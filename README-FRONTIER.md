@@ -12,6 +12,6 @@ npx create-react-app {app-name} --scripts-version @familysearch/react-scripts
 
 ## How to make a Release
 
-- When the "develop" branch is ready to merge into frontierMaster for a release, make a PR and be sure to squash all the commits into a single commit.
-- Sign in to artifactory at https://code.lds.org/artifactory/
-- run `npm publish` in the `react-scripts` directory
+- When the "develop" branch is ready to merge into frontierMaster for a release
+- run `npm release (patch|minor|major)`
+- make a PR to the `frontierMaster` branch and be sure to squash all the commits into a single commit.
