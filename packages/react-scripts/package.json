@@ -92,6 +92,6 @@
     "not op_mini all"
   ],
   "publishConfig": {
-    "registry":"https://code.lds.org/artifactory/api/npm/npm-fhd/"
+    "registry": "https://code.lds.org/artifactory/api/npm/npm-fhd/"
   }
 }
