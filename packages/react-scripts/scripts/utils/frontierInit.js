@@ -54,6 +54,7 @@ function installFrontierDependencies(appPath, answers, useYarn, ownPath) {
     'http-proxy-middleware@0.19.0',
     'react-router-dom@4.3.1',
     'fs-webdev/exo',
+    'js-cookie'
   ];
 
   const defaultDevModules = ['react-styleguidist@9.0.0-beta4', 'webpack@4.19.1'];
