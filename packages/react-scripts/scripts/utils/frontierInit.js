@@ -69,19 +69,22 @@ function installFrontierDependencies(appPath, answers, ownPath) {
 
   depsToInstall.push(
     ...[
-      'http-proxy-middleware@0.19.0',
-      'fs-webdev/exo',
-      '@reach/router',
       '@fs/axios',
-      '@emotion/core',
+      '@fs/user',
+      'fs-webdev/exo',
+      'http-proxy-middleware@0.19.1',
+      '@reach/router@1.2.1',
+      '@emotion/core@10.0.9',
     ]
   );
   devDepsToInstall.push(
     ...[
-      'eslint@5.12.0',
       '@fs/eslint-config-frontier-react',
+      '@fs/testing-library',
+      'eslint@5.12.0',
       'react-styleguidist@9.0.4',
       'webpack@4.28.3',
+      'jest-dom@3.1.3',
     ]
   );
 
@@ -145,7 +148,7 @@ function configureEF(appPath, ownPath) {
   const templatePath = path.join(ownPath, 'template-ef');
   fs.copySync(templatePath, appPath, { overwrite: true });
 
-  depsToInstall.push(...['express']);
+  depsToInstall.push(...['express@4.16.4']);
 }
 
 function configureHF(appPath, ownPath) {
@@ -161,6 +164,7 @@ function configureHF(appPath, ownPath) {
     };
     packageJson.scripts = sortScripts({ ...packageJson.scripts, ...additionalScripts });
     packageJson.main = './server.js';
+    packageJson.engines = { node: '10' };
 
     return packageJson;
   });
