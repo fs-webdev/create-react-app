@@ -58,8 +58,8 @@ function installFrontierDependencies(appPath, appName, answers, ownPath) {
       'fs-webdev/exo',
       'http-proxy-middleware@0.19.1',
       '@emotion/core@10.0.9',
-      'i18next',
-      'react-i18next',
+      'i18next@15.0.7',
+      'react-i18next@10.5.1',
     ]
   );
   devDepsToInstall.push(
@@ -67,7 +67,7 @@ function installFrontierDependencies(appPath, appName, answers, ownPath) {
       '@fs/eslint-config-frontier-react',
       '@fs/testing-library',
       'eslint@5.12.0',
-      'i18next-scanner@2',
+      'i18next-scanner@2.10.0',
       'react-styleguidist@9.0.4',
       'webpack@4.28.3',
       'jest-dom@3.1.3',
