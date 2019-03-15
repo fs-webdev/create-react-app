@@ -58,6 +58,7 @@ function installFrontierDependencies(appPath, appName, answers, ownPath) {
       'fs-webdev/exo',
       'http-proxy-middleware@0.19.1',
       '@emotion/core@10.0.9',
+      '@emotion/styled@10.0.9',
       'i18next@15.0.7',
       'react-i18next@10.5.1',
     ]
