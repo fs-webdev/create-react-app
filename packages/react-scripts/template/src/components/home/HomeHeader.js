@@ -2,7 +2,6 @@ import React from 'react'
 import { css } from '@emotion/core'
 
 const styles = css`
-  background-color: #282c34;
   display: flex;
   flex-direction: column;
   align-items: center;
