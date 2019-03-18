@@ -73,7 +73,6 @@ function installFrontierDependencies(appPath, appName, answers, ownPath) {
       '@alienfast/i18next-loader@1.0.18',
       'react-styleguidist@9.0.4',
       '@fs/styleguidist-overrides@1.3.0',
-      '@fs/configurations@2.0.0',
       'dotenv@7.0.0',
       'webpack@4.28.3',
       'jest-dom@3.1.3',
@@ -143,15 +142,15 @@ function configureEF(appPath, ownPath, appName) {
   const templatePath = path.join(ownPath, 'template-ef');
   fs.copySync(templatePath, appPath, { overwrite: true });
 
-  alterPackageJsonFile(appPath, appPackage => {	
-    const packageJson = { ...appPackage };	
-    const additionalScripts = {	
-      'heroku-prebuild': './heroku-prebuild.sh',	
-    };	
-    packageJson.scripts = sortScripts({ ...packageJson.scripts, ...additionalScripts });	
-    return packageJson;	
+  alterPackageJsonFile(appPath, appPackage => {
+    const packageJson = { ...appPackage };
+    const additionalScripts = {
+      'heroku-prebuild': './heroku-prebuild.sh',
+    };
+    packageJson.scripts = sortScripts({ ...packageJson.scripts, ...additionalScripts });
+    return packageJson;
   });
-  
+
   depsToInstall.push(...['express@4.16.4']);
   replaceStringInFile(appPath, './blueprint.yml', /\{\{APP_NAME\}\}/g, appName)
 }
