@@ -20,11 +20,12 @@ const depsToInstall = [];
 const devDepsToInstall = [];
 
 async function promptForConfig() {
+  console.log(fsCli.fsLogo('Frontier React Scripts'));
   // when in CI, don't prompt, just accept defaults
   if (process.env.CI === 'true') {
+    console.log('CI detected, skipping prompts and returning defaults ...');
     return Promise.resolve({additionalFeatures: []});
   }
-  console.log(fsCli.fsLogo('Frontier React Scripts'));
   const questions = [
     {
       type: 'checkbox',
