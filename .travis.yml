@@ -13,6 +13,10 @@ install:
   - "cd packages/react-scripts"
   - "npm i"
   - "cd ../../"
+script:
+  - npm test
+  # test that a new app can be created with these scripts
+  - npx create-react-app my-test-app --use-npm --scripts-version file:packages/react-scripts/
 before_deploy: "cd packages/react-scripts"
 deploy:
   provider: npm
