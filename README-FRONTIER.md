@@ -8,7 +8,7 @@ That being said, if you want to use our fork "manually", then here is how you do
 - TODO: put those steps here or link to those steps
 
 2. Run the following command  
-   `npx create-react-app {app-name} --scripts-version @fs/react-scripts`
+   `npx create-react-app {app-name} --use-npm --scripts-version @fs/react-scripts`
 
 ## How to test your local copy of react-scripts
 

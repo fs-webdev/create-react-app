@@ -10,6 +10,6 @@ function runExternalCommandSync(command, args) {
   const proc = spawn.sync(command, args, { stdio: 'inherit' });
   if (proc.status !== 0) {
     console.error(`\`${command} ${args.join(' ')}\` failed`);
-    return;
+    throw new Error(`\`${command} ${args.join(' ')}\` failed with status ${proc.status}`);
   }
 }
