@@ -21,7 +21,7 @@ const devDepsToInstall = [];
 
 async function promptForConfig() {
   // when in CI, don't prompt, just accept defaults
-  if (process.env.CI === true) {
+  if (process.env.CI === 'true') {
     return Promise.resolve({additionalFeatures: []});
   }
   console.log(fsCli.fsLogo('Frontier React Scripts'));
