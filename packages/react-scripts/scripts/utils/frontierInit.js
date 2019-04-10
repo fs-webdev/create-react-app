@@ -190,9 +190,7 @@ function installModulesSync(modules, saveDev = false) {
 }
 
 function createLocalEnvFile() {
-  // this fails in Travis, so skip for now
-  if (process.env.CI === 'true') return;
-  osUtils.runExternalCommandSync('npx', ['@fs/fr-cli', 'env', 'local'], process.env.CI === 'true');
+  osUtils.runExternalCommandSync('npx', ['@fs/fr-cli', 'env', 'local']);
 }
 
 function syncLocales() {
