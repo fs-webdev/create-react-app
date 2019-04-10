@@ -190,7 +190,7 @@ function installModulesSync(modules, saveDev = false) {
 }
 
 function createLocalEnvFile() {
-  osUtils.runExternalCommandSync('npx', ['@fs/fr-cli', 'env', 'local']);
+  osUtils.runExternalCommandSync('npx', ['@fs/fr-cli', 'env', 'local'], process.env.CI === 'true');
 }
 
 function syncLocales() {
