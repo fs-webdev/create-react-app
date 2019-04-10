@@ -16,7 +16,7 @@ install:
 script:
   - npm test
   # test that a new app can be created with these scripts
-  - cd ${HOME}/tmp
+  - mkdir -p ${HOME}/tmp && cd ${HOME}/tmp
   - npx create-react-app my-test-app --use-npm --scripts-version file:${TRAVIS_BUILD_DIR}/packages/react-scripts/
   - cd my-test-app
   - CI=true npm test
