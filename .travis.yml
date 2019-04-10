@@ -16,7 +16,12 @@ install:
 script:
   - npm test
   # test that a new app can be created with these scripts
-  - npx create-react-app my-test-app --use-npm --scripts-version file:packages/react-scripts/
+  - cd ${HOME}/tmp
+  - npx create-react-app my-test-app --use-npm --scripts-version file:${TRAVIS_BUILD_DIR}/packages/react-scripts/
+  - cd my-test-app
+  - CI=true npm test
+  - npm run build
+  - cd ${TRAVIS_BUILD_DIR}
 before_deploy: "cd packages/react-scripts"
 deploy:
   provider: npm
