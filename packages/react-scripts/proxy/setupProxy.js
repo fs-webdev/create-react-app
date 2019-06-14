@@ -1,36 +1,38 @@
 const proxy = require('http-proxy-middleware')
 const fsconfig = require('fs-config/config/default')
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable-next-line import/no-extraneous-dependencies */
 require('dotenv').config()
-/* eslint-enable import/no-extraneous-dependencies */
-
-// detect env
-const env = process.env.REMOTE_ENV || 'beta'
-// backwards compat for auth-middleware env implicit dependency
-process.env.TARGET_ENV = env
-
-// set keys directly from fs-config for the current env
-function getFromEnv(thisEnv, key) {
-  return fsconfig[thisEnv][key] || fsconfig.default[key]
-}
-const keys = ['FS_KEY', 'CIS_WEB']
-keys.forEach(key => {
-  process.env[key] = getFromEnv(env, key)
-})
-
-// dev key is only in default
-process.env.FS_DEV_KEY = fsconfig.default.FS_DEV_KEY
-
-// bring in auth middleware once required keys are set
-const cookieParser = require('cookie-parser')
-const base = require('connect-base')
-const metric = require('connect-metric')
-const auth = require('auth-middleware')
-const resolver = require('./resolver')
-const proxyList = require('./proxies')
 
 const setProxies = (app, customProxies = []) => {
+  // detect env
+  const env = process.env.REMOTE_ENV || 'beta'
+  // backwards compat for auth-middleware env implicit dependency
+  if (process.env.TARGET_ENV === 'local') {
+    process.env.TARGET_ENV = env
+  }
+
+  // set keys directly from fs-config for the current env
+  function getFromEnv(thisEnv, key) {
+    return fsconfig[thisEnv][key] || fsconfig.default[key]
+  }
+
+  const keys = ['FS_KEY', 'CIS_WEB']
+  keys.forEach(key => {
+    process.env[key] = getFromEnv(env, key)
+  })
+
+  // dev key is only in default
+  process.env.FS_DEV_KEY = fsconfig.default.FS_DEV_KEY
+
+  // bring in auth middleware once required keys are set
+  const cookieParser = require('cookie-parser')
+  const base = require('connect-base')
+  const metric = require('connect-metric')
+  const auth = require('auth-middleware')
+  const resolver = require('./resolver')
+  const proxyList = require('./proxies')
+
   // middleware required for auth middleware
   app.use(metric())
   app.use(base())
