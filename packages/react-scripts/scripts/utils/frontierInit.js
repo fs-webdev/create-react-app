@@ -28,7 +28,7 @@ function installFrontierDependencies(appPath, appName, ownPath) {
       '@fs/zion-router@2',
       '@fs/zion-style-normalize@1',
       '@fs/zion-subnav@1',
-      '@fs/zion-user@1',
+      '@fs/zion-user@2',
       '@fs/zion-ui@1',
       'formik@1',
       'i18next@17',
