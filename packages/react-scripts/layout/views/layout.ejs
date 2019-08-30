@@ -19,6 +19,22 @@
     <!-- Resource Hints -->
     <link rel="preconnect" href="//edge.fscdn.org" crossorigin />
 
+    <% if (feature('appdynamicsFt') || process.env.APPDYNAMICS_ENABLED !== 'false') { %>
+      <script charset='UTF-8'>
+        window['adrum-start-time'] = new Date().getTime();
+        (function(config){
+          config.appKey = '<%= process.env.APPDYNAMICS_EUM_KEY %>';
+          config.adrumExtUrlHttps = 'https://cdn.appdynamics.com';
+          config.beaconUrlHttps = 'https://col.eum-appdynamics.com';
+          config.xd = {enable : true};
+          config.spa = {
+            "spa2": true
+          };
+        })(window['adrum-config'] || (window['adrum-config'] = {}));
+      </script>
+      <script src='https://cdn.appdynamics.com/adrum/adrum-latest.js' type='text/javascript' charset='UTF-8'></script>
+    <% } %>
+
     <script>
       window.SERVER_DATA = {};
       <%- typeof cacheKey !== 'undefined' ? `SERVER_DATA.cacheKey = '${cacheKey}';` : ''; %>
