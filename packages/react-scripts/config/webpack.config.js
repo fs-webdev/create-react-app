@@ -415,11 +415,20 @@ module.exports = function(webpackEnv) {
                 // AND be in the appPath but not the ${AppPath}/src
                 // Doing things this was with an exclude allows us to transpile npm linked modules no matter what their name is
                 // (ie zion, whatever tree calls their monorepo, etc)
-                const nodeModulesWithNoFS = /node_modules\/(?!@fs)/.test(resource)
-                const appPathNoSrc = new RegExp(`${process.cwd()}/(?!src)`).test(resource)
+                const hasNodeModules = /node_modules\//.test(resource)
+                const hasNodeModulesNotFollowedByAtFS = /node_modules\/(?!@fs)/.test(resource)
+                const appRoot = new RegExp(process.cwd()).test(resource)
+                const appRootNoSrc = new RegExp(`${process.cwd()}/(?!src)$`).test(resource)
 
-                return npmLinkedReactScripts || (nodeModulesWithNoFS && appPathNoSrc)
-
+                let exclude = false
+                if (npmLinkedReactScripts) {
+                  exclude = true
+                } else if (hasNodeModules && hasNodeModulesNotFollowedByAtFS) {
+                  exclude = true
+                } else if (appRoot && appRootNoSrc) {
+                  exclude = true
+                }
+                return exclude
               },
               loader: require.resolve('babel-loader'),
               options: {
