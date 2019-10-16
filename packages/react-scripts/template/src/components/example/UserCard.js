@@ -15,6 +15,7 @@ import {
   ListItemText,
   ListItemIcon,
   TextField,
+  TypeBlock,
   useOpener,
 } from '@fs/zion-ui'
 import { ViewerContrastMore, SocialLike, MediaFastForward } from '@fs/zion-icon'
@@ -27,7 +28,11 @@ const usePersonPortrait = personId => {
       case 'FETCHING':
         return { ...state, status: 'FETCHING' }
       case 'SUCCESS':
-        return { ...state, status: 'SUCCESS', portraitUrl: response.data.thumbSquareUrl }
+        return {
+          ...state,
+          status: 'SUCCESS',
+          portraitUrl: response.data.portraitUrls.thumbSquareUrl,
+        }
       case 'ERROR':
         return { ...state, status: 'ERROR', response }
       default:
@@ -38,7 +43,7 @@ const usePersonPortrait = personId => {
 
   React.useEffect(() => {
     axios
-      .get(`/service/memories/tree/persons/${personId}/portraits/CURRENT`)
+      .get(`/service/memories/tps/persons/${personId}/portrait`)
       .then(response => dispatch({ type: 'SUCCESS', response }))
       .catch(response => dispatch({ type: 'ERROR', response }))
   }, [personId])
@@ -125,7 +130,15 @@ const UserCard = ({
         </List>
 
         <Dialog opener={dialogOpener} dismiss="Close" fullscreen>
-          <DialogTitle>{details.fullName}</DialogTitle>
+          <DialogTitle>
+            <TypeBlock
+              size="xs"
+              avatar={{ src: portraitUrl }}
+              avatarProps={{ src: portraitUrl }}
+              header={details.fullName}
+              subHeader={details.summary.lifespan}
+            />
+          </DialogTitle>
           <List dense>
             <ListItem>
               <ListItemText primary={personId} secondary="PID" />
