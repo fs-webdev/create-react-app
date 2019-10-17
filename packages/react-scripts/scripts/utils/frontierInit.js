@@ -64,6 +64,7 @@ function installFrontierDependencies(appPath, appName, ownPath) {
       'lint-staged@8',
       'suppress-exit-code@0.1',
       'source-map-explorer@2',
+      'gzip-cli@1',
     ]
   )
 
@@ -125,6 +126,7 @@ function configureHF(appPath, ownPath) {
   alterPackageJsonFile(appPath, appPackage => {
     const packageJson = { ...appPackage }
     const additionalScripts = {
+      'build:gzip': 'npm run build && gzip build/static/**/*.js',
       'build:prod': 'PUBLIC_URL=https://edge.fscdn.org/assets/ react-scripts build',
       'heroku-postbuild': 'npm run build:prod',
       'heroku-prebuild': './heroku-prebuild.sh',
