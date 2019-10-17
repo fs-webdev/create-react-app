@@ -40,7 +40,6 @@ String.prototype.injectInnerMarkdown = function injectInnerMarkdown(innerMarkdow
 }
 
 addParameters({
-  info: { disable: true },
   readme: { sidebar: '<!-- PROPS -->' },
   options: {
     showPanel: true,
@@ -48,9 +47,4 @@ addParameters({
   },
 })
 
-function loadStories() {
-  const req = require.context('../src', true, /\.stories\.js$/)
-  req.keys().forEach(filename => req(filename))
-}
-
-configure(loadStories, module)
+configure(require.context('../src', true, /\.stories\.(js|mdx)$/), module);
