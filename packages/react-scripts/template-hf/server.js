@@ -25,7 +25,7 @@ const snowConfig = {
       default: false,
     },
   ],
-  proxyUser: true,
+  proxyUser: false,
   cacheEncryption: true,
   serviceLocatorOptions,
 }
