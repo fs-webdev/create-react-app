@@ -84,7 +84,13 @@ const ArtifactsCard = ({ cisId, likeButtonPressed }) => {
     return <CardContent>An error has occured</CardContent>
   }
 
+  function renderNoArtifacts() {
+    return <CardContent>There are no artifacts to display.</CardContent>
+  }
+
   function renderArtifacts() {
+    if (!artifacts || !artifacts.length) return renderNoArtifacts()
+
     const selectedArtifact = artifacts ? artifacts[selectedIndex] : null
     const featuredImage = selectedArtifact ? selectedArtifact.featuredImages[0] : null
     return (
