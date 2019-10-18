@@ -3,6 +3,10 @@ prepare:
   fetch:
     - url: "https://raw.githubusercontent.com/fs-webdev/eslint-config-frontier-react/master/codeclimateEslintRules.js"
       path: "eslint-config-frontier-react.js"
+checks:
+  method-complexity:
+    config:
+      threshold: 8
 plugins:
   eslint:
     enabled: true
@@ -20,5 +24,7 @@ exclude_patterns:
   - eslint-config-frontier-react.js
   - "**/node_modules/"
   - "**/*min.*"
+  - "**/*.stories.js*"
+  - "**/*.test.js*"
   - "**/reports/**/*"
   - "**/vendor/**/*"
