@@ -4,9 +4,10 @@ const config = {
   experiments: [
     // REPLACE THIS EXPERIMENT WHEN ADDING THE FIRST ONE. IT BREAKS IF NONE EXIST
     {
-      name: 'nameEx',
+      name: 'fallbackExperiment',
       default: true,
-      description: 'Short description. Owner/Author/Team: Unknown',
+      description: `If you see this, then the call to get shared experiments failed somewhere. Please see the docs
+      here for some potential fixes. https://www.familysearch.org/frontier/docs/misc/issues`,
     },
   ],
 }
