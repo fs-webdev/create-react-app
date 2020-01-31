@@ -1,5 +1,6 @@
 import React from 'react'
 import { css } from '@emotion/core'
+import * as Yup from 'yup'
 import {
   Button,
   TextField,
@@ -14,30 +15,53 @@ import {
   Separator,
   useAtSize,
 } from '@fs/zion-ui'
-import * as Yup from 'yup'
+
+// Create a list of options for the autosuggest form element
+const emotions = ['joy', 'surprise', 'glee', 'astonishment', 'thirst', 'excitement']
+
+const emotionOptions = emotions.map((emotion, idx) => ({
+  id: idx,
+  key: idx,
+  primaryText: emotion,
+}))
+
+const defaultValues = {
+  adjective1: 'inspiring',
+  pluralNoun1: 'experiences',
+  emotion1: emotionOptions[0],
+  pluralNoun2: 'people',
+  pluralNoun3: 'families',
+  verb1: 'discover',
+  verb2: 'gather',
+  verb3: 'connect',
+  timePeriod1: 'future',
+  debug: false,
+}
+
+// Yup is a 3rd party library for validating
+// objects. It has a similar api to prop-types.
+// Docs here: https://www.npmjs.com/package/yup
+const validationSchema = Yup.object().shape({
+  adjective1: Yup.string()
+    .matches(/ing$/, 'Must end with "ing"')
+    .required('Required'),
+  pluralNoun3: Yup.string()
+    .min(3)
+    .max(10)
+    .required('Required'),
+
+  pluralNoun1: Yup.string().required('Required'),
+  emotion1: Yup.string()
+    .required('Required')
+    .nullable(),
+  pluralNoun2: Yup.string().required('Required'),
+  verb1: Yup.string().required('Required'),
+  verb2: Yup.string().required('Required'),
+  verb3: Yup.string().required('Required'),
+  timePeriod1: Yup.string().required('Required'),
+})
 
 const PurposeStatementGenerator = () => {
-  // Create a list of options for the autosuggest form element
-  const emotions = ['joy', 'surprise', 'glee', 'astonishment', 'thirst', 'excitement']
-  const emotionOptions = emotions.map((emotion, idx) => ({
-    id: idx,
-    key: idx,
-    primaryText: emotion,
-  }))
-
-  const defaultValues = {
-    adjective1: 'inspiring',
-    pluralNoun1: 'experiences',
-    emotion1: emotionOptions[0],
-    pluralNoun2: 'people',
-    pluralNoun3: 'families',
-    verb1: 'discover',
-    verb2: 'gather',
-    verb3: 'connect',
-    timePeriod1: 'future',
-    debug: false,
-  }
-
   const [data, setData] = React.useState(defaultValues)
   const atSize = useAtSize()
 
@@ -46,29 +70,6 @@ const PurposeStatementGenerator = () => {
   }
 
   const handleStartOver = () => setData(defaultValues)
-
-  // Yup is a 3rd party library for validating
-  // objects. It has a similar api to prop-types.
-  // Docs here: https://www.npmjs.com/package/yup
-  const validationSchema = Yup.object().shape({
-    adjective1: Yup.string()
-      .matches(/ing$/, 'Must end with "ing"')
-      .required('Required'),
-    pluralNoun3: Yup.string()
-      .min(3)
-      .max(10)
-      .required('Required'),
-
-    pluralNoun1: Yup.string().required('Required'),
-    emotion1: Yup.string()
-      .required('Required')
-      .nullable(),
-    pluralNoun2: Yup.string().required('Required'),
-    verb1: Yup.string().required('Required'),
-    verb2: Yup.string().required('Required'),
-    verb3: Yup.string().required('Required'),
-    timePeriod1: Yup.string().required('Required'),
-  })
 
   return (
     <Grid>
