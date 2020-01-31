@@ -6,12 +6,15 @@ import '@storybook/addon-console'
 import { withA11y } from '@storybook/addon-a11y'
 import { withKnobs } from '@storybook/addon-knobs'
 import { darkMode, lightMode } from './theme'
-import { I18nProvider, i18n } from '@fs/zion-locale'
+import { I18nProvider, i18n, addTranslations } from '@fs/zion-locale'
 import { themes } from '@fs/zion-ui'
 import { GridStart } from '@fs/zion-ui/dist/es/grid'
 import { ResponsiveProvider } from '@fs/zion-ui/dist/es/responsive'
 import { StatusOverlays, StatusOverlayProvider } from '@fs/zion-ui/dist/es/status-overlay'
 import withThemeSwitcher from '@fs/storybook-addons/dist/theme-switcher/withThemeSwitcher'
+import translations from '../src/locales'
+
+addTranslations(translations)
 
 addDecorator(withKnobs)
 addDecorator(withA11y)

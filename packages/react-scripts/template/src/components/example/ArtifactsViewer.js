@@ -1,13 +1,14 @@
 import React from 'react'
-import { HeaderBlock, colors } from '@fs/zion-ui'
+import { colors } from '@fs/zion-ui'
 import { css } from '@emotion/core'
 import axios from '@fs/zion-axios'
-import RequireSignedInUser from './RequireSignedInUser'
 import LazyImage from './LazyImage'
+import Banner from './Banner'
 
 const artifactsCss = css`
   margin: 0 -24px;
 `
+
 const ArtifactsViewer = ({ user: { cisId } }) => {
   // Use our custom hook
   const [{ loading, artifacts, photos, error }] = useArtifacts(cisId)
@@ -83,27 +84,7 @@ const PhotoViewer = ({ photos, height = 250 }) => {
   )
 }
 
-const bannerCss = css`
-  padding: 25px;
-  text-align: center;
-  color: ${colors.text.primary};
-`
-const Banner = ({ message, color }) => (
-  <div css={bannerCss} style={{ backgroundColor: color }}>
-    <HeaderBlock size="sm" heading={message} />
-  </div>
-)
-
-const NotSignedInComponent = () => (
-  <Banner
-    color={colors.help.accent2}
-    message="We really want to show you some pictures of your ancestors but you must sign in first"
-  />
-)
-
-export default (props) => (
-  <RequireSignedInUser {...props} Component={ArtifactsViewer} NotSignedInComponent={NotSignedInComponent} />
-)
+export default React.memo(ArtifactsViewer)
 
 // Custom hook for fetching artifacts from the the memory service
 function useArtifacts(cisId) {

@@ -22,7 +22,7 @@ module.exports = async ({ config }) => {
     config.entry = config.entry.filter((singleEntry) => !singleEntry.includes('/webpack-hot-middleware/'))
   }
 
-  printRules(config.module.rules)
+  // printRules(config.module.rules)
   return config
 }
 
