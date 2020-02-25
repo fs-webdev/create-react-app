@@ -132,7 +132,7 @@ function configureHF(appPath, ownPath) {
       'heroku-prebuild': './heroku-prebuild.sh',
       start: 'react-scripts start',
       'test:ci': 'CI=true react-scripts test --coverage',
-      analyzeBundle: "npm run build && source-map-explorer 'build/static/js/*.js'",
+      analyzeBundle: "npm run build && source-map-explorer 'build/static/js/*.js' --gzip",
     }
     packageJson.scripts = sortScripts({
       ...packageJson.scripts,
