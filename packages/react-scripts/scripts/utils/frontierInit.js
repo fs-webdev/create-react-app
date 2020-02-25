@@ -1,4 +1,4 @@
-'use strict'
+
 
 const fs = require('fs-extra')
 const os = require('os')
@@ -25,9 +25,9 @@ function installFrontierDependencies(appPath, appName, ownPath) {
       '@fs/zion-error-boundary@2',
       '@fs/zion-icon@3',
       '@fs/zion-locale@3',
-      '@fs/zion-root@3',
+      '@fs/zion-root@4',
       '@fs/zion-router@3',
-      '@fs/zion-ui@6',
+      '@fs/zion-ui@7',
       '@fs/zion-user@3',
       '@sentry/browser@5',
       'i18next@19',
