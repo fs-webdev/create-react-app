@@ -18,28 +18,11 @@ NEW_CRA_VERSION=$(json -f ${TRAVIS_BUILD_DIR}/packages/react-scripts/package.jso
 echo "NEW_CRA_VERSION: $NEW_CRA_VERSION"
 json -I -f package.json -e "this.dependencies[\"@fs/react-scripts\"]=\"$NEW_CRA_VERSION\""
 
-# Put the fresh-cra-template behind github auth
-npm i cookie-session fs-webdev/express-github-org-auth#semver:^1
-# debugging note - to run these insert commands on mac's sed, you have to put a literal newline after the "i\" (literal, not a "\n")
-sed -i.bak '1 i\const cookieSession = require(\"cookie-session\")' server.js
-sed -i.bak '1 i\const githubOrgAuth = require(\"express-github-org-auth\")' server.js
-sed -i.bak '/const snowApp/a\
-  snowApp.stack.preRoute(() => {\
-    // Authenticate all the things. Must be member of github org(s) to view\
-    snowApp.use(cookieSession({ keys: [process.env.SESSION_SECRET] }))\
-    // require github org auth\
-    githubOrgAuth(["fs-webdev", "fs-eng"], snowApp)\
-  })' server.js
-sed -i.bak '/proxyUser/d' server.js
-sed -i.bak '/cacheEncryption/d' server.js
-
-
 rm blueprint.yml.bak
-rm server.js.bak
 rm package-lock.json
 rm .npmrc
 
 # Commit and push to the existing fs-webdev/fresh-cra-template repo on github
-git commit -a -m 'editing blueprint.yml, fixing @fs/react-scripts version, and putting in github oauth'
+git commit -a -m 'editing blueprint.yml, fixing @fs/react-scripts version'
 git remote add origin https://github.com/fs-webdev/fresh-cra-template.git
 git push --force origin master

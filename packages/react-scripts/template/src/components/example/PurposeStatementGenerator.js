@@ -14,6 +14,7 @@ import {
   Cell,
   Separator,
   useAtSize,
+  useStatusOverlay,
 } from '@fs/zion-ui'
 
 // Create a list of options for the autosuggest form element
@@ -64,9 +65,14 @@ const validationSchema = Yup.object().shape({
 const PurposeStatementGenerator = () => {
   const [data, setData] = React.useState(defaultValues)
   const atSize = useAtSize()
+  const showStatusOverlay = useStatusOverlay()
 
   const handleFormSubmit = (formData) => {
     setData(formData)
+    showStatusOverlay({
+      type: 'success',
+      message: 'Way to go!',
+    })
   }
 
   const handleStartOver = () => setData(defaultValues)

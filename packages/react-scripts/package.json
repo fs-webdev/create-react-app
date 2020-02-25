@@ -1,6 +1,6 @@
 {
   "name": "@fs/react-scripts",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "upstreamVersion": "3.1.1",
   "description": "Configuration and scripts for Create React App.",
   "repository": {
@@ -35,7 +35,7 @@
   "dependencies": {
     "@alienfast/i18next-loader": "^1.0.18",
     "@babel/core": "7.5.5",
-    "@fs/babel-preset-frontier": "^2.0.0",
+    "@fs/babel-preset-frontier": "^2.1.0",
     "@fs/eslint-config-frontier-react": "^4.0.0",
     "@svgr/webpack": "4.3.2",
     "auth-middleware": "github:fs-webdev/auth-middleware",

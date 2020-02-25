@@ -2,12 +2,12 @@ module.exports = {
   stories: ['../src/**/*.stories.js'],
   addons: [
     '@storybook/preset-create-react-app',
-    '@storybook/addon-docs/preset',
+    '@storybook/addon-docs',
 
-    '@storybook/addon-knobs/register',
-    '@storybook/addon-actions/register',
-    '@storybook/addon-a11y/register',
-    '@storybook/addon-viewport/register',
+    '@storybook/addon-knobs',
+    '@storybook/addon-actions',
+    '@storybook/addon-a11y',
+    '@storybook/addon-viewport',
     '@fs/storybook-addons/dist/grid/register',
     '@fs/storybook-addons/dist/locale-switcher/register',
     '@fs/storybook-addons/dist/sign-in/register',

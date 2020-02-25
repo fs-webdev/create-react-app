@@ -10,14 +10,6 @@ const wheelCss = css`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  cursor: pointer;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -html-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
 
   svg {
     width: 100%;
@@ -33,11 +25,9 @@ const wheelCss = css`
     }
   }
 `
-
-const WagonWheel = ({ color = 'black', animationDuration = '20s', handleClick, maxHeight = '250px' }) => {
+const WagonWheel = ({ color = 'black', animationDuration = '20s', maxHeight = '250px' }) => {
   return (
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions
-    <div role="img" css={wheelCss} onClick={handleClick} style={{ animationDuration }}>
+    <div css={wheelCss} style={{ animationDuration }}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 1280 1280"
