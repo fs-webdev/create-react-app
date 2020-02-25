@@ -42,9 +42,11 @@
 
     <script>
       window.SERVER_DATA = {};
-      <%- typeof cacheKey !== 'undefined' ? `SERVER_DATA.cacheKey = '${cacheKey}';` : ''; %>
-      SERVER_DATA.appPath = "<%- typeof appPathOverride !== 'undefined' ? appPathOverride : appPath('') %>";
+      <%= typeof cacheKey !== 'undefined' ? `SERVER_DATA.cacheKey = '${cacheKey}';` : ''; %>
+      SERVER_DATA.appPath = "<%= typeof appPathOverride !== 'undefined' ? appPathOverride : appPath('') %>";
+      SERVER_DATA.targetEnv = "<%= process.env.TARGET_ENV %>""
       <% include partials/experiments %>
+      <% include partials/sentry %>
     </script>
   </head>
   <body>
