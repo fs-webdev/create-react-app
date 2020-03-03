@@ -322,7 +322,7 @@ module.exports = function(webpackEnv) {
         'react-native': 'react-native-web',
         // Allows for better profiling with ReactDevTools
         ...(isEnvProductionProfile && {
-          'react-dom$': 'react-dom/profiling',
+          'react-dom$': require.resolve('react-dom/profiling'),
           'scheduler/tracing': 'scheduler/tracing-profiling',
         }),
         react: require.resolve('react'),
