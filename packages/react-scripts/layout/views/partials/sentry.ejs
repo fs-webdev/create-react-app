@@ -2,8 +2,6 @@
 const {APP_NAME, SENTRY_DSN, SENTRY_DISABLED, BUILD_GIT_CURRENT_SHA = '', BUILD_NUMBER } = process.env
 const sentryRelease = BUILD_NUMBER && BUILD_GIT_CURRENT_SHA ? `${APP_NAME}@${BUILD_NUMBER}:${BUILD_GIT_CURRENT_SHA.substring(0, 8)}` : ''
 %>
-<script>
-  SERVER_DATA.sentryDSN = '<%= SENTRY_DSN %>'
-  SERVER_DATA.sentryDisabled = <%= SENTRY_DISABLED === "true" %>
-  SERVER_DATA.sentryRelease = '<%= sentryRelease %>'
-</script>
+      SERVER_DATA.sentryDSN = '<%= SENTRY_DSN %>'
+      SERVER_DATA.sentryDisabled = <%= SENTRY_DISABLED === "true" %>
+      SERVER_DATA.sentryRelease = '<%= sentryRelease %>'
