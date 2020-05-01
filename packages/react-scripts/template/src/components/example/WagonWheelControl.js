@@ -55,7 +55,7 @@ const WagonWheelControl = ({ animationDuration, color, handleColorChange, handle
           })}
         </RadioGroup>
       </Cell>
-      <Cell stretch="false" align="center">
+      <Cell stretch={false} verticalAlign="middle">
         <Grid>
           {[
             colors.text.primary,

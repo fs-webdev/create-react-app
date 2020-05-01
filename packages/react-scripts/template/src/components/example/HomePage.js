@@ -98,13 +98,13 @@ const HomePage = () => {
             css={wagonButtonCss}
             type="button"
             tabIndex={0}
-            onClick={overlay.handleOpen}
+            onClick={overlay.handleClick}
           >
             <WagonWheel
               alt="Wagon Wheel"
               color={wheelColor}
               animationDuration={wheelSpeed}
-              handleClick={overlay.handleOpen}
+              handleClick={overlay.handleClick}
             />
           </button>
         </Cell>
@@ -151,7 +151,7 @@ const HomePage = () => {
       </Grid>
 
       {/* Overlay */}
-      <Suspense fallback={NoticeLoading}>
+      <Suspense fallback={<NoticeLoading />}>
         <DialogOverlay autoWidth headingText="Wagon Wheel Controls" {...overlay}>
           <DialogOverlayContent>
             <WagonWheelControl

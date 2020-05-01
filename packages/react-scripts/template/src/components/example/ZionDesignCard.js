@@ -1,21 +1,21 @@
 import React from 'react'
-import { MenuNewWindow, LogoGithub } from '@fs/zion-icon'
-import { Button, Card, CardMedia, CardActions, CardHeader } from '@fs/zion-ui'
+import { MenuNewWindow } from '@fs/zion-icon'
+import { Button, Card } from '@fs/zion-ui'
 import ZionImage from './zion.jpg'
 
 const ZionDesignCard = () => {
   return (
     <Card>
-      <CardMedia height="calc(var(--cell-width, 750px) / 2.5)" image={ZionImage} alt="Zion National Park" />
-      <CardHeader heading="Zion Design System" />
-      <CardActions>
+      <Card.Image height="calc(var(--cell-width, 750px) / 2.5)" src={ZionImage} alt="Zion National Park" />
+      <Card.Title>Zion Design System</Card.Title>
+      <Card.Actions>
         <Button Icon={MenuNewWindow} keyline="left" href="https://beta.familysearch.org/frontier/zion">
           Zion Docs + Components
         </Button>
-        <Button Icon={LogoGithub} href="https://github.com/fs-webdev/zion">
+        <Button Icon={MenuNewWindow} href="https://github.com/fs-webdev/zion">
           Github
         </Button>
-      </CardActions>
+      </Card.Actions>
     </Card>
   )
 }

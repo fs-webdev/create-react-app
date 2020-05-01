@@ -1,13 +1,13 @@
 import React from 'react'
 import { MenuNewWindow } from '@fs/zion-icon'
-import { Button, Card, CardMedia, CardActions, CardHeader } from '@fs/zion-ui'
+import { Button, Card } from '@fs/zion-ui'
 import ReactImage from './reactjs.jpg'
 
 const LearnReactCard = () => (
   <Card>
-    <CardMedia image={ReactImage} alt="React" height="calc(var(--cell-width, 750px) / 2.5)" />
-    <CardHeader heading="Learn React" />
-    <CardActions>
+    <Card.Image src={ReactImage} alt="React" height="calc(var(--cell-width, 750px) / 2.5)" />
+    <Card.Title>Learn React</Card.Title>
+    <Card.Actions>
       <Button Icon={MenuNewWindow} href="https://reactjs.org/docs/getting-started.html">
         React Docs
       </Button>
@@ -17,7 +17,7 @@ const LearnReactCard = () => (
       >
         Earn your Badge
       </Button>
-    </CardActions>
+    </Card.Actions>
   </Card>
 )
 
