@@ -49,7 +49,7 @@ function installFrontierDependencies(appPath, appName, ownPath) {
       "@storybook/preset-create-react-app@1",
       '@storybook/react@5',
       '@storybook/theming@5',
-      '@fs/eslint-config-frontier-react@4',
+      '@fs/eslint-config-frontier-react@5',
       '@fs/storybook-addons@3',
       '@fs/zion-testing-library@4',
       'eslint@6',
