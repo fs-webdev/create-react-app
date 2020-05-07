@@ -1,7 +1,7 @@
 import React from 'react'
-import { colors, DataPreview, Skeleton } from '@fs/zion-ui'
+import { colors, LayoutBand, Skeleton } from '@fs/zion-ui'
 import { css } from '@emotion/core'
-import axios from '@fs/zion-axios'
+import useZionAxios from './UseZionAxios'
 import LazyImage from './LazyImage'
 import Banner from './Banner'
 
@@ -30,11 +30,24 @@ const ArtifactsViewSkeleton = () => {
 }
 
 const ArtifactsViewer = ({ user: { cisId } }) => {
-  // Use our custom hook
-  const [{ loading, artifacts, photos, error }] = useArtifacts(cisId)
+  const artifactsUrl = `/service/memories/presentation/patrons/${cisId}/persons?numTaggedPersonArtifacts=3&includeTaggedPersons=true&includeEmptyPersons=false&includeHistory=false`
+  // Call our wrapper around use-axios-client
+  const { data, error, loading } = useZionAxios(artifactsUrl)
 
   function renderError() {
     return <Banner color={colors.feedback.danger.accent2} message="Darn it, something went wrong!" />
+  }
+
+  function renderArtifacts() {
+    if (data && data.length > 0) {
+      const photos = removeDuplicates(data)
+      return (
+        <div css={artifactsCss}>
+          <PhotoViewer photos={photos} />
+        </div>
+      )
+    }
+    return renderNoArtifacts()
   }
 
   function renderNoArtifacts() {
@@ -46,24 +59,26 @@ const ArtifactsViewer = ({ user: { cisId } }) => {
     )
   }
 
-  function renderArtifacts() {
-    return (
-      <div css={artifactsCss}>
-        <PhotoViewer photos={photos} />
-      </div>
-    )
+  function removeDuplicates(d) {
+    const photos = d
+      .filter((arts) => arts.featuredImages.length > 0)
+      .map((a) => ({
+        id: a.featuredImages[0].apid,
+        url: a.featuredImages[0].thumbUrl,
+        alt: a.featuredImages[0].title,
+      }))
+
+    const photoSet = Array.from(new Set(photos.map((p) => p.id))).map((id) => photos.find((p) => p.id === id))
+    return { photos: photoSet }
   }
 
-  if (error) return renderError()
+  // use-axios-client provides these states for us:
   return (
-    <>
-      <DataPreview.Loading loading={loading}>
-        <ArtifactsViewSkeleton />
-      </DataPreview.Loading>
-      <DataPreview.Ready loading={loading}>
-        {artifacts?.length > 0 ? renderArtifacts() : renderNoArtifacts()}
-      </DataPreview.Ready>
-    </>
+    <LayoutBand>
+      {loading && <ArtifactsViewSkeleton />}
+      {error && renderError()}
+      {data && renderArtifacts()}
+    </LayoutBand>
   )
 }
 
@@ -100,7 +115,7 @@ const PhotoViewer = ({ photos, height = 250 }) => {
 
   return (
     <div css={photoViewerCss} style={{ height }}>
-      {photos.map((photo) => (
+      {photos.photos.map((photo) => (
         <LazyImage css={viewerImageCss} key={photo.id} src={photo.url} alt={photo.alt} handleOnError={handleOnError} />
       ))}
     </div>
@@ -108,54 +123,3 @@ const PhotoViewer = ({ photos, height = 250 }) => {
 }
 
 export default React.memo(ArtifactsViewer)
-
-// Custom hook for fetching artifacts from the the memory service
-function useArtifacts(cisId) {
-  // Handles dispatched actions
-  // Take an action type, applies state changes and returns new state
-  const reducer = (state, { type, ...data }) => {
-    switch (type) {
-      case 'LOADING':
-        return { ...state, loading: true }
-      case 'SUCCESS': {
-        const { artifacts } = data
-        const photos = artifacts
-          .filter((arts) => arts.featuredImages.length > 0)
-          .map((a) => ({
-            id: a.featuredImages[0].apid,
-            url: a.featuredImages[0].thumbUrl,
-            alt: a.featuredImages[0].title,
-          }))
-
-        // Remove duplicates.
-        const photoSet = Array.from(new Set(photos.map((p) => p.id))).map((id) => photos.find((p) => p.id === id))
-        return { ...state, loading: false, artifacts, photos: photoSet }
-      }
-      case 'ERROR':
-        return { ...state, loading: false, error: data.error }
-      default:
-        throw new Error(`Unknown action type: ${type}`)
-    }
-  }
-
-  const [state, dispatch] = React.useReducer(reducer, { loading: true })
-
-  React.useEffect(() => {
-    // Dispatch action to update loading state
-    dispatch({ type: 'LOADING' })
-
-    // Initiate API call
-    axios
-      .get(
-        `/service/memories/presentation/patrons/${cisId}/persons?numTaggedPersonArtifacts=3&includeTaggedPersons=true&includeEmptyPersons=false&includeHistory=false`
-      )
-      .then((response) => response.data.filter((a) => a.featuredImages && a.featuredImages.length > 0))
-      .then((artifacts) => {
-        // Success!  Dispatch action with results
-        dispatch({ type: 'SUCCESS', artifacts })
-      })
-      .catch((error) => dispatch({ type: 'ERROR', error })) // Dispatch Error, update state
-  }, [cisId])
-
-  return [state]
-}

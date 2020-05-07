@@ -33,6 +33,7 @@ function installFrontierDependencies(appPath, appName, ownPath) {
       'i18next@19',
       'react-i18next@11',
       'prop-types@15',
+      'use-axios-client@2',
       'yup@0.28',
     ]
   )
