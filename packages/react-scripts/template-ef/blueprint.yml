@@ -15,7 +15,7 @@ deploy:
       location: development-fh5-useast1-heroku
       binding_sets:
         # Replace {{BINDING_PATH}} with your approved service name. 
-        # See https://www.familysearch.org/frontier/docs/develop/deploy 
+        # See https://www.familysearch.org/frontier/docs/develop/deployment
         {{BINDING_PATH}}:
           - type: "Service v1_0"
             sites:

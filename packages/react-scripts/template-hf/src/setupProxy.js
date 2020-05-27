@@ -3,12 +3,12 @@
 // This file is only run in development mode.
 
 // sets local proxies using http-proxy-middleware configs
-// docs here: https://www.familysearch.org/frontier/docs/develop/proxies
+// docs here: https://www.familysearch.org/frontier/docs/app-development/proxies
 const setProxies = require('@fs/react-scripts/proxy/setupProxy')
 const waitForWebpack = require('@fs/snow/lib/utils/waitForWebpack.js')
 const setupServer = require('../server')
 
-// put any custom proxies here, see https://www.familysearch.org/frontier/docs/develop/proxies
+// put any custom proxies here, see https://www.familysearch.org/frontier/docs/app-development/proxies
 const customProxies = []
 
 module.exports = (app) => {
