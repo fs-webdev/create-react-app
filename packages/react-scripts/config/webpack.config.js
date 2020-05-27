@@ -57,7 +57,7 @@ const imageInlineSizeLimit = parseInt(
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 
 // FS - check if snow is installed in root node_modules
-const isSnow = fs.existsSync(path.join(paths.appNodeModules, 'snow/package.json'));
+const isSnow = fs.existsSync(path.join(paths.appNodeModules, 'snow', 'package.json')) || fs.existsSync(path.join(paths.appNodeModules, '@fs', 'snow', 'package.json'));
 
 // style files regexes
 const cssRegex = /\.css$/;
@@ -466,7 +466,7 @@ module.exports = function(webpackEnv) {
               exclude: /@babel(?:\/|\\{1,2})runtime/,
               use: [
                 {
-                  loader: require.resolve('webpack-wci18n'),
+                  loader: require.resolve('@fs/webpack-wci18n'),
                 },
                 {
                   loader: require.resolve('babel-loader'),

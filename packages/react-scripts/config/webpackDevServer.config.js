@@ -19,7 +19,7 @@ const path = require('path');
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
 
-const isSnow = fs.existsSync(path.join(paths.appNodeModules, 'snow/package.json'));
+const isSnow = fs.existsSync(path.join(paths.appNodeModules, 'snow', 'package.json')) || fs.existsSync(path.join(paths.appNodeModules, '@fs', 'snow', 'package.json'));
 
 module.exports = function(proxy, allowedHost) {
   return {

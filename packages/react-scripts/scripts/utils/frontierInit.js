@@ -31,22 +31,26 @@ function installFrontierDependencies(appPath, appName, ownPath) {
       '@fs/zion-user@3',
       '@sentry/browser@5',
       'i18next@19',
-      'react-i18next@11',
       'prop-types@15',
       'use-axios-client@2',
+      'react-i18next@11',
       'yup@0.28',
     ]
   )
   devDepsToInstall.push(
     ...[
-      '@storybook/addon-actions@5',
+      '@alienfast/i18next-loader@1',
+      '@fs/eslint-config-frontier-react@5',
+      '@fs/storybook-addons@4',
+      '@fs/zion-testing-library@5',
       '@storybook/addon-a11y@5',
+      '@storybook/addon-actions@5',
       '@storybook/addon-console@1',
       '@storybook/addon-docs@5',
       '@storybook/addon-knobs@5',
       '@storybook/addon-viewport@5',
       '@storybook/addons@5',
-      "@storybook/preset-create-react-app@1",
+      '@storybook/preset-create-react-app@2',
       '@storybook/react@5',
       '@storybook/theming@5',
       '@fs/eslint-config-frontier-react@5',
@@ -56,12 +60,14 @@ function installFrontierDependencies(appPath, appName, ownPath) {
       '@alienfast/i18next-loader@1',
       'dotenv@8',
       '@testing-library/jest-dom@5',
+      'dotenv@8',
+      'eslint@6',
+      'gzip-cli@1',
       'http-proxy-middleware@0.20',
       'husky@4',
       'lint-staged@10',
-      'suppress-exit-code@0.1',
       'source-map-explorer@2',
-      'gzip-cli@1',
+      'suppress-exit-code@0.1',
     ]
   )
 
@@ -145,7 +151,7 @@ function configureHF(appPath, ownPath) {
   })
 
   createLocalEnvFile()
-  depsToInstall.push(...['github:fs-webdev/snow#cra', 'github:fs-webdev/startup'])
+  depsToInstall.push(...['@fs/snow@7', '@fs/startup@2'])
 }
 
 function installModulesSync(modules, saveDev = false) {

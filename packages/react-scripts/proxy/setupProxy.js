@@ -11,7 +11,7 @@ const setProxies = (app, customProxies = []) => {
   const cookieParser = require('cookie-parser')
   const base = require('connect-base')
   const metric = require('connect-metric')
-  const auth = require('auth-middleware')
+  const auth = require('@fs/auth-middleware')
   const resolver = require('./resolver')
   const proxyList = require('./proxies')
 

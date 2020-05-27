@@ -48,7 +48,7 @@ module.exports = (resolve, rootDir, isEjecting) => {
       '<rootDir>/packages/**/__tests__/**/*.{js,jsx,ts,tsx}',
       '<rootDir>/packages/**/*.{spec,test}.{js,jsx,ts,tsx}',
     ],
-    testEnvironment: 'jest-environment-jsdom-fourteen',
+    testEnvironment: 'jest-environment-jsdom-sixteen',
     transform: {
       '^.+\\.(js|jsx|ts|tsx)$': isEjecting
         ? '<rootDir>/node_modules/babel-jest'

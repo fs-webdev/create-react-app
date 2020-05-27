@@ -1,4 +1,4 @@
-const snow = require('snow')
+const snow = require('@fs/snow')
 const layout = require('@fs/react-scripts/layout')
 
 const urlLookup = {

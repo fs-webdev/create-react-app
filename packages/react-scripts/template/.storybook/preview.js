@@ -7,10 +7,7 @@ import { withA11y } from '@storybook/addon-a11y'
 import { withKnobs } from '@storybook/addon-knobs'
 import { darkMode, lightMode } from './theme'
 import { I18nProvider, i18n, addTranslations } from '@fs/zion-locale'
-import { themes } from '@fs/zion-ui'
-import { GridStart } from '@fs/zion-ui/dist/es/grid'
-import { ResponsiveProvider } from '@fs/zion-ui/dist/es/responsive'
-import { StatusOverlays, StatusOverlayProvider } from '@fs/zion-ui/dist/es/status-overlay'
+import { themes, Providers } from '@fs/zion-ui'
 import withThemeSwitcher from '@fs/storybook-addons/dist/theme-switcher/withThemeSwitcher'
 import translations from '../src/locales'
 
@@ -18,15 +15,12 @@ addTranslations(translations)
 
 addDecorator(withKnobs)
 addDecorator(withA11y)
-addDecorator((storyFn) => (
+addDecorator((StoryFn) => (
   <Suspense fallback={<div>Storybook Wrapper Loading...</div>}>
     <I18nProvider i18nInstance={i18n}>
-      <ResponsiveProvider>
-        <StatusOverlayProvider>
-          <StatusOverlays />
-          <GridStart>{storyFn()}</GridStart>
-        </StatusOverlayProvider>
-      </ResponsiveProvider>
+      <Providers>
+        <StoryFn />
+      </Providers>
     </I18nProvider>
   </Suspense>
 ))

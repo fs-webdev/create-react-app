@@ -5,7 +5,7 @@
 // sets local proxies using http-proxy-middleware configs
 // docs here: https://www.familysearch.org/frontier/docs/develop/proxies
 const setProxies = require('@fs/react-scripts/proxy/setupProxy')
-const waitForWebpack = require('snow/lib/utils/waitForWebpack.js')
+const waitForWebpack = require('@fs/snow/lib/utils/waitForWebpack.js')
 const setupServer = require('../server')
 
 // put any custom proxies here, see https://www.familysearch.org/frontier/docs/develop/proxies
