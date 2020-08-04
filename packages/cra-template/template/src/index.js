@@ -31,11 +31,11 @@ const base = appPath ? new URL(appPath).pathname : ''
 
 const FrontierRoot = () => (
   <React.StrictMode>
-    <Root fullWidth>
-      <Router basename={base}>
+    <Router basename={base}>
+      <Root fullWidth>
         <App />
-      </Router>
-    </Root>
+      </Root>
+    </Router>
   </React.StrictMode>
 )
 
@@ -43,7 +43,11 @@ ReactDOM.render(<FrontierRoot />, document.getElementById('root'))
 =======
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Router basename={base}>
+      <Root fullWidth>
+        <App />
+      </Root>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );
