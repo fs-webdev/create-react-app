@@ -11,7 +11,6 @@
 const fs = require('fs');
 const path = require('path');
 const paths = require('./paths');
-const { v4: uuidv4 } = require('uuid');
 
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve('./paths')];
@@ -69,13 +68,6 @@ process.env.NODE_PATH = (process.env.NODE_PATH || '')
 // injected into the application via DefinePlugin in webpack configuration.
 const REACT_APP = /^REACT_APP_/i;
 
-// The reason we set these env vars here is so
-// per-lang-loader/plugin have access to the values.
-// Below, we add them to webpack.DefinePlugin so they
-// are available in client files during build.
-process.env.BUILD_VERSION = uuidv4();
-process.env.APP_NAME = require(paths.appPackageJson).name;
-
 function getClientEnvironment(publicUrl) {
   const raw = Object.keys(process.env)
     .filter(key => REACT_APP.test(key))
@@ -101,11 +93,6 @@ function getClientEnvironment(publicUrl) {
         WDS_SOCKET_HOST: process.env.WDS_SOCKET_HOST,
         WDS_SOCKET_PATH: process.env.WDS_SOCKET_PATH,
         WDS_SOCKET_PORT: process.env.WDS_SOCKET_PORT,
-        // build version and app name are used for per-lang builds
-        // so that we load the correct locales based on the app name
-        // and build number
-        BUILD_VERSION: process.env.BUILD_VERSION,
-        APP_NAME: process.env.APP_NAME,
       }
     );
   // Stringify all values so we can feed into webpack DefinePlugin
