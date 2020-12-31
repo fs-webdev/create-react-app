@@ -109,5 +109,5 @@ module.exports = function() {
   }
   // return "module.exports = " + bundle;
 
-  return '';
+  return 'module.exports = {}';
 };
