@@ -410,10 +410,11 @@ module.exports = function(webpackEnv) {
             },
             // load locale files
             {
-              test: /locales/,
-              loader: '@alienfast/i18next-loader',
+              test: /locales.index\.js$/,
+              loader: require.resolve('../per-lang-loader'),
               options: {
                 debug: false,
+                include: ['**/+(translation|common-ui).json'], // only include translation and common-ui namespaces
                 basenameAsNamespace: true,
               },
             },

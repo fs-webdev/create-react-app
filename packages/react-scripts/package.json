@@ -1,6 +1,6 @@
 {
   "name": "@fs/react-scripts",
-  "version": "5.4.3",
+  "version": "6.0.0-beta.6",
   "upstreamVersion": "3.4.1",
   "description": "Configuration and scripts for Create React App.",
   "repository": {
@@ -29,7 +29,8 @@
     "template",
     "template-typescript",
     "utils",
-    "polyfills.js"
+    "polyfills.js",
+    "per-lang-loader"
   ],
   "bin": {
     "react-scripts": "./bin/react-scripts.js"
@@ -78,6 +79,7 @@
     "file-loader": "4.3.0",
     "fork-ts-checker-webpack-plugin-alt": "0.4.14",
     "fs-extra": "^9.0.1",
+    "glob-all": "^3.2.1",
     "html-webpack-plugin": "4.0.0-beta.11",
     "http-proxy-middleware": "^1.0.5",
     "identity-obj-proxy": "3.0.0",
@@ -86,6 +88,7 @@
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "jest-resolve": "^26.0.1",
     "jest-watch-typeahead": "^0.6.0",
+    "loader-utils": "^2.0.0",
     "mini-css-extract-plugin": "0.9.0",
     "optimize-css-assets-webpack-plugin": "5.0.3",
     "pnp-webpack-plugin": "1.6.4",
