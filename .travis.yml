@@ -29,6 +29,12 @@ deploy:
   - provider: script
     edge: true
     cleanup: false
+    script: npm run publish --allow-earlier-version
+    on:
+      branch: v5.x
+  - provider: script
+    edge: true
+    cleanup: false
     script: npm run publish
     on:
       branch: frontierMaster
