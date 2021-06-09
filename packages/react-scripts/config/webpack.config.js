@@ -426,7 +426,9 @@ module.exports = function (webpackEnv) {
             // load locale files
             {
               test: /locales\/index\.js$/,
-              loader: require.resolve('../per-lang-loader'),
+              loader: isEnvProduction
+                ? require.resolve('../per-lang-loader')
+                : require.resolve('@alienfast/i18next-loader'),
               options: {
                 debug: false,
                 include: ['**/+(translation|common-ui).json'], // only include translation and common-ui namespaces
@@ -846,7 +848,10 @@ module.exports = function (webpackEnv) {
           baseConfig: {
             extends: [
               require.resolve('@fs/eslint-config-frontier-react'),
-              useTypeScript && require.resolve('@fs/eslint-config-frontier-react').replace('index.js', 'typescript.js'),
+              useTypeScript &&
+                require
+                  .resolve('@fs/eslint-config-frontier-react')
+                  .replace('index.js', 'typescript.js'),
             ].filter(Boolean),
             rules: {
               ...(!hasJsxRuntime && {
