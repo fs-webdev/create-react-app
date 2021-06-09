@@ -22,6 +22,9 @@ function setupFrontier(appPath, appName) {
   replaceStringInFile(appPath, './package.json', /cra-template-name-will-be-replaced/g, appName)
 
   createLocalEnvFile()
+  // TODO: JOEY ask if they want it to be a pwa or not.
+  // if not, remove the 2 serviceworker files, all the workbox dependencies, and the tweak in index.js and the 
+  // manifest.json and the 2 logo.png files
 }
 
 function alterPackageJsonFile(appPath, extendFunction) {

@@ -50,7 +50,7 @@ const proxies = [
     route: '/platform',
   },
   {
-    route: '/service',
+    route: '/service/',
   },
 ];
 

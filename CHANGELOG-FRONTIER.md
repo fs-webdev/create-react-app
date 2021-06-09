@@ -1,3 +1,15 @@
+## 6.0.0-charlie.2
+
+Updated the proxies.js file to have "/service/" so the proxy won't intercept service-worker urls
+
+## 6.0.0-charlie.1
+
+Merged upstream master to get cra v4 changes.
+
+### Divergences from upstream master
+- we put resetMocks back to false in createJestConfig
+- we hard code eslint failOnError to false in webpack.config.js
+
 ## 1.4.4
 
 #### :rocket: New Feature
