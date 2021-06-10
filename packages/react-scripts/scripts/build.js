@@ -45,7 +45,7 @@ const FileSizeReporter = require('react-dev-utils/FileSizeReporter');
 const printBuildError = require('react-dev-utils/printBuildError');
 // frontier
 // coalesce per-lang locales for speedier intl perf scaling
-const perlang = require('../coalesceLocales');
+const perlang = require('./coalesceLocales');
 // /frontier
 
 const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
