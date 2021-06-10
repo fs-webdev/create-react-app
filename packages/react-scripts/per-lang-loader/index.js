@@ -8,7 +8,7 @@ const globAll = require('glob-all');
 const loaderUtils = require('loader-utils');
 
 function enumerateLangs(dir) {
-  return fs.readdirSync(dir).filter(function(file) {
+  return fs.readdirSync(dir).filter(function (file) {
     return fs.statSync(path.join(dir, file)).isDirectory();
   });
 }
@@ -27,7 +27,7 @@ const handleError = (locale, namespace) => {
   console.error(\`failed to load translation - \${locale}" + "\${namespace}"\`)
 }
 const importLocale = (locale, namespace) => {
-  import(/* webpackChunkName: "locales-[request]-[index]" */ \`../builtLocales/\${locale}/\${namespace}\`)
+  import(/* webpackChunkName: "locales-[request]-[index]" */ \`../locales/dist/\${locale}/\${namespace}\`)
     .then(({ default: localeStrings }) => addTranslations({[locale]: {[namespace]: localeStrings}}))
     .catch(() => handleError(locale, namespace))
 }
@@ -54,7 +54,7 @@ importLocale('en', '${ns}');
 
 `;
 let first = false
-module.exports = function() {
+module.exports = function () {
   this.cacheable && this.cacheable();
 
   const options = loaderUtils.getOptions(this) || {};
@@ -70,17 +70,17 @@ module.exports = function() {
   if (!fs.existsSync(appLocalesDir)) {
     throw new Error(
       'Directory does not exist: ' +
-        appLocalesDir +
-        ' for resource: ' +
-        this.resource
+      appLocalesDir +
+      ' for resource: ' +
+      this.resource
     );
   }
 
   if (options.debug) {
     console.info(
       'Bundling locales from ' +
-        appLocalesDir +
-        ' (ordered least specific to most):'
+      appLocalesDir +
+      ' (ordered least specific to most):'
     );
   }
   const namespaces = [];
@@ -131,7 +131,7 @@ module.exports = function() {
       }
     }
   });
-  if(first){
+  if (first) {
     return `export default {}`
   }
   first = true

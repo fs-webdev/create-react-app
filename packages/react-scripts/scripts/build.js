@@ -152,9 +152,9 @@ function build(previousFileSizes) {
     // frontier
     // coalesce per-lang locales for speedier intl perf scaling
     compiler.hooks.beforeRun.tap('perlang', () => {
-      console.time('perlang');
+      console.time('per-lang coalesce');
       perlang(process.cwd());
-      console.timeEnd('perlang');
+      console.timeEnd('per-lang coalesce');
     });
     // /frontier
     compiler.run((err, stats) => {
