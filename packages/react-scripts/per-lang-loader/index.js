@@ -20,18 +20,20 @@ function findAll(globs, cwd) {
 }
 
 const i18nextImport = `
-import i18n from "i18next";
+import i18n from 'i18next'
+import { addTranslations } from "@fs/zion-locale";
 
-const handleLoadLocale = (locale, namespace, localeStrings) => {
-  i18n.addResources(locale, namespace, localeStrings)
+const handleError = (err, locale, namespace, path) => {
+  window.loadCount--
+  console.error(\`failed to load translation - \${locale}" + "\${namespace}" + "\${path}"\`, window.loadCount, Date.now()-window.loadStart, err)
 }
-const handleError = (locale, namespace) => {
-  console.error(\`failed to load translation - \${locale}" + "\${namespace}"\`)
-}
-const importLocale = (locale, namespace) => {
-  import(\`./\${locale}/\${namespace}\`)
-    .then(({ default: localeStrings }) => handleLoadLocale(locale, namespace, localeStrings))
-    .catch(() => handleError(locale, namespace))
+const importLocale = (locale, namespace, path) => {
+  if (typeof window.loadCount === 'undefined') {window.loadCount = 0;window.loadStart=Date.now()}
+  window.loadCount++;
+  console.log('importing/loading locale', locale, namespace, window.loadCount, Date.now()-window.loadStart, path)
+  import(/* webpackChunkName: "locales" */ \`./\${locale}/\${namespace}\`)
+    .then(({ default: localeStrings }) => {window.loadCount--;console.log('updated loadCount', locale, namespace, window.loadCount, Date.now()-window.loadStart);addTranslations({[locale]: {[namespace]: localeStrings}})})
+    .catch((err) => handleError(err, locale, namespace, path))
 }
 
 `;
@@ -41,28 +43,24 @@ const importLocale = (locale, namespace) => {
 // a default export, that breaks.
 const mainExport = 'export default {}';
 
-const createDynamicImport = ns =>
+const createDynamicImport = (ns,path) =>
   `
+  console.log('dynamic import load', i18n.language, '${ns}', '${path}')
 if(i18n.language){
-  importLocale(i18n.language, '${ns}');
+  importLocale(i18n.language, '${ns}', '${path}');
 } else {
   i18n.on('languageChanged', locale => {
-    importLocale(locale, '${ns}')
+    importLocale(locale, '${ns}', '${path}')
   });
 }
 
 // Always load english translations for backup.
-importLocale('en', '${ns}');
+importLocale('en', '${ns}', '${path}');
 
 `;
 
-module.exports = function(source) {
+module.exports = function() {
   this.cacheable && this.cacheable();
-
-  // if json file, just load it
-  if (this.resource.endsWith('.json')) {
-    return source;
-  }
 
   const options = loaderUtils.getOptions(this) || {};
 
@@ -139,11 +137,11 @@ module.exports = function(source) {
     }
   });
   const returnSource = [...new Set(namespaces)].map(ns =>
-    createDynamicImport(ns)
+    createDynamicImport(ns, this.resource)
   );
   const dynamicImports = i18nextImport + returnSource.join('') + mainExport;
   if (options.debug) {
-    console.info('\t' + dynamicImports);
+    // console.info('\t' + dynamicImports);
   }
   return dynamicImports;
 };
