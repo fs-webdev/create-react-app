@@ -43,6 +43,10 @@ const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
 const printHostingInstructions = require('react-dev-utils/printHostingInstructions');
 const FileSizeReporter = require('react-dev-utils/FileSizeReporter');
 const printBuildError = require('react-dev-utils/printBuildError');
+// frontier
+// coalesce per-locale locales for speedier intl perf scaling
+const coalesceLocales = require('./coalesceLocales');
+// /frontier
 
 const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
 const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild;
@@ -90,8 +94,8 @@ checkBrowsers(paths.appPath, isInteractive)
         console.log(warnings.join('\n\n'));
         console.log(
           '\nSearch for the ' +
-            chalk.underline(chalk.yellow('keywords')) +
-            ' to learn more about each warning.'
+          chalk.underline(chalk.yellow('keywords')) +
+          ' to learn more about each warning.'
         );
         console.log(
           'To ignore, add ' + chalk.cyan('// eslint-disable-next-line') + ' to the line before.\n'
@@ -145,6 +149,14 @@ function build(previousFileSizes) {
 
   const compiler = webpack(config);
   return new Promise((resolve, reject) => {
+    // frontier
+    // coalesce per-locale locales for speedier intl perf scaling
+    compiler.hooks.beforeRun.tap('perlocale', () => {
+      console.time('per-locale coalesce');
+      coalesceLocales(process.cwd());
+      console.timeEnd('per-locale coalesce');
+    });
+    // /frontier
     compiler.run((err, stats) => {
       let messages;
       if (err) {
@@ -186,7 +198,7 @@ function build(previousFileSizes) {
         console.log(
           chalk.yellow(
             '\nTreating warnings as errors because process.env.CI = true.\n' +
-              'Most CI servers set it automatically.\n'
+            'Most CI servers set it automatically.\n'
           )
         );
         return reject(new Error(messages.warnings.join('\n\n')));
