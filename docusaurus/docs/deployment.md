@@ -8,14 +8,14 @@ sidebar_label: Deployment
 
 ## Static Server
 
-For environments using [Node](https://nodejs.org/), the easiest way to handle this would be to install [serve](https://github.com/zeit/serve) and let it handle the rest:
+For environments using [Node](https://nodejs.org/), the easiest way to handle this would be to install [serve](https://github.com/vercel/serve) and let it handle the rest:
 
 ```sh
 npm install -g serve
 serve -s build
 ```
 
-The last command shown above will serve your static site on the port **5000**. Like many of [serve](https://github.com/zeit/serve)’s internal settings, the port can be adjusted using the `-l` or `--listen` flags:
+The last command shown above will serve your static site on the port **3000**. Like many of [serve](https://github.com/vercel/serve)’s internal settings, the port can be adjusted using the `-l` or `--listen` flags:
 
 ```sh
 serve -s build -l 4000
@@ -161,7 +161,7 @@ You can specify other environments in the same way.
 
 Variables in `.env.production` will be used as fallback because `NODE_ENV` will always be set to `production` for a build.
 
-## [AWS Amplify](http://console.amplify.aws)
+## [AWS Amplify](https://console.amplify.aws)
 
 The AWS Amplify Console provides continuous deployment and hosting for modern web apps (single page apps and static site generators) with serverless backends. The Amplify Console offers globally available CDNs, custom domain setup, feature branch deployments, and password protection.
 
