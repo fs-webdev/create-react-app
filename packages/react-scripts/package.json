@@ -167,6 +167,6 @@
     ]
   },
   "publishConfig": {
-    "registry": "https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/"
+    "registry": "https://familysearch.jfrog.io/artifactory/api/npm/fs-npm-prod-virtual/"
   }
 }
