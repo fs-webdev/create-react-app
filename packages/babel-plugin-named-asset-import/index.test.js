@@ -1,3 +1,5 @@
+'use strict';
+
 const pluginTester = require('babel-plugin-tester/pure');
 const namedAssetImport = require('./index');
 
