@@ -16,6 +16,7 @@ process.on('unhandledRejection', err => {
 
 const fs = require('fs-extra');
 const path = require('path');
+const debug = require('debug')('@fs/react-scripts')
 const chalk = require('react-dev-utils/chalk');
 const execSync = require('child_process').execSync;
 const spawn = require('react-dev-utils/crossSpawn');
@@ -90,6 +91,7 @@ module.exports = function (
   templateName
 ) {
   const appPackage = require(path.join(appPath, 'package.json'));
+  debug('appPackage: ', appPackage)
   const useYarn = fs.existsSync(path.join(appPath, 'yarn.lock'));
 
   if (!templateName) {
@@ -129,6 +131,7 @@ module.exports = function (
   }
 
   const templatePackage = templateJson.package || {};
+  debug('templatePackage: ', templatePackage)
 
   // TODO: Deprecate support for root-level `dependencies` and `scripts` in v5.
   // These should now be set under the `package` key.
@@ -241,6 +244,7 @@ module.exports = function (
   }
 
   const directoriesToNotCopyOver = ['node_modules', 'build', 'dist']
+  debug('directoriesToNotCopyOver: ', directoriesToNotCopyOver)
 
   // Copy the files for the user
   const templateDir = path.join(templatePath, 'template');
@@ -248,6 +252,7 @@ module.exports = function (
   console.log('templateDir: ', templateDir)
   if (fs.existsSync(templateDir)) {
     fs.copySync(templateDir, appPath, {filter: (src) => {
+      debug('copying over: ', src)
       // FamilySearch - we don't copy over node_mouldes, build, and dist here in order for us to be able to
       // run npx create-react-app --template file:cra-template locally to test if things are working as expected
       return !directoriesToNotCopyOver.some(dirName => src.includes(`/template/${dirName}/`))
@@ -356,6 +361,8 @@ module.exports = function (
   // Remove template
   console.log(`Removing template package using ${command}...`);
   console.log();
+  debug('templateName to uninstall: ', templateName)
+  debug('command, remove, templateName: ', command, remove, templateName)
 
   const proc = spawn.sync(command, [remove, templateName], {
     stdio: 'inherit',

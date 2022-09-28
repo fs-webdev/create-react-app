@@ -1,3 +1,9 @@
+## 7.0.6-alpha.0
+- Adding lots of debugging lines
+
+## 7.0.5
+- Easy Client Config from Gabe
+
 ## 7.0.4
 - Don't run the IndexRevisionReplace webpack plugin if we are running storybook
 
