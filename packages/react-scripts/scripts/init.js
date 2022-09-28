@@ -243,8 +243,8 @@ module.exports = function (
     );
   }
 
-  const directoriesToNotCopyOver = ['node_modules', 'build', 'dist']
-  debug('directoriesToNotCopyOver: ', directoriesToNotCopyOver)
+  const stuffToNotCopyOver = ['node_modules/', 'build/', 'dist/', 'package-lock.json']
+  debug('directoriesToNotCopyOver: ', stuffToNotCopyOver)
 
   // Copy the files for the user
   const templateDir = path.join(templatePath, 'template');
@@ -255,7 +255,7 @@ module.exports = function (
       debug('copying over: ', src)
       // FamilySearch - we don't copy over node_mouldes, build, and dist here in order for us to be able to
       // run npx create-react-app --template file:cra-template locally to test if things are working as expected
-      return !directoriesToNotCopyOver.some(dirName => src.includes(`/template/${dirName}/`))
+      return !stuffToNotCopyOver.some(dirName => src.includes(`/template/${dirName}`))
     }});
   } else {
     console.error(
@@ -340,6 +340,7 @@ module.exports = function (
   if ((!isReactInstalled(appPackage) || templateName) && args.length > 1) {
     console.log();
     console.log(`Installing template dependencies using ${command}...`);
+    debug('command, args: ', command, args)
 
     const proc = spawn.sync(command, args, { stdio: 'inherit' });
     if (proc.status !== 0) {

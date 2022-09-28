@@ -1,3 +1,6 @@
+## 7.0.7
+- more logging, and don't copy over package-lock.json file from @fs/cra-template
+
 ## 7.0.6
 - releasing the alpha changes
 
