@@ -1,3 +1,6 @@
+## 7.0.6-alpha.1
+- Put the coalesce-locales warning behind debug
+
 ## 7.0.6-alpha.0
 - Adding lots of debugging lines
 

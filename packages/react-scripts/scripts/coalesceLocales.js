@@ -1,4 +1,5 @@
 'use strict';
+const debug = require('debug')('coalesceLocales');
 const dependencyTree = require('dependency-tree');
 const jsonfile = require('jsonfile');
 const path = require('path');
@@ -79,8 +80,9 @@ exports.coalesceLocales = paths => {
     });
   });
   if (collisionReport.potentialCollisions.length > 0) {
-    console.warn(`WARNING: The following ${collisionReport.potentialCollisions.length} potential collisions were detected when coalescing locales, the values were the same, but could diverge in the future:`)
-    collisionReport.potentialCollisions.forEach(({ key, locale, ns, newValue }) => console.warn(`\tkey=${key} namespace=${ns} locale=${locale} value="${newValue}"`))
+    console.warn(`WARNING: There were ${collisionReport.potentialCollisions.length} potential collisions detected when coalescing locales, the values were the same, but could diverge in the future:
+      To see a list of all potential collisions, turn on debugging with "DEBUG=coalesceLocales" before the command you just ran `)
+    collisionReport.potentialCollisions.forEach(({ key, locale, ns, newValue }) => debug(`\tkey=${key} namespace=${ns} locale=${locale} value="${newValue}"`))
   }
   if (collisionReport.collisions.length > 0) {
     console.error(`ERROR: The following ${collisionReport.collisions.length} collisions were detected when coalescing locales:`, collisionReport.collisions)
