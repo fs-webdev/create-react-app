@@ -243,7 +243,7 @@ module.exports = function (
     );
   }
 
-  const stuffToNotCopyOver = ['node_modules/', 'build/', 'dist/', 'package-lock.json']
+  const stuffToNotCopyOver = ['node_modules/', 'build/', 'dist/']
   debug('directoriesToNotCopyOver: ', stuffToNotCopyOver)
 
   // Copy the files for the user
@@ -335,6 +335,13 @@ module.exports = function (
   if (!isReactInstalled(appPackage)) {
     args = args.concat(['react', 'react-dom']);
   }
+
+  //do I need to delete node_modules and package-lock here before running npm install for the template????
+  // FamilySearch npm 8 has weird behavior. Deleting node_modules and package-lock ensure that we are building
+  // the new app in a predicatable manner. Specifically, this solves the issue of node_modules/.bin/react-scripts
+  // symlinking to ../react-scripts instead of ../@fs/react-scripts
+  fs.removeSync(path.join(appPath, 'node_modules'))
+  fs.removeSync(path.join(appPath, 'package-lock.json'))
 
   // Install template dependencies, and react and react-dom if missing.
   if ((!isReactInstalled(appPackage) || templateName) && args.length > 1) {
