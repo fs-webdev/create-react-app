@@ -36,6 +36,12 @@ deploy:
   - provider: script
     edge: true
     cleanup: false
+    script: npm run publish -- --allow-earlier-version
+    on:
+      branch: v7.x
+  - provider: script
+    edge: true
+    cleanup: false
     script: npm run publish
     on:
       branch: coalesce-frontierMaster

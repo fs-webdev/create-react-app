@@ -1,8 +1,20 @@
-## 7.0.5-alpha.0
-- Add dynatrace RUM snippet behind feature flag
+## 7.0.7
+- more logging, and don't copy over package-lock.json file from @fs/cra-template
 
-## 7.0.4-alpha.0
-- Bumped eslint-config-frontier-react dependency
+## 7.0.6
+- releasing the alpha changes
+
+## 7.0.6-alpha.1
+- Put the coalesce-locales warning behind debug
+
+## 7.0.6-alpha.0
+- Adding lots of debugging lines
+
+## 7.0.5
+- Easy Client Config from Gabe
+
+## 7.0.4
+- Don't run the IndexRevisionReplace webpack plugin if we are running storybook
 
 ## 7.0.3
 - Add debounce of 250 to the coalesce-locales watch function (same as zion does it)
