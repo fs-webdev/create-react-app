@@ -1,3 +1,6 @@
+## 7.0.5-alpha.0
+- Add dynatrace RUM snippet behind feature flag
+
 ## 7.0.4-alpha.0
 - Bumped eslint-config-frontier-react dependency
 
