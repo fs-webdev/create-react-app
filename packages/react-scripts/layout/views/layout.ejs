@@ -20,10 +20,7 @@
     <!-- Resource Hints -->
     <link rel="preconnect" href="https://edge.fscdn.org" crossorigin />
 
-    <% if (getFeatureFlag('frontier_snow_dynatraceRUM').isOn) { %>
-      <script type="text/javascript" src="https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/da59925a648d952e_complete.js" crossorigin="anonymous"></script>
-    <% } %>
-
+    <% include partials/dynatrace %>
     <script>
       window.SERVER_DATA = {};
       <%- typeof cacheKey !== 'undefined' ? `SERVER_DATA.cacheKey = '${cacheKey}';` : ''; %>
