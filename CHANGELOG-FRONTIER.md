@@ -1,3 +1,6 @@
+## 7.0.8-alpha.0
+- Add dynatrace RUM snippet behind feature flag
+
 ## 7.0.7
 - more logging, and don't copy over package-lock.json file from @fs/cra-template
 
