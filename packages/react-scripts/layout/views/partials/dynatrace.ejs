@@ -74,7 +74,7 @@ if (dynatraceFlag.treatment === 'asyncCS-script') { %>
     5,Gb.indexOf(".",Jb)),10):!1}if(hb)xf(Qa,Oa("async"),void 0,void 0,"dtjsagent");else{var Rb="".concat("dtjsagent","dw");document.write('<script id="'.concat(Rb,'" type="text/javascript" src="').concat(Qa,'">\x3c/script>'));document.getElementById(Rb)||xf(Qa,Oa("async"),void 0,void 0,"dtjsagent")}}ba("dtCookie")&&ka("cooO",!0);pf();ka("pVO",!!hd("dt-pVO"));ad(od);Df=18E5;Mf=Za("hvt")||216E5;y(Xe,[1]);Rg=[];Xf="dtCookie dtLatC rxvt dtAdk dtAdkSettings dtPC".split(" ");if(Oa("cg"))try{Wc(Object.getOwnPropertyDescriptor(Document.prototype,
     "cookie")||Object.getOwnPropertyDescriptor(HTMLDocument.prototype,"cookie"))}catch(Xb){}}catch(Xb){try{delete Bb.dT_}catch(Dc){Bb.dT_=void 0}La()&&Bb.console.log("JsAgent initCode initialization failed!",Xb)}})(!1)})()})();
     </script>
-<% } else if (dynatraceFlag.treatment.isOn) { %>
+<% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
   <script type="text/javascript" src="https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/da59925a648d952e_complete.js" crossorigin="anonymous"></script>
 <% } %>
 <% } %>
