@@ -20,7 +20,9 @@
     <!-- Resource Hints -->
     <link rel="preconnect" href="https://edge.fscdn.org" crossorigin />
 
-    <% include partials/dynatrace %>
+    <% if (process.env.NODE_ENV === 'production') { %>
+      <% include partials/dynatrace %>
+    <% } %>
     <script>
       window.SERVER_DATA = {};
       <%- typeof cacheKey !== 'undefined' ? `SERVER_DATA.cacheKey = '${cacheKey}';` : ''; %>

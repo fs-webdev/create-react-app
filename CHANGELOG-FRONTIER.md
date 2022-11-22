@@ -1,4 +1,7 @@
-## 7.0.8-alpha.0
+## 7.0.9
+- Update dynatrace RUM snippets to support multiple environments
+
+## 7.0.8
 - Add dynatrace RUM snippet behind feature flag
 
 ## 7.0.7
