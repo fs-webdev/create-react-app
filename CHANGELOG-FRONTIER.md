@@ -1,3 +1,6 @@
+## 8.0.0-rc.3
+- CRA 5 changed the default behavior so both prod and dev builds go to the `build` dir, which breaks our Snow middleware, so restoring the CRA 4 behavior that prod goes to `build` and dev goes to `dist`. We may revisit this later
+
 ## 8.0.0-rc.2
 - splitChunks was messing with output filename on development environment. Changing to use [file] instead of hardcoded filename
 
