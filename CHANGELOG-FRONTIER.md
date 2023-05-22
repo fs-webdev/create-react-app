@@ -1,3 +1,6 @@
+## 8.1.2
+- add `window.dtinfo` with `appName` for Dynatrace integration
+
 ## 8.1.1
 - disable new `runtimeErrors` property in webpack-dev-server
   - this causes constant errors with ResizeObserver

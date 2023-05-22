@@ -1,6 +1,6 @@
 {
   "name": "@fs/react-scripts",
-  "version": "8.1.1",
+  "version": "8.1.2",
   "upstreamVersion": "5.0.1",
   "description": "Configuration and scripts for Create React App.",
   "repository": {

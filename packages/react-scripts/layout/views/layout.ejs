@@ -35,6 +35,11 @@
       <% include partials/experiments %>
       <% include partials/sentry %>
       <% include partials/clientAppConfig %>
+      if (window.dtrum) {
+        window.dtrum.enableManualPageDetection()
+        if (!window.dtinfo) window.dtinfo = {}
+        window.dtinfo.appName = SERVER_DATA.appName
+      }
     </script>
   </head>
   <body>
