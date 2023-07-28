@@ -8,6 +8,22 @@ const rimraf = require('rimraf');
 const chokidar = require('chokidar');
 const _ = require('lodash');
 
+function getTsConfig(paths) {
+  const tsConfig = fs.existsSync(paths.appTsConfig) && paths.appTsConfig;
+
+  // jsconfig is a tsconfig with allowJs as true (https://code.visualstudio.com/docs/languages/jsconfig#_what-is-jsconfigjson), so a normal jsconfig will not have allowJs set to true in the file. However, we pass this jsconfig as a tsConfig to filing-cabinet, so the "tsconfig" we make needs to have allowJs set to true for it to work as a jsconfig. The tsConfig can be either an object or a path.
+  let jsConfig;
+  if (fs.existsSync(paths.appJsConfig)) {
+    const realJsconfig = require(paths.appJsConfig);
+    jsConfig = {
+      ...realJsconfig,
+      compilerOptions: { ...realJsconfig.compilerOptions, allowJs: true },
+    };
+  }
+
+  return tsConfig || jsConfig;
+}
+
 exports.coalesceLocales = paths => {
   console.time('per-locale coalesce');
 
@@ -21,10 +37,12 @@ exports.coalesceLocales = paths => {
     ? `${paths.appSrc}/index.tsx`
     : `${paths.appSrc}/index.js`;
 
+  const tsConfig = getTsConfig(paths);
+
   const list = dependencyTree.toList({
     filename: index,
     directory: paths.appPath,
-    tsConfig: fs.existsSync(paths.appTsConfig) && paths.appTsConfig,
+    tsConfig,
     noTypeDefinitions: true, // optional
     detective: { es6: { mixedImports: true } },
     nodeModulesConfig: { entry: 'module' },
