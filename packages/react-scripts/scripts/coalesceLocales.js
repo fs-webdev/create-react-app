@@ -106,12 +106,11 @@ exports.coalesceLocales = paths => {
   }
   if (collisionReport.collisions.length > 0) {
     console.error(
-      `ERROR: The following ${collisionReport.collisions.length} collisions were detected when coalescing locales:`,
-      collisionReport.collisions
+      `ERROR: There were ${collisionReport.collisions.length} collisions were detected when coalescing locales. To see a list of all collisions, turn on debugging with "DEBUG=coalesceLocales" before the command you just ran`
     );
     collisionReport.collisions.forEach(
       ({ key, locale, ns, newValue, oldValue }) =>
-        console.error(
+        debug(
           `\tkey=${key} namespace=${ns} locale=${locale} newValue="${newValue}" oldValue="${oldValue}"`
         )
     );
