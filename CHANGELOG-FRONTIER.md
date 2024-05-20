@@ -1,3 +1,7 @@
+## 8.5.4
+
+- Fix coalesceLocales to handle Windows/WSL paths correctly
+
 ## 8.5.3
 
 - Fix coalesceLocales to handle undefined paths better

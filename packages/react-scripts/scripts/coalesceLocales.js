@@ -34,20 +34,25 @@ exports.coalesceLocales = paths => {
     filter: filePath => filePath.includes(paths.appSrc) || filePath.includes('@fs'),
   }).sort();
 
+  /*
+    REMINDER: when comparing paths, make sure to take into account Windows/WSL2 paths that will look like: 'C:\\Users\\MyUser\\my-project\\node_modules\\@fs\\flags-js\\src\\index.js'
+    Constructing paths with forward slashes works, but not comparing the file path string, which needs to use `path.join()` or `path.sep`
+  */
+
   // the nonExistents array is populated with any file that dependencyTree was unable to locate on the filesystem.
   // Currently we have an issue if npm didn't flatten a dependency to node_modules/@fs/ then dependencyTree says that
   // dependency is nonExistent. Specifically chinese-discovery-surname got into an issue once where zion-header wasn't
   // flattened, and so they didn't get zion-header translations coalesced. We are adding this globbing logic to go 
   // find the least nested path to the "nonExistent" module.
-  const hiddenNestedZionDeps = nonExistents.filter(filePath => filePath.startsWith('@fs/zion-'))
+  const hiddenNestedZionDeps = nonExistents.filter(filePath => filePath.startsWith(path.join('@fs','zion-')))
   const hiddenNestedLocaleFiles = hiddenNestedZionDeps.map(filePath => {
     const hiddenLocaleFiles = glob.sync([`node_modules/@fs/**/${filePath}/**/locales/index.js`], { absolute: true })
-      .filter(filePath => !filePath.includes('/cjs/'))
-    return _.sortBy(hiddenLocaleFiles, filePath => filePath.split('/').length)[0]
+      .filter(filePath => !filePath.includes(`${path.sep}cjs${path.sep}`))
+    return _.sortBy(hiddenLocaleFiles, filePath => filePath.split(path.sep).length)[0]
   })
 
   // adding this filter logic up in dependencyTree doesn't work as expected
-  const realList = [...list.filter(filePath => filePath.includes('locales/index.js')), ...hiddenNestedLocaleFiles]
+  const realList = [...list.filter(filePath => filePath.includes(path.join('locales','index.js'))), ...hiddenNestedLocaleFiles]
 
   const allLocales = {};
   const collisionReport = {
@@ -60,7 +65,7 @@ exports.coalesceLocales = paths => {
     keys: new Set(),
   };
   realList.forEach(p => {
-    if (!p) return
+    if (!p) {return}
     
     const dir = path.dirname(p);
     // console.log('dir', dir)
