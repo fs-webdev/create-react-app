@@ -1,3 +1,7 @@
+## 8.5.5
+
+- Fix proxy to work with Russian test user
+
 ## 8.5.4
 
 - Fix coalesceLocales to handle Windows/WSL paths correctly

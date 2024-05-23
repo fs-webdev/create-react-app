@@ -14,6 +14,7 @@ const setProxies = (app, customProxies = []) => {
   const auth = require('@fs/auth-middleware')
   const resolver = require('./resolver')
   const proxyList = require('./proxies')
+  const getDataLocalizationRouter = require('./getDataLocalizationRouter')
 
   // middleware required for auth middleware
   app.use(metric())
@@ -35,6 +36,7 @@ const setProxies = (app, customProxies = []) => {
       changeOrigin: true,
       logLevel: 'debug',
       timeout: 5000,
+      router: getDataLocalizationRouter({ proxyConfig, target }),
       ...proxyConfig.options,
     }
 
