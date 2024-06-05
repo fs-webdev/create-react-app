@@ -33,26 +33,22 @@ script:
 before_deploy: "cd ${TRAVIS_BUILD_DIR}/packages/react-scripts"
 deploy:
   - provider: script
-    edge: true
     cleanup: false
     script: npm run fs-publish -- --allow-earlier-version
     on:
       branch: frontierMaster
   - provider: script
-    edge: true
     cleanup: false
     script: npm run fs-publish -- --allow-earlier-version
     on:
       branch: v7.x
   - provider: script
-    edge: true
     cleanup: false
     script: npm run fs-publish -- --allow-earlier-version
     on:
       branch: next
   - provider: script
     skip_cleanup: true
-    edge: true
     cleanup: false
     script: cd ${TRAVIS_BUILD_DIR} && ./freshCraTemplateUpdate.sh
     on:
