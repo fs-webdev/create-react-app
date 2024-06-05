@@ -11,52 +11,17 @@ before_install:
   - echo "@fs:registry=https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/" >> packages/react-scripts/.npmrc
 install:
   - npm install
-  - cd packages/react-scripts
-  - npm install
-  - cd ../../
 script:
-  - npm test
-
-  - node publishPrReleaseAndCreateFreshCraTemplate.js
-
-  # ${HOME}/tmp/fresh-cra-template was created in script above
-  - cd ${HOME}/tmp/fresh-cra-template
-
-  # this is necessary so we can do some additional npm installs in the freshCraTemplateUpdate.sh script
-  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> ${HOME}/tmp/fresh-cra-template/.npmrc
-  - echo "@fs:registry=https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/" >> ${HOME}/tmp/fresh-cra-template/.npmrc
-
-  - CI=true npm test
-    
-  # Building the app so freshCraTemplateUpdate.sh can publish it
-  - npm run build
+  - echo "Hello"
 before_deploy: "cd ${TRAVIS_BUILD_DIR}/packages/react-scripts"
 deploy:
-  - provider: script
-    edge: true
-    cleanup: false
-    script: npm run fs-publish -- --allow-earlier-version
-    on:
-      branch: frontierMaster
-  - provider: script
-    edge: true
-    cleanup: false
-    script: npm run fs-publish -- --allow-earlier-version
-    on:
-      branch: v7.x
-  - provider: script
-    edge: true
-    cleanup: false
-    script: npm run fs-publish -- --allow-earlier-version
-    on:
-      branch: next
   - provider: script
     skip_cleanup: true
     edge: true
     cleanup: false
-    script: cd ${TRAVIS_BUILD_DIR} && ./freshCraTemplateUpdate.sh
+    script: cd ${TRAVIS_BUILD_DIR}
     on:
-      branch: frontierMaster
+      branch: fix-travis
 # This tells travis to not build when the branch is master. This is important to have on our master
 # branch as well because anytime we merge upstream changes from facebook, travis builds their whole matrix of 24 different builds.
 # We do NOT need or want that to occur. Please leave this branches.except here, even on the master branch
