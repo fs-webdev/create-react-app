@@ -1,7 +1,6 @@
 language: node_js
 node_js:
   - "16"
-dpl_version: 2.0.3.beta.4
 before_install:
   - git config --global url."https://git@".insteadOf git://
   - echo -e "machine github.com\n  login $CI_USER_TOKEN" > ~/.netrc
@@ -36,24 +35,28 @@ deploy:
   - provider: script
     edge: true
     cleanup: false
+    dpl_version: 2.0.3.beta.4
     script: npm run fs-publish -- --allow-earlier-version
     on:
       branch: skip-cleanup
   - provider: script
     edge: true
     cleanup: false
+    dpl_version: 2.0.3.beta.4
     script: npm run fs-publish -- --allow-earlier-version
     on:
       branch: v7.x
   - provider: script
     edge: true
     cleanup: false
+    dpl_version: 2.0.3.beta.4
     script: npm run fs-publish -- --allow-earlier-version
     on:
       branch: next
   - provider: script
     edge: true
     cleanup: false
+    dpl_version: 2.0.3.beta.4
     script: cd ${TRAVIS_BUILD_DIR} && ./freshCraTemplateUpdate.sh
     on:
       branch: skip-cleanup
