@@ -48,7 +48,6 @@ deploy:
     on:
       branch: next
   - provider: script
-    skip_cleanup: true
     cleanup: false
     script: cd ${TRAVIS_BUILD_DIR} && ./freshCraTemplateUpdate.sh
     on:
