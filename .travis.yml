@@ -36,7 +36,7 @@ deploy:
     cleanup: false
     script: npm run fs-publish -- --allow-earlier-version
     on:
-      branch: frontierMaster
+      branch: skip-cleanup
   - provider: script
     cleanup: false
     script: npm run fs-publish -- --allow-earlier-version
@@ -51,7 +51,7 @@ deploy:
     cleanup: false
     script: cd ${TRAVIS_BUILD_DIR} && ./freshCraTemplateUpdate.sh
     on:
-      branch: frontierMaster
+      branch: skip-cleanup
 # This tells travis to not build when the branch is master. This is important to have on our master
 # branch as well because anytime we merge upstream changes from facebook, travis builds their whole matrix of 24 different builds.
 # We do NOT need or want that to occur. Please leave this branches.except here, even on the master branch
