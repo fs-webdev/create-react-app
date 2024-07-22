@@ -30,6 +30,11 @@
     <% if (process.env.NODE_ENV === 'production') { %>
       <% include partials/dynatrace %>
     <% } %>
+
+    <script>
+      <% include ../../modernizr.js %>
+    </script>
+
     <script>
       window.SERVER_DATA = {};
       <%- typeof cacheKey !== 'undefined' ? `SERVER_DATA.cacheKey = '${cacheKey}';` : ''; %>
@@ -50,6 +55,12 @@
     </script>
   </head>
   <body>
+    <header id="outdated-browser" style="display: none">
+      <p>Your browser is outdated. Please consider upgrading to a modern browser for a better experience.</p>
+    </header>
     <%- body %>
+    <script>
+      <% include partials/featureDetection %>
+    </script>
   </body>
 </html>

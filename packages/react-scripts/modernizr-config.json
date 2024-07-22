@@ -1,0 +1,12 @@
+{
+    "minify": true,
+    "options": [
+      "addTest"
+    ],
+    "feature-detects": [
+      "test/es6/promises",
+      "test/network/fetch",
+      "test/url/parser",
+      "test/dom/intersection-observer"
+    ]
+}

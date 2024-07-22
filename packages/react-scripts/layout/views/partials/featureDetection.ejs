@@ -1,0 +1,10 @@
+const header = document.getElementById('outdated-browser');
+
+console.log('Checking for outdated browser message', Modernizr);
+
+const outdatedFeatures = Object.keys(Modernizr).filter(feature => !Modernizr[feature]);
+
+if (outdatedFeatures.length > 0 && header) {
+  header.style.display = 'block';
+  console.log('Outdated browser message displayed:', outdatedFeatures);
+}
