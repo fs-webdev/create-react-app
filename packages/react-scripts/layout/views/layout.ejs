@@ -55,9 +55,7 @@
     </script>
   </head>
   <body>
-    <header id="outdated-browser" style="display: none">
-      <p>Your browser is outdated. Please consider upgrading to a modern browser for a better experience.</p>
-    </header>
+    <% include partials/outdatedBrowserHeader %>
     <%- body %>
     <script>
       <% include partials/featureDetection %>
