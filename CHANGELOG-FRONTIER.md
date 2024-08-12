@@ -1,3 +1,9 @@
+## 8.6.0
+
+- Add some logic in webpack.config.js to look for CRA_MAGIC_ZION_UI_VERSION and CRA_MAGIC_REACT_SCRIPTS_VERSION and calculate
+  those versions based on the info in their respective package.json files, and send that info to DefinePlugin, which will
+  inject the values directly into any code that has that variable name (which will be in @fs/zion-config)
+
 ## 8.5.5
 
 - Fix proxy to work with Russian test user

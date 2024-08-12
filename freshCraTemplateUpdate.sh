@@ -27,8 +27,8 @@ git commit -a -m 'editing blueprint.yml, fixing @fs/react-scripts version'
 git remote add origin https://github.com/fs-webdev/fresh-cra-template.git
 
 if [ "$1" == next ]; then
-	echo Is next branch, pushing to fresh-cra-template next branch
-	git push --force origin master:next
+  echo Is next branch, pushing to fresh-cra-template next branch
+  git push --force origin master:next
 else
-	git push --force origin master
+  git push --force origin master
 fi
