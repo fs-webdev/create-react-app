@@ -57,11 +57,8 @@
   <body>
     <% include partials/outdatedBrowserHeader %>
     <%- body %>
-
-    <% if (feature('frontier_snow_unsupportedBrowser')) { %>
     <script>
       <% include partials/featureDetection %>
     </script>
-    <% } %>
   </body>
 </html>
