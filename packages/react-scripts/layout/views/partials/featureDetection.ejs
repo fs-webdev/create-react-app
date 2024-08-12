@@ -1,6 +1,6 @@
-const header = document.getElementById('outdated-browser');
+const unsupportedBrowserHeader = document.getElementById('unsupported-browser');
 const outdatedFeatures = Object.keys(Modernizr).filter(feature => !Modernizr[feature]);
 
-if (outdatedFeatures.length > 0 && !embeddedMobile && header) {
-  header.style.display = 'block';
+if (outdatedFeatures.length > 0 && unsupportedBrowserHeader) {
+  unsupportedBrowserHeader.style.display = 'block';
 }
