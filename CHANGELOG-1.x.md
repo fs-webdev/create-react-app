@@ -298,7 +298,7 @@ yarn add --exact react-scripts@1.1.1
 - David Gilbertson ([davidgilbertson](https://github.com/davidgilbertson))
 - Eli Perelman ([eliperelman](https://github.com/eliperelman))
 - Elie ([elie222](https://github.com/elie222))
-- Ernesto García ([gnapse](https://github.com/gnapse))
+- Ernesto Garc??a ([gnapse](https://github.com/gnapse))
 - Evan You ([yyx990803](https://github.com/yyx990803))
 - Gavin Gilmour ([gaving](https://github.com/gaving))
 - Ian Schmitz ([ianschmitz](https://github.com/ianschmitz))
@@ -308,7 +308,7 @@ yarn add --exact react-scripts@1.1.1
 - Joe Haddad ([Timer](https://github.com/Timer))
 - Joe Lim ([xjlim](https://github.com/xjlim))
 - Jonathan ([GreenGremlin](https://github.com/GreenGremlin))
-- Juhamatti Niemelä ([iiska](https://github.com/iiska))
+- Juhamatti Niemel?? ([iiska](https://github.com/iiska))
 - Mae Capozzi ([maecapozzi](https://github.com/maecapozzi))
 - Maksym Dogadailo ([mdogadailo](https://github.com/mdogadailo))
 - Mario Nebl ([marionebl](https://github.com/marionebl))
@@ -317,14 +317,14 @@ yarn add --exact react-scripts@1.1.1
 - Moos ([moos](https://github.com/moos))
 - Nils Magnus Englund ([nmenglund](https://github.com/nmenglund))
 - Norris Oduro ([Norris1z](https://github.com/Norris1z))
-- Ovidiu Cherecheș ([skidding](https://github.com/skidding))
+- Ovidiu Chereche?? ([skidding](https://github.com/skidding))
 - Quentin Bahers ([qbahers](https://github.com/qbahers))
 - Rafael E. Poveda ([raerpo](https://github.com/raerpo))
 - Rahul Chanila ([rahulcs](https://github.com/rahulcs))
 - Ryan McCue ([rmccue](https://github.com/rmccue))
 - Sascha Dens ([SaschaDens](https://github.com/SaschaDens))
 - Siddharth Doshi ([doshisid](https://github.com/doshisid))
-- Tao Gómez Gil ([Gua-naiko-che](https://github.com/Gua-naiko-che))
+- Tao G??mez Gil ([Gua-naiko-che](https://github.com/Gua-naiko-che))
 - Tharaka Wijebandara ([tharakawj](https://github.com/tharakawj))
 - Trevor Brindle ([tabrindle](https://github.com/tabrindle))
 - Ulrik Strid ([ulrikstrid](https://github.com/ulrikstrid))
@@ -382,7 +382,7 @@ or
 yarn add --exact react-scripts@1.0.17
 ```
 
-## 1.0.16 (October 31, 2017) 🎃
+## 1.0.16 (October 31, 2017) ????
 
 #### :bug: Bug Fix
 
@@ -492,22 +492,22 @@ yarn add --exact react-scripts@1.0.16
 
 - Aaron Shafovaloff ([aaronshaf](https://github.com/aaronshaf))
 - Alex ([alexkrolick](https://github.com/alexkrolick))
-- André Ericson ([aericson](https://github.com/aericson))
+- Andr?? Ericson ([aericson](https://github.com/aericson))
 - Dan Abramov ([gaearon](https://github.com/gaearon))
 - David Beitey ([davidjb](https://github.com/davidjb))
-- Hrvoje Šimić ([shime](https://github.com/shime))
+- Hrvoje ??imi?? ([shime](https://github.com/shime))
 - IJAJ MULANI ([ijajmulani](https://github.com/ijajmulani))
 - Joe Haddad ([Timer](https://github.com/Timer))
 - Joe Lim ([xjlim](https://github.com/xjlim))
 - Jonny Buchanan ([insin](https://github.com/insin))
 - Josh Branchaud ([jbranchaud](https://github.com/jbranchaud))
 - Joshua Wiens ([d3viant0ne](https://github.com/d3viant0ne))
-- Kévin Dunglas ([dunglas](https://github.com/dunglas))
+- K??vin Dunglas ([dunglas](https://github.com/dunglas))
 - Lorenzo Palmes ([lpalmes](https://github.com/lpalmes))
 - Matt Phillips ([mattphillips](https://github.com/mattphillips))
 - Mohamed Oun ([Mohamed3on](https://github.com/Mohamed3on))
 - Nik Nyby ([nikolas](https://github.com/nikolas))
-- Petr Huřťák ([Hurtak](https://github.com/Hurtak))
+- Petr Hu??????k ([Hurtak](https://github.com/Hurtak))
 - Robert Panzer ([robertpanzer](https://github.com/robertpanzer))
 - Ryan Sullivan ([ryansully](https://github.com/ryansully))
 - Satya van Heummen ([satyavh](https://github.com/satyavh))
@@ -728,7 +728,7 @@ or
 yarn add --exact react-scripts@1.0.12
 ```
 
-**Note:** there’s a [known issue](https://github.com/facebook/create-react-app/issues/3041) that might cause the project to not compile after upgrading. In this case, migrate straight to `1.0.13` which doesn’t have this issue.
+**Note:** there???s a [known issue](https://github.com/facebook/create-react-app/issues/3041) that might cause the project to not compile after upgrading. In this case, migrate straight to `1.0.13` which doesn???t have this issue.
 
 ## 1.0.11 (August 9, 2017)
 
@@ -823,19 +823,19 @@ yarn add --exact react-scripts@1.0.12
 - Forbes Lindesay ([ForbesLindesay](https://github.com/ForbesLindesay))
 - Joe Haddad ([Timer](https://github.com/Timer))
 - Jon Crenshaw ([jdcrensh](https://github.com/jdcrensh))
-- Kiho · Cham ([monkindey](https://github.com/monkindey))
+- Kiho ?? Cham ([monkindey](https://github.com/monkindey))
 - Konstantin Tarkus ([koistya](https://github.com/koistya))
 - Kristoffer ([denkristoffer](https://github.com/denkristoffer))
 - Mostafa Hajizadeh ([mostafah](https://github.com/mostafah))
-- Oskar Köök ([oskarkook](https://github.com/oskarkook))
+- Oskar K????k ([oskarkook](https://github.com/oskarkook))
 - Owen Flood ([OwenFlood](https://github.com/OwenFlood))
-- Stéphane Goetz ([onigoetz](https://github.com/onigoetz))
+- St??phane Goetz ([onigoetz](https://github.com/onigoetz))
 - Trygve Aaberge ([trygveaa](https://github.com/trygveaa))
 - Wiley Bennett ([wileybenet](https://github.com/wileybenet))
 - [iamdoron](https://github.com/iamdoron)
 - [themre](https://github.com/themre)
 - zeel ([zeel](https://github.com/zeel))
-- Đinh Quang Trung ([trungdq88](https://github.com/trungdq88))
+- ??inh Quang Trung ([trungdq88](https://github.com/trungdq88))
 
 ### Migrating from 1.0.10 to 1.0.11
 
@@ -1057,7 +1057,7 @@ yarn add --exact react-scripts@1.0.9
 - Erik Engi ([kireerik](https://github.com/kireerik))
 - Evan Jones ([mini-eggs](https://github.com/mini-eggs))
 - Fabrizio Castellarin ([EnoahNetzach](https://github.com/EnoahNetzach))
-- Frédéric Miserey ([diligiant](https://github.com/diligiant))
+- Fr??d??ric Miserey ([diligiant](https://github.com/diligiant))
 - Gabriel Aumala ([GAumala](https://github.com/GAumala))
 - Glenn Reyes ([glennreyes](https://github.com/glennreyes))
 - Heng Li ([iheng](https://github.com/iheng))
@@ -1077,13 +1077,13 @@ yarn add --exact react-scripts@1.0.9
 - Mico Piira ([micopiira](https://github.com/micopiira))
 - Mikhail Osher ([miraage](https://github.com/miraage))
 - Norbert de Langen ([ndelangen](https://github.com/ndelangen))
-- Paweł Jędrzejczyk ([paweljedrzejczyk](https://github.com/paweljedrzejczyk))
-- Pete Nykänen ([petetnt](https://github.com/petetnt))
+- Pawe?? J??drzejczyk ([paweljedrzejczyk](https://github.com/paweljedrzejczyk))
+- Pete Nyk??nen ([petetnt](https://github.com/petetnt))
 - Ro Savage ([ro-savage](https://github.com/ro-savage))
 - Roman ([romanyanke](https://github.com/romanyanke))
 - Rustem Kakimov ([ruskakimov](https://github.com/ruskakimov))
 - Ryan Sullivan ([ryansully](https://github.com/ryansully))
-- Stanislas Ormières ([laruiss](https://github.com/laruiss))
+- Stanislas Ormi??res ([laruiss](https://github.com/laruiss))
 - Will Farley ([goldhand](https://github.com/goldhand))
 - Zac Kwan ([Zaccc123](https://github.com/Zaccc123))
 - [bryankang](https://github.com/bryankang)
@@ -1106,9 +1106,9 @@ yarn add --dev --exact react-scripts@1.0.8
 
 **If you previously used `HTTPS=true` environment variable in development**, make sure you aren't affected by a now-fixed vulnerability in webpack by [visiting this page](http://badcert.mike.works/). You can read more about the vulnerability [here](https://medium.com/@mikenorth/webpack-preact-cli-vulnerability-961572624c54).
 
-You may optionally then move `react-scripts` from `devDependencies` to `dependencies` since that’s how we’ll structure newly created projects. It is not necessary though.
+You may optionally then move `react-scripts` from `devDependencies` to `dependencies` since that???s how we???ll structure newly created projects. It is not necessary though.
 
-If you left the service worker integration enabled and didn’t change how it works, you can replace `src/registerServiceWorker.js` with [this updated version](https://raw.githubusercontent.com/facebook/create-react-app/895c475d3fc218c65dcac9a3ef3f2c0ea746a1ed/packages/react-scripts/template/src/registerServiceWorker.js).
+If you left the service worker integration enabled and didn???t change how it works, you can replace `src/registerServiceWorker.js` with [this updated version](https://raw.githubusercontent.com/facebook/create-react-app/895c475d3fc218c65dcac9a3ef3f2c0ea746a1ed/packages/react-scripts/template/src/registerServiceWorker.js).
 
 If you haven't changed the default CSS organization, you may want to apply [this fix](https://github.com/facebook/create-react-app/pull/2470/files) that makes `index.css` take precedence over `App.css` in your project.
 
@@ -1278,7 +1278,7 @@ yarn add --dev --exact react-scripts@1.0.4
 
 - `react-dev-utils`
 
-  - [#2297](https://github.com/facebook/create-react-app/pull/2297) Don’t serve the development version from public IPs by default. ([@Timer](https://github.com/Timer))
+  - [#2297](https://github.com/facebook/create-react-app/pull/2297) Don???t serve the development version from public IPs by default. ([@Timer](https://github.com/Timer))
 
 - `eslint-config-react-app`
 
@@ -1443,10 +1443,10 @@ yarn add --dev --exact react-scripts@1.0.1
 
 ## 1.0.0 (May 18, 2017)
 
-We’ve been working on this release for the past few months, and there are many big improvements, from migrating to webpack 2 to a brand new runtime error overlay and built-in support for Progressive Web Apps.
+We???ve been working on this release for the past few months, and there are many big improvements, from migrating to webpack 2 to a brand new runtime error overlay and built-in support for Progressive Web Apps.
 
 So instead of just enumerating them here, we decided to write a blog post about all the new features.<br>
-Check it out: **[What’s New in Create React App](https://facebook.github.io/react/blog/2017/05/18/whats-new-in-create-react-app.html)**.
+Check it out: **[What???s New in Create React App](https://facebook.github.io/react/blog/2017/05/18/whats-new-in-create-react-app.html)**.
 
 Have you read it? Now let's see how to update your app to the latest version.
 
@@ -1481,7 +1481,7 @@ To remedy this, simply move any files that you `import` within `src/` and update
 
 If you used relative imports outside the project directory as a way to share code with another project, consider using a [monorepo](https://github.com/lerna/lerna) instead, so that other projects are symlinked to your project's `node_modules/`. Then you can import them as a Node modules.
 
-While running `npm test`, you may notice some of your tests are missing. Please move any top-level test directory (i.e. `__test__`, `__spec__`) or files (i.e. `*.test.js`, `*.spec.js`) into `src/`. Conversely, if you have some similarly named files that you _don’t_ want Jest to run, move them outside of `src/`.
+While running `npm test`, you may notice some of your tests are missing. Please move any top-level test directory (i.e. `__test__`, `__spec__`) or files (i.e. `*.test.js`, `*.spec.js`) into `src/`. Conversely, if you have some similarly named files that you _don???t_ want Jest to run, move them outside of `src/`.
 
 #### Import required locales for Moment.js
 
@@ -1570,7 +1570,7 @@ If you still have the problem please file an issue.
 
 #### Some of my tests started crashing because of unhandled rejections
 
-Unhandled Promise rejections will now crash tests. You can fix them by explicitly catching the errors you don’t care about.
+Unhandled Promise rejections will now crash tests. You can fix them by explicitly catching the errors you don???t care about.
 
 #### How to turn my app into a [Progressive Web App](https://github.com/facebook/create-react-app/blob/main/packages/react-scripts/template/README.md#making-a-progressive-web-app)?
 
