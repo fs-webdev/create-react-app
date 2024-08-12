@@ -16,9 +16,11 @@
     "screencast": "node ./tasks/screencast.js",
     "screencast:error": "svg-term --cast jyu19xGl88FQ3poMY8Hbmfw8y --out screencast-error.svg --window --at 12000 --no-cursor",
     "alex": "alex .",
-    "test:integration": "echo \"jest test/integration\" && exit 0",
-    "test": "echo \"cd packages/react-scripts && node bin/react-scripts.js test\" && exit 0",
-    "format": "prettier --write 'packages/*/*.js' 'packages/*/!(node_modules)/**/*.js'"
+    "test:integration": "jest test/integration",
+    "test": "cd packages/react-scripts && node bin/react-scripts.js test",
+    "eslint": "eslint .",
+    "prettier": "prettier .",
+    "format": "npm run prettier -- --write"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.15.1",
