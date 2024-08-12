@@ -1,6 +1,7 @@
 const header = document.getElementById('outdated-browser');
 const outdatedFeatures = Object.keys(Modernizr).filter(feature => !Modernizr[feature]);
+const unsupportedBrowserFlag = getFeatureFlag('frontier_snow_unsupportedBrowser', {appName: process.env.APP_NAME});
 
-if (outdatedFeatures.length > 0 && !embeddedMobile && header) {
+if (unsupportedBrowserFlag && outdatedFeatures.length > 0 && !embeddedMobile && header) {
   header.style.display = 'block';
 }
