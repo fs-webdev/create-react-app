@@ -1,3 +1,8 @@
+## 8.7.0
+
+- Provide a simpleCoalesceLocales and simple-webpack.config.js files for use by cypress in apps. This speeds things up compared to using the
+  regular versions of those files.
+
 ## 8.6.0
 
 - Add some logic in webpack.config.js to look for CRA_MAGIC_ZION_UI_VERSION and CRA_MAGIC_REACT_SCRIPTS_VERSION and calculate
