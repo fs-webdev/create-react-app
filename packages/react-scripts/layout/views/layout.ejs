@@ -55,7 +55,9 @@
     </script>
   </head>
   <body>
-    <% include partials/unsupportedBrowserHeader %>
+    <% if (feature('frontier_snow_unsupportedBrowser')) { %>
+      <% include partials/unsupportedBrowserHeader %>
+    <% } %>
     <%- body %>
 
     <% if (feature('frontier_snow_unsupportedBrowser')) { %>
