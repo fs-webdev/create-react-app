@@ -16,6 +16,7 @@ module.exports = () => {
   fs.ensureDirSync(builtLocalesDir, { recursive: true })
 
   const files = glob.sync([
+    `${cwd}/src/locales/index.js`,
     'node_modules/@fs/zion-*/dist/es/locales/index.js',
     'node_modules/@fs/tree-*/dist/es/locales/index.js',
   ])
@@ -23,7 +24,7 @@ module.exports = () => {
   const allLocales = {}
   files.forEach((p) => {
     const dir = path.dirname(p)
-    const locales = fs.readdirSync(dir).filter((d) => !d.includes('.'))
+    const locales = fs.readdirSync(dir).filter((d) => !d.includes('.') && !d.includes('dist'))
     debug('files foreach', p, dir, locales)
     locales.forEach((locale) => {
       const namespaces = fs.readdirSync(path.join(dir, locale)).map((d) => d.split('.')[0])
