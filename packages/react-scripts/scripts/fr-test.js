@@ -25,7 +25,8 @@ const mergeReports = ()=>{
 // dev ran npm test
 if(!process.env.CI){
   const args = process.argv.slice(2).join(' ')
-  return execSync(`react-scripts test ${args}`)
+  execSync(`react-scripts test ${args}`, { stdio: 'inherit' })
+  return
 }
 
 // reset
