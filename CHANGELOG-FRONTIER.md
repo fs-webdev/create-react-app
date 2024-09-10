@@ -1,3 +1,7 @@
+## 8.7.1
+
+- Add in feature detection and unsupported browser banner. Based on the frontier_snow_unsupportedBrowser flag. Uses the unsupportedBrowserHeaderText value from snow.
+
 ## 8.7.0
 
 - Provide a simpleCoalesceLocales and simple-webpack.config.js files for use by cypress in apps. This speeds things up compared to using the

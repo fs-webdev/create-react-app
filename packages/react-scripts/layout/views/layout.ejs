@@ -30,6 +30,13 @@
     <% if (process.env.NODE_ENV === 'production') { %>
       <% include partials/dynatrace %>
     <% } %>
+
+    <% if (feature('frontier_snow_unsupportedBrowser')) { %>
+      <script>
+        <% include ../../modernizr.js %>
+      </script>
+    <% } %>
+
     <script>
       window.SERVER_DATA = {};
       <%- typeof cacheKey !== 'undefined' ? `SERVER_DATA.cacheKey = '${cacheKey}';` : ''; %>
@@ -50,6 +57,15 @@
     </script>
   </head>
   <body>
+    <% if (feature('frontier_snow_unsupportedBrowser')) { %>
+      <% include partials/unsupportedBrowserHeader %>
+    <% } %>
     <%- body %>
+
+    <% if (feature('frontier_snow_unsupportedBrowser')) { %>
+      <script>
+        <% include partials/featureDetection %>
+      </script>
+    <% } %>
   </body>
 </html>

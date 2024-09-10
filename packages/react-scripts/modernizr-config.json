@@ -1,0 +1,10 @@
+{
+    "minify": true,
+    "feature-detects": [
+      "test/customevent",
+      "test/dom/intersection-observer",
+      "test/es6/promises",
+      "test/network/fetch",
+      "test/url/parser"
+    ]
+}
