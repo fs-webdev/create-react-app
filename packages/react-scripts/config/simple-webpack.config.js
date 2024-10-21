@@ -6,6 +6,7 @@ const path = require('path')
 const webpack = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const babelConfig = require.resolve('@fs/babel-preset-frontier')
+const { RetryChunkLoadPlugin } = require('webpack-retry-chunk-load-plugin')
 
 const d3DagRegex = /[\\/]node_modules[\\/]d3-dag/
 
@@ -120,6 +121,16 @@ module.exports = {
     new MiniCssExtractPlugin({ filename: 'styles.css', ignoreOrder: true }),
     new webpack.ProvidePlugin({
       React: 'react',
+    }),
+    new RetryChunkLoadPlugin({
+      // optional stringified function to get the cache busting query string appended to the script src
+      // if not set will default to appending the string `?cache-bust=true`
+      cacheBust: `function() { return Date.now() }`,
+      // optional value to set the maximum number of retries to load the chunk. Default is 1
+      maxRetries: 5,
+      // optional code to be executed in the browser context if after all retries chunk is not loaded.
+      // if not set - nothing will happen and error will be returned to the chunk loader.
+      // lastResortScript: "window.location.href='/500.html'"
     }),
   ],
 }

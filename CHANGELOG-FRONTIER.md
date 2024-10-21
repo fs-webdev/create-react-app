@@ -1,6 +1,10 @@
-## 8.7.1
+## 8.7.6
 
 - Add in feature detection and unsupported browser banner. Based on the frontier_snow_unsupportedBrowser flag. Uses the unsupportedBrowserHeaderText value from snow.
+
+## 8.7.4
+
+- Adding isLoggedIn to SERVER_DATA so that we can tell the difference between a logged in session vs an anonymous session.
 
 ## 8.7.0
 
