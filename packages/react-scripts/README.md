@@ -5,3 +5,7 @@ Please refer to its documentation:
 
 - [Getting Started](https://facebook.github.io/create-react-app/docs/getting-started) – How to create a new app.
 - [User Guide](https://facebook.github.io/create-react-app/) – How to develop apps bootstrapped with Create React App.
+
+## Modernizr
+
+The modernizr config (in `modernizr-config.json`) is based on `packages/react-scripts/polyfills.js` and usage of the items in the config across apps.
