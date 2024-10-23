@@ -18,7 +18,7 @@
   "scripts": {
     "prettier": "npx prettier --arrow-parens always --single-quote --trailing-comma es5 --print-width 120 --no-semi --write \"template*/**/*.js\"",
     "fs-publish": "npmPublish",
-    "prepublish": "modernizr -c modernizr-config.json"
+    "prepare": "modernizr -c modernizr-config.json"
   },
   "files": [
     "bin",
