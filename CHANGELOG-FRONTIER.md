@@ -1,6 +1,10 @@
-## 8.7.6
+## 8.7.7
 
 - Add in feature detection and unsupported browser banner. Based on the frontier_snow_unsupportedBrowser flag. Uses the unsupportedBrowserHeaderText value from snow.
+
+## 8.7.6
+
+- Adding the Array.at polyfill for older browsers
 
 ## 8.7.4
 
