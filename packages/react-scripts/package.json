@@ -1,6 +1,6 @@
 {
   "name": "@fs/react-scripts",
-  "version": "8.7.6",
+  "version": "8.7.7",
   "upstreamVersion": "5.0.1",
   "description": "Configuration and scripts for Create React App.",
   "repository": {
@@ -17,7 +17,8 @@
   },
   "scripts": {
     "prettier": "npx prettier --arrow-parens always --single-quote --trailing-comma es5 --print-width 120 --no-semi --write \"template*/**/*.js\"",
-    "fs-publish": "npmPublish"
+    "fs-publish": "npmPublish",
+    "prepare": "modernizr -c modernizr-config.json"
   },
   "files": [
     "bin",
@@ -125,6 +126,7 @@
     "babel-plugin-react-docgen": "^3.0.0",
     "graphql-tag": "^2.12.6",
     "i18next": "19.8.7",
+    "modernizr": "^3.13.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-i18next": "^11.0.1",
