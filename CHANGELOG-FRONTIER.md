@@ -1,3 +1,7 @@
+## 8.7.6
+
+- Adding the Array.at polyfill for older browsers
+
 ## 8.7.4
 
 - Adding isLoggedIn to SERVER_DATA so that we can tell the difference between a logged in session vs an anonymous session.
