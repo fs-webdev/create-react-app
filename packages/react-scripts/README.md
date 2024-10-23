@@ -9,3 +9,4 @@ Please refer to its documentation:
 ## Modernizr
 
 The modernizr config (in `modernizr-config.json`) is based on `packages/react-scripts/polyfills.js` and usage of the items in the config across apps.
+The `modernizr.js` file is generated from the config in the `prepare` script when installed and published.
