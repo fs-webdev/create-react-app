@@ -1,6 +1,8 @@
-const unsupportedBrowserHeader = document.getElementById('unsupported-browser');
-const outdatedFeatures = Object.keys(Modernizr).filter(feature => !Modernizr[feature]);
+if (Modernizr) {
+  const unsupportedBrowserHeader = document.getElementById('unsupported-browser');
+  const outdatedFeatures = Object.keys(Modernizr).filter(feature => !Modernizr[feature]);
 
-if (outdatedFeatures.length > 0 && unsupportedBrowserHeader) {
-  unsupportedBrowserHeader.style.display = 'block';
+  if (outdatedFeatures.length > 0 && unsupportedBrowserHeader) {
+    unsupportedBrowserHeader.style.display = 'block';
+  }
 }
