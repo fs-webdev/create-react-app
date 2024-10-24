@@ -31,7 +31,7 @@
       <% include partials/dynatrace %>
     <% } %>
 
-    <% if (getFeatureFlag('frontier_snow_unsupportedBrowser')) { %>
+    <% if (getFeatureFlag('frontier_snow_unsupportedBrowser').isOn) { %>
       <script>
         <% include ../../modernizr.js %>
       </script>
@@ -58,12 +58,12 @@
     </script>
   </head>
   <body>
-    <% if (getFeatureFlag('frontier_snow_unsupportedBrowser')) { %>
+    <% if (getFeatureFlag('frontier_snow_unsupportedBrowser').isOn) { %>
       <% include partials/unsupportedBrowserHeader %>
     <% } %>
     <%- body %>
 
-    <% if (getFeatureFlag('frontier_snow_unsupportedBrowser')) { %>
+    <% if (getFeatureFlag('frontier_snow_unsupportedBrowser').isOn) { %>
       <script>
         <% include partials/featureDetection %>
       </script>
