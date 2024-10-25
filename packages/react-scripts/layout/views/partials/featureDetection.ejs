@@ -4,5 +4,7 @@ if (Modernizr) {
 
   if (outdatedFeatures.length > 0 && unsupportedBrowserHeader) {
     unsupportedBrowserHeader.style.display = 'block';
+  } else {
+    unsupportedBrowserHeader.remove();
   }
 }
