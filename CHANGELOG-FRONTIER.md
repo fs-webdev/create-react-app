@@ -1,3 +1,7 @@
+## 8.7.8
+
+- Fix unsupported browser banner logic to avoid errors
+
 ## 8.7.7
 
 - Add in feature detection and unsupported browser banner. Based on the frontier_snow_unsupportedBrowser flag. Uses the unsupportedBrowserHeaderText value from snow.
