@@ -25,6 +25,7 @@ module.exports = (resolve, rootDir, isEjecting) => {
 
   const config = {
     roots: ['<rootDir>/src'],
+    resolver: `${__dirname}/jestResolver.js`,
 
     collectCoverageFrom:[
       "src/**/*.{js,jsx,ts,tsx}",

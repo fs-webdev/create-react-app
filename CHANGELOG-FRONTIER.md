@@ -3,6 +3,10 @@
 - Update proxies to handle language URLs
 - Update dependencies and require Node >= 18.12.0
 
+## 8.7.10
+
+- Have jest configuration use browser-resolve for requires in splitio packages. Only affects jest tests, nothing else.
+
 ## 8.7.9
 
 - Add additional check for unsupported browser banner to avoid errors
