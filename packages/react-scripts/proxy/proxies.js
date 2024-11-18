@@ -20,25 +20,25 @@ const proxies = [
       'application/' /* 'application/x-gedcomx-v1+json', 'application/json', etc. */,
   },
   {
-    route: '/ask',
-  },
-  {
     route: '/cis-web',
   },
   {
-    route: '/cmsa',
+    route: '/cmsa/api',
   },
   {
     route: '/dz',
   },
   {
-    route: '/frontier',
+    route: '/frontier/beacon',
+  },
+  {
+    route: '/frontier/ip',
+  },
+  {
+    route: '/frontier/graphql',
   },
   {
     route: '/hf',
-  },
-  {
-    route: '/home/banner',
   },
   {
     route: '/ident',

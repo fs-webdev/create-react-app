@@ -1,6 +1,9 @@
+dist: jammy
 language: node_js
 node_js:
-  - "16"
+  - "18"
+  - "20"
+  - "22"
 before_install:
   - git config --global url."https://git@".insteadOf git://
   - echo -e "machine github.com\n  login $CI_USER_TOKEN" > ~/.netrc

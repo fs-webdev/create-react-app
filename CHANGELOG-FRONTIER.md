@@ -1,3 +1,8 @@
+## 8.8.0
+
+- Update proxies to handle language URLs
+- Update dependencies and require Node >= 18.12.0
+
 ## 8.7.9
 
 - Add additional check for unsupported browser banner to avoid errors

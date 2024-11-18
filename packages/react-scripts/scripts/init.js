@@ -137,7 +137,7 @@ module.exports = function (
     console.log(
       chalk.red(
         'Root-level `dependencies` and `scripts` keys in `template.json` were deprecated for Create React App 5.\n' +
-          'This template needs to be updated to use the new `package` key.'
+        'This template needs to be updated to use the new `package` key.'
       )
     );
     console.log('For more information, visit https://cra.link/templates');
@@ -189,7 +189,7 @@ module.exports = function (
   const templateScripts = templatePackage.scripts || {};
   appPackage.scripts = Object.assign(
     {
-      start: 'PORT=5000 react-scripts start',
+      start: 'PORT=5006 react-scripts start',
       build: 'react-scripts build',
       test: 'react-scripts test',
       eject: 'react-scripts eject',
@@ -241,11 +241,13 @@ module.exports = function (
   console.log('templatePath: ', templatePath)
   console.log('templateDir: ', templateDir)
   if (fs.existsSync(templateDir)) {
-    fs.copySync(templateDir, appPath, {filter: (src) => {
-      // FamilySearch - we don't copy over node_modules, build, and dist here in order for us to be able to
-      // run npx create-react-app --template file:cra-template locally to test if things are working as expected
-      return !directoriesToNotCopyOver.some(dirName => src.includes(`/template/${dirName}/`))
-    }});
+    fs.copySync(templateDir, appPath, {
+      filter: (src) => {
+        // FamilySearch - we don't copy over node_modules, build, and dist here in order for us to be able to
+        // run npx create-react-app --template file:cra-template locally to test if things are working as expected
+        return !directoriesToNotCopyOver.some(dirName => src.includes(`/template/${dirName}/`))
+      }
+    });
   } else {
     console.error(
       `Could not locate supplied template: ${chalk.green(templateDir)}`
@@ -361,11 +363,11 @@ module.exports = function (
     verifyTypeScriptSetup();
   }
 
-  const currentAppPackage = JSON.parse(fs.readFileSync(path.join(appPath, 'package.json'), {encoding: 'utf8'}))
+  const currentAppPackage = JSON.parse(fs.readFileSync(path.join(appPath, 'package.json'), { encoding: 'utf8' }))
   console.log('currentAppPackage. I expect no @fs/cra-template to be in deps:\n', JSON.stringify(currentAppPackage, null, 2))
 
   if (currentAppPackage.dependencies[templateName]) {
-    
+
     // Remove template
     console.log(`Removing template package using ${command}...`);
     console.log(`Template version being removed: ${templateName}: ${appPackage.dependencies[templateName]} `)
