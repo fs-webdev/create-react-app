@@ -1,9 +1,7 @@
 dist: jammy
 language: node_js
 node_js:
-  - "18"
-  - "20"
-  - "22"
+  - '18'
 before_install:
   - git config --global url."https://git@".insteadOf git://
   - echo -e "machine github.com\n  login $CI_USER_TOKEN" > ~/.netrc
@@ -30,10 +28,10 @@ script:
   - echo "@fs:registry=https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/" >> ${HOME}/tmp/fresh-cra-template/.npmrc
 
   - CI=true npm test
-    
+
   # Building the app so freshCraTemplateUpdate.sh can publish it
   - npm run build
-before_deploy: "cd ${TRAVIS_BUILD_DIR}/packages/react-scripts"
+before_deploy: 'cd ${TRAVIS_BUILD_DIR}/packages/react-scripts'
 deploy:
   - provider: script
     edge: true
