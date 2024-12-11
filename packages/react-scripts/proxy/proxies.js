@@ -44,9 +44,6 @@ const proxies = [
     route: '/home/banner',
   },
   {
-    route: '/ident',
-  },
-  {
     route: '/mobile',
   },
   {
