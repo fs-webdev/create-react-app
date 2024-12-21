@@ -46,7 +46,6 @@
       SERVER_DATA.sgBaseUrl = "<%= process.env.SG_BASE_URL %>"
       SERVER_DATA.splitioAuthKey = "<%= process.env.SPLITIO_AUTH_KEY %>"
       SERVER_DATA.geoData = <%- typeof geoData !== 'undefined' ? JSON.stringify(geoData) : JSON.stringify({}) %>;
-      SERVER_DATA.isLoggedIn = <%= isLoggedIn %>
       <% include partials/experiments %>
       <% include partials/sentry %>
       <% include partials/clientAppConfig %>
@@ -55,6 +54,10 @@
         if (!window.dtinfo) window.dtinfo = {}
         window.dtinfo.appName = SERVER_DATA.appName
       }
+      // Apps that cache SERVER_DATA need this flag on.
+      <% if (!getFeatureFlag('frontier_server_removeIsLoggedIn', { appName: SERVER_DATA.appName }).isOn) { %>
+        SERVER_DATA.isLoggedIn = <%= isLoggedIn %>
+      <% } %>
     </script>
   </head>
   <body>
