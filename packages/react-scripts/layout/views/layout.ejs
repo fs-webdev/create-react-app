@@ -46,7 +46,7 @@
       SERVER_DATA.sgBaseUrl = "<%= process.env.SG_BASE_URL %>"
       SERVER_DATA.splitioAuthKey = "<%= process.env.SPLITIO_AUTH_KEY %>"
       SERVER_DATA.geoData = <%- typeof geoData !== 'undefined' ? JSON.stringify(geoData) : JSON.stringify({}) %>;
-      <% if (!getFeatureFlag('frontier_server_removeIsLoggedIn', { appName }).isOn) { %>
+      <% if (typeof skipSessionPrevalidation != 'undefined' && !skipSessionPrevalidation) { %>
         SERVER_DATA.isLoggedIn = <%= isLoggedIn %>
       <% } %>
       <% include partials/experiments %>
