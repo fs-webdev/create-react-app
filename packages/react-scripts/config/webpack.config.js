@@ -140,7 +140,21 @@ module.exports = function (webpackEnv) {
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
-      isEnvDevelopment && require.resolve('style-loader'),
+      isEnvDevelopment &&  {
+        loader: require.resolve('style-loader'),
+        options: process.env.REACT_APP_HF_INJECT_STYLES ? {
+          injectType: 'singletonStyleTag',
+          insert: function addToWindowObject(element) {
+
+            const _window = typeof window !== 'undefined' ? window : {}
+            if (!_window.hfBundleStyles) {
+              _window.hfBundleStyles = []
+            }
+            element.classList.add('linaria-style')
+            _window.hfBundleStyles.push(element)
+          }
+        } : {},
+      },
       isEnvProduction && {
         loader: MiniCssExtractPlugin.loader,
         // css is located in `static/css`, use '../../' to locate index.html folder
