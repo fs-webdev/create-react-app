@@ -142,16 +142,12 @@ module.exports = function (webpackEnv) {
     const loaders = [
       isEnvDevelopment &&  {
         loader: require.resolve('style-loader'),
-        options: process.env.REACT_APP_HF_INJECT_STYLES ? {
+        options: process.env.REACT_APP_INJECT_STYLES ? {
           injectType: 'singletonStyleTag',
           insert: function addToWindowObject(element) {
 
             const _window = typeof window !== 'undefined' ? window : {}
-            if (!_window.hfBundleStyles) {
-              _window.hfBundleStyles = []
-            }
-            element.classList.add('linaria-style')
-            _window.hfBundleStyles.push(element)
+            _window[process.env.REACT_APP_INJECT_STYLES] = element
           }
         } : {},
       },
@@ -232,6 +228,9 @@ module.exports = function (webpackEnv) {
   }
 
   return {
+    snapshot: {
+      unmanagedPaths: ['/Users/rtbrown560/Code/hf-inj-react/node_modules/@fs/'],
+    },
     target: ['browserslist'],
     // Webpack noise constrained to errors and warnings
     stats: 'errors-warnings',
