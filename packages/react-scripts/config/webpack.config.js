@@ -228,9 +228,6 @@ module.exports = function (webpackEnv) {
   }
 
   return {
-    snapshot: {
-      unmanagedPaths: ['/Users/rtbrown560/Code/hf-inj-react/node_modules/@fs/'],
-    },
     target: ['browserslist'],
     // Webpack noise constrained to errors and warnings
     stats: 'errors-warnings',
