@@ -38,7 +38,8 @@ if (!process.env.E2E_FILE && !process.env.E2E_URL) {
   });
 }
 
-export default feature =>
+const initDOM = async feature =>
+  // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
     try {
       const host = process.env.E2E_URL || 'http://www.example.org/spa:3000';
@@ -102,3 +103,5 @@ export default feature =>
       reject(e);
     }
   });
+
+export default initDOM;
