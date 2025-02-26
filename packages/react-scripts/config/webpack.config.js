@@ -60,6 +60,7 @@ console.log(`In webpack.config from @fs/react-scripts version ${reactScriptsVers
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier')
 // @remove-on-eject-end
 const createEnvironmentHash = require('./webpack/persistentCache/createEnvironmentHash')
+const InjectEntrypointsPlugin = require('./InjectEntrypointsPlugin.js')
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false'
@@ -139,6 +140,7 @@ module.exports = function (webpackEnv) {
 
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
+    // todo handle inject styles for prod
     const loaders = [
       isEnvDevelopment && {
         loader: require.resolve('style-loader'),
@@ -770,6 +772,12 @@ module.exports = function (webpackEnv) {
             entrypoints: entrypointFiles,
           }
         },
+      }),
+      // Inject the manifest entrypoint file names into the outputFile
+      process.env.REACT_APP_INJECT_SCRIPTS == 'true' &&
+      new InjectEntrypointsPlugin({
+        outputPath: paths.publicUrlOrPath,
+        outputFile: 'hf-inj-react-scripts.js',
       }),
       // Moment.js is an extremely popular library that bundles large locale files
       // by default due to how webpack interprets its code. This is a practical
