@@ -140,9 +140,8 @@ module.exports = function (webpackEnv) {
 
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
-    // todo handle inject styles for prod
     const loaders = [
-      isEnvDevelopment && {
+      (isEnvDevelopment || process.env.REACT_APP_INJECT_STYLES) && {
         loader: require.resolve('style-loader'),
         options: process.env.REACT_APP_INJECT_STYLES ? {
           injectType: 'singletonStyleTag',
@@ -152,7 +151,7 @@ module.exports = function (webpackEnv) {
           }
         } : {},
       },
-      isEnvProduction && {
+      (isEnvProduction && !process.env.REACT_APP_INJECT_STYLES) && {
         loader: MiniCssExtractPlugin.loader,
         // css is located in `static/css`, use '../../' to locate index.html folder
         // in production `paths.publicUrlOrPath` can be a relative path
@@ -742,7 +741,7 @@ module.exports = function (webpackEnv) {
       // a plugin that prints an error when you attempt to do this.
       // See https://github.com/facebook/create-react-app/issues/240
       isEnvDevelopment && new CaseSensitivePathsPlugin(),
-      isEnvProduction &&
+      (isEnvProduction && !process.env.REACT_APP_INJECT_STYLES) &&
         new MiniCssExtractPlugin({
           // Options similar to the same options in webpackOptions.output
           // both options are optional
