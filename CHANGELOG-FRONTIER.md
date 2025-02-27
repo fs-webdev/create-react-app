@@ -1,4 +1,4 @@
-## 8.8.5
+## 8.6.0
 
 - Add options for injecting scripts and styles (for hf-inj-react)
 
