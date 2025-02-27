@@ -1,3 +1,7 @@
+## 8.8.5
+
+- Add options for injecting scripts and styles (for hf-inj-react)
+
 ## 8.8.3
 
 - Add photos/apiHelper endpoint to proxy list
