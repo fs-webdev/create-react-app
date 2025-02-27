@@ -141,7 +141,7 @@ module.exports = function (webpackEnv) {
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
-      (isEnvDevelopment || process.env.REACT_APP_INJECT_STYLES) && {
+      (isEnvDevelopment || process.env.REACT_APP_INJECT_STYLES === 'true') && {
         loader: require.resolve('style-loader'),
         options: process.env.REACT_APP_INJECT_STYLES === 'true' ? {
           injectType: 'singletonStyleTag',
