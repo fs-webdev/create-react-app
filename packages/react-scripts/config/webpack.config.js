@@ -741,7 +741,7 @@ module.exports = function (webpackEnv) {
       // a plugin that prints an error when you attempt to do this.
       // See https://github.com/facebook/create-react-app/issues/240
       isEnvDevelopment && new CaseSensitivePathsPlugin(),
-      (isEnvProduction && !process.env.REACT_APP_INJECT_STYLES) &&
+      (isEnvProduction && process.env.REACT_APP_INJECT_STYLES !== 'true') &&
         new MiniCssExtractPlugin({
           // Options similar to the same options in webpackOptions.output
           // both options are optional
