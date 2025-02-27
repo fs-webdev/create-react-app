@@ -143,7 +143,7 @@ module.exports = function (webpackEnv) {
     const loaders = [
       (isEnvDevelopment || process.env.REACT_APP_INJECT_STYLES) && {
         loader: require.resolve('style-loader'),
-        options: process.env.REACT_APP_INJECT_STYLES ? {
+        options: process.env.REACT_APP_INJECT_STYLES === 'true' ? {
           injectType: 'singletonStyleTag',
           insert: function addToWindowObject(element) {
             const _window = typeof window !== 'undefined' ? window : {}
