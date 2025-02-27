@@ -773,7 +773,7 @@ module.exports = function (webpackEnv) {
         },
       }),
       // Inject the manifest entrypoint file names into the outputFile
-      process.env.REACT_APP_INJECT_SCRIPTS == 'true' &&
+      process.env.REACT_APP_INJECT_SCRIPTS === 'true' &&
       new InjectEntrypointsPlugin({
         outputPath: paths.publicUrlOrPath,
         outputFile: 'hf-inj-react-scripts.js',
