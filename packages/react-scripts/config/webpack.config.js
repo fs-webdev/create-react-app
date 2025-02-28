@@ -141,17 +141,17 @@ module.exports = function (webpackEnv) {
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
-      (isEnvDevelopment || process.env.REACT_APP_INJECT_STYLES === 'true') && {
+      (isEnvDevelopment || process.env.INJECT_STYLES === 'true') && {
         loader: require.resolve('style-loader'),
-        options: process.env.REACT_APP_INJECT_STYLES === 'true' ? {
+        options: process.env.INJECT_STYLES === 'true' ? {
           injectType: 'singletonStyleTag',
           insert: function addToWindowObject(element) {
             const _window = typeof window !== 'undefined' ? window : {}
-            _window[process.env.REACT_APP_INJECT_STYLES] = element
+            _window['hfBundleStyles'] = element
           }
         } : {},
       },
-      (isEnvProduction && !process.env.REACT_APP_INJECT_STYLES) && {
+      (isEnvProduction && !process.env.INJECT_STYLES) && {
         loader: MiniCssExtractPlugin.loader,
         // css is located in `static/css`, use '../../' to locate index.html folder
         // in production `paths.publicUrlOrPath` can be a relative path
@@ -741,7 +741,7 @@ module.exports = function (webpackEnv) {
       // a plugin that prints an error when you attempt to do this.
       // See https://github.com/facebook/create-react-app/issues/240
       isEnvDevelopment && new CaseSensitivePathsPlugin(),
-      (isEnvProduction && process.env.REACT_APP_INJECT_STYLES !== 'true') &&
+      (isEnvProduction && process.env.INJECT_STYLES !== 'true') &&
         new MiniCssExtractPlugin({
           // Options similar to the same options in webpackOptions.output
           // both options are optional
@@ -773,9 +773,8 @@ module.exports = function (webpackEnv) {
         },
       }),
       // Inject the manifest entrypoint file names into the outputFile
-      process.env.REACT_APP_INJECT_SCRIPTS === 'true' &&
+      process.env.INJECT_SCRIPTS === 'true' &&
       new InjectEntrypointsPlugin({
-        outputPath: paths.publicUrlOrPath,
         outputFile: 'hf-inj-react-scripts.js',
       }),
       // Moment.js is an extremely popular library that bundles large locale files

@@ -2,6 +2,7 @@
 const { getCompilerHooks } = require('webpack-manifest-plugin');
 const fs = require('fs');
 const path = require('path');
+const paths = require('./paths')
 
 class InjectEntrypointsPlugin {
   constructor(options) {
@@ -19,7 +20,7 @@ class InjectEntrypointsPlugin {
 
 		fs.writeFileSync(outputPath,
 			JSON.stringify(
-				manifest.entrypoints.map((entry) => this.options.outputPath + entry)),
+				manifest.entrypoints.map((entry) => paths.publicUrlOrPath + entry)),
 				'utf8');
 			})
   }
