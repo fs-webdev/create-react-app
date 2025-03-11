@@ -15,8 +15,11 @@ class InjectEntrypointsPlugin {
 	afterEmit.tap('InjectEntrypointsPlugin', (manifest) => {
 		const outputPath = path.join(
 			compiler.options.context,
+			'build-hf',
 			this.options.outputFile
 		);
+
+		fs.mkdirSync(path.dirname(outputPath));
 
 		fs.writeFileSync(outputPath,
 			JSON.stringify(
