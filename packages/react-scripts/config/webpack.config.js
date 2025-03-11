@@ -775,7 +775,7 @@ module.exports = function (webpackEnv) {
       // Inject the manifest entrypoint file names into the outputFile
       process.env.INJECT_SCRIPTS === 'true' &&
       new InjectEntrypointsPlugin({
-        outputFile: 'hf-inj-react-scripts.js',
+        outputFile: 'hf-inj-react-scripts.json',
       }),
       // Moment.js is an extremely popular library that bundles large locale files
       // by default due to how webpack interprets its code. This is a practical

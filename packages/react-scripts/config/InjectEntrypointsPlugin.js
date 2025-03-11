@@ -2,7 +2,7 @@
 const { getCompilerHooks } = require('webpack-manifest-plugin');
 const fs = require('fs');
 const path = require('path');
-const paths = require('./paths')
+const paths = require('./paths');
 
 class InjectEntrypointsPlugin {
   constructor(options) {
