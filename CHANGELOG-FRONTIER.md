@@ -1,3 +1,7 @@
+## 8.10.6
+
+- Add optional override to "title" in layout.ejs
+
 ## 8.10.5
 
 - Add intelligence to `layout.ejs` to use the correct icon for PWAs saved to homescreen.
