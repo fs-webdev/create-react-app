@@ -1,6 +1,6 @@
 {
   "name": "@fs/react-scripts",
-  "version": "8.10.6",
+  "version": "8.10.7",
   "upstreamVersion": "5.0.1",
   "description": "Configuration and scripts for Create React App.",
   "repository": {
@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "bugs": {
     "url": "https://github.com/fs-webdev/create-react-app/issues"
@@ -52,7 +52,7 @@
     "@babel/core": "^7.16.0",
     "@emotion/babel-plugin": "^11.13.5",
     "@fs/auth-middleware": "^2.0.1",
-    "@fs/babel-preset-frontier": "^5.0.0",
+    "@fs/babel-preset-frontier": "^5.2.0",
     "@fs/webpack-wci18n": "^1.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^5.5.0",
