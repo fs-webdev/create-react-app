@@ -1,6 +1,6 @@
 {
   "name": "@fs/react-scripts",
-  "version": "8.10.4",
+  "version": "8.10.6",
   "upstreamVersion": "5.0.1",
   "description": "Configuration and scripts for Create React App.",
   "repository": {
@@ -18,7 +18,7 @@
   "scripts": {
     "prettier": "npx prettier --arrow-parens always --single-quote --trailing-comma es5 --print-width 120 --no-semi --write \"template*/**/*.js\"",
     "fs-publish": "npmPublish",
-    "prepare": "modernizr -c modernizr-config.json -d layout"
+    "prepublishOnly": "npx modernizr -c modernizr-config.json -d layout"
   },
   "files": [
     "bin",

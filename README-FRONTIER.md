@@ -16,9 +16,11 @@ That being said, if you want to use our fork "manually", then here is how you do
 If you have cloned this repo and made changes locally and want to test them before committing and publishing here is how.
 
 1. Clone this repo and make any changes needed in `./packages/react-scripts/`
-2. Change directories to where you want a brand new app to be created in (don't run step 3 in an existing repo)
-3. Run the following command  
+2. In the `react-scripts` directory run `npm install`.
+3. Change directories to where you want a brand new app to be created in (don't run step 4 in an existing repo)
+4. Run the following command  
    `npx create-react-app --use-npm --template @fs/cra-template --scripts-version file:${relativePathToYourClonedCreateReactAppRepo}/packages/react-scripts ${your-app-name} `
+
 
 ## Development and Cutting a Release
 

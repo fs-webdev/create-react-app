@@ -1,3 +1,13 @@
+## 8.10.6
+
+- Add optional override to "title" in layout.ejs
+
+## 8.10.5
+
+- Add intelligence to `layout.ejs` to use the correct icon for PWAs saved to homescreen.
+- Update package.json to use `prepublishOnly` to run modernizr on layout.
+- Update `README-FRONTIER.md` to reflect the correct steps for testing local changes to `react-scripts`.
+
 ## 8.10.4
 
 - Add @emotion/babel-plugin for cypress tests in apps

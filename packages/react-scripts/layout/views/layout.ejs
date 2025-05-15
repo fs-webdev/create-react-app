@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html dir="<%= typeof languageDir !== 'undefined' ? languageDir : 'ltr' %>" lang="<%= simpleLocale %>">
   <head>
-    <title>FamilySearch.org</title>
+    <title><%= typeof title !== 'undefined' ? title : 'FamilySearch.org'%></title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,8 +14,10 @@
     <meta name="description" content="Discover your family history. Explore the world’s largest collection of free family trees, genealogy records and resources.">
     <meta name="google-site-verification" content="VJlFQrAXTCBy0PqVi23EsGD-mpA5KaBhIt8LkrcRbP0" />
     <link href="https://edge.fscdn.org/assets/docs/fs_logo_favicon_sq.png" rel="icon" type="image/x-icon" />
-    <link rel="apple-touch-icon" href="https://edge.fscdn.org/assets/components/hf/assets/img/tree-touch-icon-11024a277f1fda5735de5a9f0f4f75ca.png" />
-
+    
+    <!-- icon used for PWAs saved to homescreen -->
+    <link rel="apple-touch-icon" href="<%= typeof logoHref !== 'undefined' ? logoHref : 'https://edge.fscdn.org/assets/components/hf/assets/img/tree-touch-icon-11024a277f1fda5735de5a9f0f4f75ca.png' %>" />
+    
     <% if (typeof manifestJsonExists === 'undefined' || manifestJsonExists) { %>
       <link rel="manifest" href="<%= typeof appPathOverride !== 'undefined' ? appPathOverride : appPath('') %>/manifest.json" type="application/manifest+json" crossorigin="use-credentials" />
     <% } %>
