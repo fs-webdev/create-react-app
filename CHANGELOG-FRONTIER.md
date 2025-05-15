@@ -1,3 +1,9 @@
+## 8.10.7
+
+- Rename released proposal plugins to transform plugins
+- Update babel-preset-frontier to latest with transform renames
+- Update to Node 20
+
 ## 8.10.6
 
 - Add optional override to "title" in layout.ejs
