@@ -1,3 +1,7 @@
+## 8.10.8
+
+- Add support for .avif files in simple-webpack-config
+
 ## 8.10.7
 
 - Rename released proposal plugins to transform plugins

@@ -96,7 +96,7 @@ module.exports = {
         loader: 'ignore-loader',
       },
       {
-        test: /\.(ico|jpg|jpeg|png|apng|gif|eot|otf|webp|ttf|woff|woff2|cur|ani|pdf)(\?.*)?$/,
+        test: /\.(ico|jpg|jpeg|png|apng|gif|eot|otf|webp|ttf|woff|woff2|cur|ani|pdf|avif)(\?.*)?$/,
         loader: require.resolve('file-loader'),
         options: {
           esModule: false,
