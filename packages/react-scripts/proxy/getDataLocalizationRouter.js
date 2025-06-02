@@ -21,7 +21,7 @@ module.exports = ({ proxyConfig, target }) =>
     if (!auth) {
       return
     }
-    // https://fhconfluence.churchofjesuschrist.org/display/Product/Session+ID+Format
+    // https://icseng.atlassian.net/wiki/display/Product/Session+ID+Format
     // example header value: "Bearer p0-Adeq12~_tmc.Qed~3_4ZuIY"
     const ruleSet = /bearer\s+\w{1}(?<ruleSet>\d+)/i.exec(auth)?.groups?.ruleSet
     let subdomainSuffix

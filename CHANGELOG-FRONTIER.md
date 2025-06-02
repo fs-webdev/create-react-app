@@ -1,6 +1,30 @@
-## 8.10.5
+## 8.10.10
 
 - Remove `hf` from local proxies
+
+## 8.10.9
+
+- Add flag to ensure no double head tag inserted in template (https://icseng.atlassian.net/browse/ACCESSIBLE-88)
+
+## 8.10.8
+
+- Add support for .avif files in simple-webpack-config
+
+## 8.10.7
+
+- Rename released proposal plugins to transform plugins
+- Update babel-preset-frontier to latest with transform renames
+- Update to Node 20
+
+## 8.10.6
+
+- Add optional override to "title" in layout.ejs
+
+## 8.10.5
+
+- Add intelligence to `layout.ejs` to use the correct icon for PWAs saved to homescreen.
+- Update package.json to use `prepublishOnly` to run modernizr on layout.
+- Update `README-FRONTIER.md` to reflect the correct steps for testing local changes to `react-scripts`.
 
 ## 8.10.4
 
