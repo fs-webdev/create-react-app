@@ -1,3 +1,7 @@
+## 8.10.9
+
+- Add flag to ensure no double head tag inserted in template (https://icseng.atlassian.net/browse/ACCESSIBLE-88)
+
 ## 8.10.8
 
 - Add support for .avif files in simple-webpack-config

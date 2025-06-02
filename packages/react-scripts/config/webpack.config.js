@@ -699,6 +699,9 @@ module.exports = function (webpackEnv) {
                   minifyJS: true,
                   minifyCSS: true,
                   minifyURLs: true,
+                  // This avoids inserting an extraneous <head> tag in the output HTML
+                  // See https://icseng.atlassian.net/browse/ACCESSIBLE-88
+                  removeOptionalTags: true, 
                 },
               }
             : undefined
