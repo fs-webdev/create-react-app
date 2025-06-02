@@ -37,9 +37,6 @@ const proxies = [
     route: '/frontier/graphql',
   },
   {
-    route: '/hf',
-  },
-  {
     route: '/home/banner',
   },
   {
