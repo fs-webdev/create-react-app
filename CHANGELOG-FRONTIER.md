@@ -1,3 +1,7 @@
+## 8.10.5
+
+- Remove `hf` from local proxies
+
 ## 8.10.4
 
 - Add @emotion/babel-plugin for cypress tests in apps
