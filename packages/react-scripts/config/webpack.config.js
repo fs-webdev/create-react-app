@@ -704,7 +704,13 @@ module.exports = function (webpackEnv) {
                   removeOptionalTags: true, 
                 },
               }
-            : undefined
+            : {
+                minify: {
+                  // This avoids inserting an extraneous <head> tag in the output HTML
+                  // See https://icseng.atlassian.net/browse/ACCESSIBLE-88
+                  removeOptionalTags: true,
+                },
+              }
         )
       ),
       // Inlines the webpack runtime script. This script is too small to warrant
