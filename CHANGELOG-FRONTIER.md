@@ -1,3 +1,7 @@
+## 8.10.11
+
+- Pass `flagAttributes` from Snow to SERVER_DATA for use in zion-config
+
 ## 8.10.10
 
 - Apply head tag fix from 8.10.9 to dev mode as well as prod mode

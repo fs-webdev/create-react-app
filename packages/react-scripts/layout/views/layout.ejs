@@ -51,6 +51,7 @@
       <% if (typeof skipSessionPrevalidation !== 'undefined' && !skipSessionPrevalidation) { %>
         SERVER_DATA.isLoggedIn = <%= isLoggedIn %>
       <% } %>
+      SERVER_DATA.flagAttributes = <%- typeof flagAttributes !== 'undefined' ? JSON.stringify(flagAttributes) : JSON.stringify({}) %>;
       <% include partials/experiments %>
       <% include partials/sentry %>
       <% include partials/clientAppConfig %>
