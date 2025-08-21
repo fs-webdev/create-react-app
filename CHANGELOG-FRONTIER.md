@@ -1,3 +1,7 @@
+## 8.10.12
+
+- Update simple-webpack-config to handle `process` from mjs files
+
 ## 8.10.11
 
 - Pass `flagAttributes` from Snow to SERVER_DATA for use in zion-config
