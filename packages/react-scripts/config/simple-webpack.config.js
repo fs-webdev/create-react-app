@@ -25,6 +25,7 @@ module.exports = {
       // '@material-ui/styles': require.resolve('@material-ui/styles'),
       '/coalesced-locales': path.resolve(path.join(process.cwd(), 'dist/locales/')),
     },
+    fallback: { 'process/browser': require.resolve('process/browser') },
     extensions: ['.ts', '.tsx', '.jsx', '.js', '.json'],
   },
   module: {
@@ -40,7 +41,7 @@ module.exports = {
             },
           },
         ],
-        include: (input) => input.match(d3DagRegex),
+        include: input => input.match(d3DagRegex),
       },
       {
         test: /\.(mjs|tsx?|jsx?)$/,
@@ -83,7 +84,7 @@ module.exports = {
                 '@babel/preset-env',
                 '@babel/preset-react',
                 '@babel/preset-typescript',
-                '@emotion/babel-preset-css-prop'
+                '@emotion/babel-preset-css-prop',
               ],
               ignore: ['**/dist/*'],
               babelrc: false,
@@ -123,7 +124,7 @@ module.exports = {
             options: {
               esModule: false,
               name: 'static/media/[path][name].[ext]',
-            }
+            },
           },
         ],
       },
@@ -152,6 +153,7 @@ module.exports = {
     new MiniCssExtractPlugin({ filename: 'styles.css', ignoreOrder: true }),
     new webpack.ProvidePlugin({
       React: 'react',
+      process: 'process/browser',
     }),
     new RetryChunkLoadPlugin({
       // optional stringified function to get the cache busting query string appended to the script src
