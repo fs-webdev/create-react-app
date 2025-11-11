@@ -46,4 +46,3 @@ When we are ready to pull in changes from Facebook, here are the steps
 7. Fix any merge conflicts
 8. Bump the 'upstreamVersion' in packages/react-scripts/package.json to match the release of facebook's react-scripts that you merged to
 9. Cut a release (follow steps up above)
-
