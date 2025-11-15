@@ -1,0 +1,9 @@
+{ "noscript-title" : "JavaScript is required to use FamilySearch",
+  "noscript-message" : "It looks like JavaScript is disabled in your browser. FamilySearch requires JavaScript to function properly.",
+  "noscript-last-message" : "To continue, please enable JavaScript in your browser settings and refresh the page.",
+  "noscript-link" : "Learn how to enable JavaScript",
+  "nocookies-title" : "Cookies are required to use FamilySearch",
+  "nocookies-message" : "It looks like cookies are disabled in your browser. FamilySearch requires cookies to function properly.",
+  "nocookies-last-message" : "To continue, please enable cookies in your browser settings and refresh the page.",
+  "nocookies-link" : "Learn how to enable cookies"
+}

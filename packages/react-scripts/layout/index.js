@@ -10,6 +10,7 @@ const config = {
       here for some potential fixes. https://www.familysearch.org/frontier/docs/miscellaneous/common-issues`,
     },
   ],
+  localesDir: __dirname + `/locales`
 }
 
 module.exports = config
