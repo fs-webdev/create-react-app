@@ -1,3 +1,7 @@
+## 8.10.13
+
+- Update to Node 24 and npm 11
+
 ## 8.10.12
 
 - Update simple-webpack-config to handle `process` from mjs files
