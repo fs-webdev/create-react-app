@@ -1,3 +1,7 @@
+## 8.10.13
+
+- Update @fs/auth-middleware to ^3.12.0
+
 ## 8.11.0
 
 - Update to Node 24 and npm 11
