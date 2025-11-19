@@ -1,3 +1,7 @@
+## 8.10.13
+
+- Update @fs/auth-middleware to ^3.12.0
+
 ## 8.10.12
 
 - Update simple-webpack-config to handle `process` from mjs files
