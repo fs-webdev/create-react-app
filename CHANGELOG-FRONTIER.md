@@ -1,4 +1,4 @@
-## 8.10.13
+## 8.11.0
 
 - Update to Node 24 and npm 11
 
