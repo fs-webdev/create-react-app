@@ -1,3 +1,7 @@
+## 8.11.0 
+
+- Add no cookies and no javascript warnings to react-scripts
+  
 ## 8.10.12
 
 - Update simple-webpack-config to handle `process` from mjs files

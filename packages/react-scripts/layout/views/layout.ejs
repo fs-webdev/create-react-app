@@ -73,5 +73,9 @@
         <% include partials/featureDetection %>
       </script>
     <% } %>
+
+    <% if (getFeatureFlag('frontier_snow_browserWarnings').isOn) { %>
+      <% include partials/browserWarnings %>
+    <% } %>
   </body>
 </html>
