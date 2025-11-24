@@ -1,3 +1,7 @@
+## 8.12.0
+
+- Update @fs/auth-middleware to ^3.12.0
+
 ## 8.11.0 
 
 - Add no cookies and no javascript warnings to react-scripts
