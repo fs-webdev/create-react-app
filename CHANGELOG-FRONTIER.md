@@ -1,4 +1,4 @@
-## 8.11.1
+## 8.12.0
 
 - Update @fs/auth-middleware to ^3.12.0
 
