@@ -1,3 +1,7 @@
+## 8.12.1
+
+- Regress @fs/auth-middleware to ^2.0.1 until Storybook fixes are implemented.
+
 ## 8.12.0
 
 - Update @fs/auth-middleware to ^3.12.0
