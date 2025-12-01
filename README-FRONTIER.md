@@ -21,6 +21,9 @@ If you have cloned this repo and made changes locally and want to test them befo
 4. Run the following command  
    `npx create-react-app --use-npm --template @fs/cra-template --scripts-version file:${relativePathToYourClonedCreateReactAppRepo}/packages/react-scripts ${your-app-name} `
 
+## Linking react-scripts to another app 
+
+Before running `npm link`, run `npm publish --dry-run` to ensure modernizr.js is added in `./packages/react-scripts/layout`
 
 ## Development and Cutting a Release
 
