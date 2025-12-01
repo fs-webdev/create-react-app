@@ -51,7 +51,7 @@
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@emotion/babel-plugin": "^11.13.5",
-    "@fs/auth-middleware": "^3.12.0",
+    "@fs/auth-middleware": "^3.12.1",
     "@fs/babel-preset-frontier": "^5.2.0",
     "@fs/webpack-wci18n": "^1.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
