@@ -1,6 +1,10 @@
-## 8.13.0
+## 8.14.0
 
 - Update to Node 24 and npm 11
+
+## 8.13.0
+
+- Add Array.toReversed polyfill for apps to have
 
 ## 8.12.2
 
