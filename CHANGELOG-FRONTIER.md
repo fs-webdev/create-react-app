@@ -1,3 +1,7 @@
+## 8.11.0
+
+- Add Array.toReversed polyfill for apps to have
+
 ## 8.10.12
 
 - Update simple-webpack-config to handle `process` from mjs files
