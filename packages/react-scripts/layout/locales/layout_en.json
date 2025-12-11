@@ -1,4 +1,5 @@
-{ "noscript-title" : "JavaScript is required to use FamilySearch",
+{ 
+  "noscript-title" : "JavaScript is required to use FamilySearch",
   "noscript-message" : "It looks like JavaScript is disabled in your browser. FamilySearch requires JavaScript to function properly.",
   "noscript-last-message" : "To continue, please enable JavaScript in your browser settings and refresh the page.",
   "noscript-link" : "Learn how to enable JavaScript",
