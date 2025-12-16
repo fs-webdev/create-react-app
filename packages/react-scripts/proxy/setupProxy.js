@@ -9,6 +9,7 @@ const setProxies = (app, customProxies = []) => {
   const cookieParser = require('cookie-parser')
   const base = require('connect-base')
   const metric = require('connect-metric')
+  const bodyParser = require('body-parser')
   const auth = require('@fs/auth-middleware')
   const resolver = require('./resolver')
   const proxyList = require('./proxies')
@@ -16,6 +17,7 @@ const setProxies = (app, customProxies = []) => {
 
   // middleware required for auth middleware
   app.use(metric())
+  app.use(bodyParser.json())
   app.use(base())
   app.use(resolver())
   app.use(cookieParser())
