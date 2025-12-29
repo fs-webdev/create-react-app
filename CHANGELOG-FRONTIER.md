@@ -1,3 +1,6 @@
+## 8.14.1
+- Add body-parser to proxy to support auth-middleware v3
+
 ## 8.14.0
 
 - Update to Node 24 and npm 11
