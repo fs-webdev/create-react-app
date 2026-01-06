@@ -1,0 +1,10 @@
+{
+  "noscript-title": "Для використання FamilySearch необхідний JavaScript",
+  "noscript-message": "Здається, що JavaScript вимкнений у вашому браузері. Щоб FamilySearch правильно функціонував, потрібен JavaScript.",
+  "noscript-last-message": "Щоб продовжити, будь ласка, увімкніть JavaScript у налаштуваннях вашого браузеру та оновіть сторінку.",
+  "noscript-link": "Дізнатися як увімкнути JavaScript",
+  "nocookies-title": "Щоб користуватися FamilySearch, потрібно дозволити файли сookie.",
+  "nocookies-message": "Здається, що файли сookie вимкнені у вашому браузері. Щоб FamilySearch правильно функціонував, потрібно дозволити файли сookie.",
+  "nocookies-last-message": "Щоб продовжити, будь ласка, увімкніть файли сookie у налаштуваннях вашого браузеру та оновіть сторінку.",
+  "nocookies-link": "Дізнатися, як увімкнути файли сookie"
+}
