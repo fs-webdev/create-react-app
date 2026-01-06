@@ -1,0 +1,10 @@
+{
+  "noscript-title": "Kailangan ang Javascript upang magamit ang FamilySearch.",
+  "noscript-message": "Mukhang naka-disable ang JavaScript sa browser mo. Kailangan ang Javascript upang gumana nang maayos ang FamilySearch.",
+  "noscript-last-message": "Upang makapagpatuloy, i-enable ang JavaScript sa iyong browser settings at i-refresh ang page.",
+  "noscript-link": "Alamin kung paano i-enable ang JavaScript",
+  "nocookies-title": "Kailangan ang cookies upang magamit ang FamilySearch.",
+  "nocookies-message": "Mukhang naka-disable ang cookies sa browser mo. Kailangan ang cookies upang gumana nang maayos ang FamilySearch.",
+  "nocookies-last-message": "Upang makapagpatuloy, i-enable ang cookies sa iyong browser settings at i-refresh ang page.",
+  "nocookies-link": "Alamin kung paano i-enable ang cookies"
+}
