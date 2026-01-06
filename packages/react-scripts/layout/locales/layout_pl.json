@@ -1,0 +1,10 @@
+{
+  "noscript-title": "Do korzystania z serwisu FamilySearch wymagana jest obsługa JavaScript.",
+  "noscript-message": "Wygląda na to, że w twojej przeglądarce wyłączono obsługę JavaScript. Aby serwis FamilySearch działał poprawnie, wymagana jest obsługa JavaScript.",
+  "noscript-last-message": "Aby kontynuować, włącz obsługę JavaScript w ustawieniach przeglądarki i odśwież stronę.",
+  "noscript-link": "Dowiedz się, jak włączyć obsługę JavaScript",
+  "nocookies-title": "Pliki cookie są wymagane do korzystania z serwisu FamilySearch.",
+  "nocookies-message": "Wygląda na to, że w twojej przeglądarce wyłączono obsługę plików cookie. Serwis FamilySearch wymaga plików cookie do prawidłowego działania.",
+  "nocookies-last-message": "Aby kontynuować, włącz obsługę plików cookie w ustawieniach przeglądarki i odśwież stronę.",
+  "nocookies-link": "Dowiedz się, jak włączyć pliki cookie"
+}
