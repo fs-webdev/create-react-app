@@ -1,0 +1,10 @@
+{
+  "noscript-title": "FamilySearchin käyttämiseen vaaditaan JavaScriptiä",
+  "noscript-message": "Näyttää siltä, että JavaScript on poistettu käytöstä selaimessasi. FamilySearch vaatii JavaScriptin toimiakseen oikein.",
+  "noscript-last-message": "Jotta voit jatkaa, ota JavaScript käyttöön selaimesi asetuksissa ja päivitä sivu.",
+  "noscript-link": "Opi, kuinka JavaScript otetaan käyttöön",
+  "nocookies-title": "FamilySearchin käyttämiseen vaaditaan evästeitä",
+  "nocookies-message": "Näyttää siltä, että evästeet on poistettu käytöstä selaimessasi. FamilySearch vaatii evästeitä toimiakseen oikein.",
+  "nocookies-last-message": "Jotta voit jatkaa, ota evästeet käyttöön selaimesi asetuksissa ja päivitä sivu.",
+  "nocookies-link": "Opi, kuinka evästeet otetaan käyttöön"
+}
