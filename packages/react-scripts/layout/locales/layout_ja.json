@@ -1,0 +1,10 @@
+{
+  "noscript-title": "ファミリーサーチを利用するにはJavaScriptが必要です",
+  "noscript-message": "お使いのブラウザではJavaScriptが無効になっているようです。ファミリーサーチが正常に機能するためにはJavaScriptが必要です。",
+  "noscript-last-message": "続行するには、ブラウザの設定でJavaScriptを有効にし、ページを更新してください。",
+  "noscript-link": "JavaScriptを有効にする方法について学ぶ",
+  "nocookies-title": "ファミリーサーチを利用するにはCookieが必要です",
+  "nocookies-message": "お使いのブラウザではCookieが無効になっているようです。ファミリーサーチが正常に機能するためにはCookieが必要です。",
+  "nocookies-last-message": "続行するには、ブラウザの設定でCookieを有効にし、ページを更新してください。",
+  "nocookies-link": "Cookieを有効にする方法について学ぶ"
+}
