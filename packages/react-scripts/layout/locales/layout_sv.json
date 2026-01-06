@@ -1,0 +1,10 @@
+{
+  "noscript-title": "JavaScript krävs för att använda FamilySearch",
+  "noscript-message": "JavaScript ser ut att vara inaktiverat i din webbläsare. FamilySearch behöver JavaScript för att fungera ordentligt.",
+  "noscript-last-message": "För att fortsätta behöver du aktivera JavaScript i dina webbläsarinställningar och uppdatera sidan.",
+  "noscript-link": "Lär dig hur du aktiverar JavaScript",
+  "nocookies-title": "Cookies behövs för att använda FamilySearch",
+  "nocookies-message": "Cookies ser ut att vara inaktiverade i din webbläsare. FamilySearch behöver cookies för att fungera ordentligt.",
+  "nocookies-last-message": "För att fortsätta behöver du aktivera cookies i dina webbläsarinställningar och uppdatera sidan.",
+  "nocookies-link": "Lär dig hur du aktiverar cookies"
+}
