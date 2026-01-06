@@ -1,0 +1,10 @@
+{
+  "noscript-title": "Для использования FamilySearch требуется JavaScript",
+  "noscript-message": "Похоже, в вашем браузере отключен JavaScript. Для корректной работы FamilySearch требуется JavaScript.",
+  "noscript-last-message": "Для продолжения включите JavaScript в настройках вашего браузера и обновите страницу.",
+  "noscript-link": "Узнайте, как включить JavaScript",
+  "nocookies-title": "Для использования FamilySearch требуются файлы cookie",
+  "nocookies-message": "Похоже, в вашем браузере отключены файлы cookie. Для корректной работы FamilySearch требуются файлы cookie.",
+  "nocookies-last-message": "Для продолжения включите файлы cookie в настройках вашего браузера и обновите страницу.",
+  "nocookies-link": "Узнайте, как включить файлы cookie"
+}
