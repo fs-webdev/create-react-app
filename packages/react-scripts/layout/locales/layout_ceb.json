@@ -1,0 +1,10 @@
+{
+  "noscript-title": "Kinahanglan ang JavaScript para magamit ang FamilySearch",
+  "noscript-message": "Morag ang JavaScript na-disable sa imong browser. Kinahanglan ang JavaScript aron magamit og sakto ang FamilySearch.",
+  "noscript-last-message": "Sa pagpadayon, palihog i-enable ang JavaScript sa imong browser nga settings ug i-refresh ang page.",
+  "noscript-link": "Pagkat-on kon unsaon sa pag-enable ang JavaScript",
+  "nocookies-title": "Gikinahanglan ang Cookies aron magamit ang FamilySearch",
+  "nocookies-message": "Morag ang cookies na-disable sa imong browser. Kinahanglan ang JavaScript aron magamit og sakto ang FamilySearch.",
+  "nocookies-last-message": "Sa pagpadayon, palihog i-enable ang cookies sa imong browser nga settings ug i-refresh ang page.",
+  "nocookies-link": "Pagkat-on kon unsaon sa pag-enable sa cookies"
+}
