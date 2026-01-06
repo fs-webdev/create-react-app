@@ -1,0 +1,10 @@
+{
+  "noscript-title": "FamilySearchi kasutamiseks on vaja JavaScripti",
+  "noscript-message": "Tundub, et JavaScript on teie veebilehitsejas välja lülitatud. FamilySearchi hästi toimimiseks on vajalik JavaScript.",
+  "noscript-last-message": "Jätkamiseks palun lülitage oma veebilehitseja seadetes sisse JavaScript ja uuendage lehte.",
+  "noscript-link": "Vaata, kuidas JavaScript sisse lülitada",
+  "nocookies-title": "FamilySearchi kasutamiseks on küpsised vajalikud",
+  "nocookies-message": "Tundub, et küpsised on teie veebilehitsejas välja lülitatud. FamilySearchi hästi toimimiseks on küpsised vajalikud.",
+  "nocookies-last-message": "Jätkamiseks palun lülitage oma veebilehitseja seadetes sisse küpsised ja uuendage lehte.",
+  "nocookies-link": "Vaata, kuidas küpsised sisse lülitada."
+}
