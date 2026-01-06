@@ -1,0 +1,10 @@
+{
+  "noscript-title": "FamilySearch kullanmak için JavaScript gereklidir",
+  "noscript-message": "Tarayıcınızda JavaScript devre dışı bırakılmış gibi görünüyor. FamilySearch, düzgün çalışması için JavaScript'e ihtiyacı vardır.",
+  "noscript-last-message": "Devam etmek için lütfen tarayıcı ayarlarınızdan JavaScript'i aktif edin ve sayfayı yenileyin.",
+  "noscript-link": "JavaScript'i nasıl aktif edebileceğinizi öğrenin",
+  "nocookies-title": "FamilySearch kullanmak için çerezler gereklidir",
+  "nocookies-message": "Tarayıcınızda çerezler devre dışı bırakılmış gibi görünüyor. FamilySearch, düzgün çalışması için çerezlere ihtiyacı vardır.",
+  "nocookies-last-message": "Devam etmek için lütfen tarayıcı ayarlarınızdan çerezleri aktif edin ve sayfayı yenileyin.",
+  "nocookies-link": "Çerezleri nasıl aktif edebileceğinizi öğrenin"
+}
