@@ -1,0 +1,10 @@
+{
+  "noscript-title": "JavaScript-re van szükség a FamilySearch használatához",
+  "noscript-message": "Úgy tűnik, a JavaScript ki van kapcsolva a böngésződben. A FamilySearch megfelelő műkédéséhez szükség van a JavaScript használatára.",
+  "noscript-last-message": "Kérjük, a folytatáshoz engedélyezd a JavaScript használatát a böngésződ beállításaiban, és frissítsd az oldalt.",
+  "noscript-link": "Tudj meg többet a JavaScript engedélyezéséről!",
+  "nocookies-title": "A FamilySearch használatához sütikre van szükség",
+  "nocookies-message": "Úgy tűnik, a böngésződben sütik nem engedélyezettek. A FamilySearch megfelelő műkédéséhez szükség van sütikre",
+  "nocookies-last-message": "Kérjük, a folytatáshoz engedélyezd a sütik használatát a böngésződ beállításaiban, és frissítsd az oldalt.",
+  "nocookies-link": "Tudj meg többet a sütik engedélyezéséről!"
+}
