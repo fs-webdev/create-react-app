@@ -1,0 +1,10 @@
+{
+  "noscript-title": "JavaScript doit être activé pour utiliser le site de FamilySearch",
+  "noscript-message": "JavaScript semble être désactivé dans votre navigateur. FamilySearch en a besoin pour fonctionner correctement.",
+  "noscript-last-message": "Pour continuer, activez JavaScript dans les paramètres de votre navigateur puis rafraîchissez la page.",
+  "noscript-link": "Comment activer JavaScript",
+  "nocookies-title": "Vous devez autoriser les cookies pour utiliser FamilySearch",
+  "nocookies-message": "Les cookies ne semblent pas être autorisés dans votre navigateur. FamilySearch en a besoin pour fonctionner correctement.",
+  "nocookies-last-message": "Pour continuer, activez les cookies dans les paramètres de votre navigateur puis rafraîchissez la page.",
+  "nocookies-link": "Comment activer les cookies"
+}
