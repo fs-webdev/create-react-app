@@ -1,0 +1,10 @@
+{
+  "noscript-title": "需启用 JavaScript 才能使用 FamilySearch",
+  "noscript-message": "你的浏览器似乎已停用 JavaScript。FamilySearch 需使用 JavaScript 才能正常运作。 ",
+  "noscript-last-message": "若要继续，请在你的浏览器设定中启用 JavaScript，并重新整理页面。",
+  "noscript-link": "了解如何启用 JavaScript",
+  "nocookies-title": "需启用 Cookies 才能使用 FamilySearch",
+  "nocookies-message": "你的浏览器似乎已停用 Cookies。FamilySearch 需使用 Cookies 才能正常运作。 ",
+  "nocookies-last-message": "若要继续，请在你的浏览器设定中启用 Cookies，并重新整理页面。",
+  "nocookies-link": "了解如何启用 Cookies"
+}
