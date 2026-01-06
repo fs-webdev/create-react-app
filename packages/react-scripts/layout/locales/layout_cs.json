@@ -1,0 +1,10 @@
+{
+  "noscript-title": "K používání FamilySearch je zapotřebí JavaScript",
+  "noscript-message": "Vypadá to, že máte v prohlížeči vypnutý JavaScript. Aby mohl systém FamilySearch správně fungovat, je zapotřebí JavaScript povolit.",
+  "noscript-last-message": "Chcete-li pokračovat, povolte prosím JavaScript v nastavení prohlížeče a stránku obnovte.",
+  "noscript-link": "Zjistěte, jak povolit JavaScript",
+  "nocookies-title": "K používání FamilySearch jsou zapotřebí cookies",
+  "nocookies-message": "Vypadá to, že máte v prohlížeči vypnuté cookies. Aby mohl systém FamilySearch správně fungovat, je zapotřebí cookies povolit.",
+  "nocookies-last-message": "Chcete-li pokračovat, povolte prosím cookies v nastavení prohlížeče a stránku obnovte.",
+  "nocookies-link": "Zjistěte, jak povolit cookies"
+}
