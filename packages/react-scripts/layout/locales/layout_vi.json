@@ -1,0 +1,10 @@
+{
+  "noscript-title": "Cần có JavaScript để sử dụng FamilySearch",
+  "noscript-message": "Có vẻ như JavaScript bị vô hiệu hóa trong trình duyệt của bạn. FamilySearch yêu cầu sử dụng JavaScript để hoạt động đúng cách.",
+  "noscript-last-message": "Để tiếp tục, vui lòng bật JavaScript trong cài đặt trình duyệt của bạn và làm mới lại trang.",
+  "noscript-link": "Tìm hiểu cách bật JavaScript",
+  "nocookies-title": "Cần có cookie để sử dụng FamilySearch",
+  "nocookies-message": "Có vẻ như cookie đang bị tắt trong trình duyệt của bạn. FamilySearch yêu cầu sử dụng cookie để hoạt động đúng cách.",
+  "nocookies-last-message": "Để tiếp tục, vui lòng bật cookie trong cài đặt trình duyệt của bạn và làm mới lại trang.",
+  "nocookies-link": "Tìm hiểu cách bật cookie"
+}
