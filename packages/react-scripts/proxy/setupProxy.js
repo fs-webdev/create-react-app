@@ -17,7 +17,6 @@ const setProxies = (app, customProxies = []) => {
 
   // middleware required for auth middleware
   app.use(metric())
-  app.use(bodyParser.json())
   app.use(base())
   app.use(resolver())
   app.use(cookieParser())
@@ -66,6 +65,13 @@ const setProxies = (app, customProxies = []) => {
   customProxies.forEach(config => setProxy(config))
   // set up all default proxies
   proxyList.forEach(proxyConfig => setProxy(proxyConfig))
+
+  // body-parser can't handled streamed requests made through the proxy, so we need to
+  // set it up after the proxy middleware to avoid interfering with the handling
+  // of requests.
+  app.use(bodyParser.json())
+  // In the future, consider matching snow's body-parser settings here:
+  // https://github.com/fs-webdev/snow/blob/bb74a5e613772d146c68e95543af5d6ef28d98c7/index.js#L471
 }
 
 module.exports = setProxies

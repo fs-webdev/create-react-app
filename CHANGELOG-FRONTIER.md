@@ -1,3 +1,6 @@
+## 8.14.2
+- Fix issue where body-parser was hanging up on streamed requests that were proxied
+
 ## 8.14.1
 - Add body-parser to proxy to support auth-middleware v3
 
