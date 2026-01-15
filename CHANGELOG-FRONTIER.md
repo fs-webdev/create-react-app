@@ -1,3 +1,6 @@
+## 8.14.3
+- Add translations for cookie and javascript warnings
+
 ## 8.14.2
 - Fix issue where body-parser was hanging up on streamed requests that were proxied
 
