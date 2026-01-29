@@ -19,7 +19,12 @@
     <link rel="apple-touch-icon" href="<%= typeof logoHref !== 'undefined' ? logoHref : 'https://edge.fscdn.org/assets/components/hf/assets/img/tree-touch-icon-11024a277f1fda5735de5a9f0f4f75ca.png' %>" />
     
     <% if (typeof manifestJsonExists === 'undefined' || manifestJsonExists) { %>
-      <link rel="manifest" href="<%= typeof appPathOverride !== 'undefined' ? appPathOverride : appPath('') %>/manifest.json" type="application/manifest+json" crossorigin="use-credentials" />
+      <%
+        var manifestPath = typeof appPathOverride !== 'undefined' ? appPathOverride : appPath('');
+        // Strip query parameters for manifest path to avoid malformed URLs like /africa?lang=en/manifest.json
+        manifestPath = manifestPath.split('?')[0];
+      %>
+      <link rel="manifest" href="<%= manifestPath %>/manifest.json" type="application/manifest+json" crossorigin="use-credentials" />
     <% } %>
 
     <!-- Resource Hints -->
