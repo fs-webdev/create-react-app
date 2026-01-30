@@ -1,3 +1,6 @@
+## 8.14.4
+- Adjust body-parser in proxy to work in all known cases
+
 ## 8.14.3
 - Add translations for cookie and javascript warnings
 
