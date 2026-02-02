@@ -30,8 +30,9 @@ In CI mode, `fr-test` automatically checks if a `pr:acceptance` script exists in
 
 The `conditional-test` command:
 - Checks which files changed using Git
-- If only `test/` changed (no `src/` changes) → Runs acceptance tests
+- If only `test/` changed (no excluded files changed) → Runs acceptance tests
 - Otherwise → Skips (exits 0)
+- See "Default Exclusions" section below for complete list
 
 ## Usage
 
@@ -45,7 +46,10 @@ react-scripts conditional-test --folder <dir> --command <npm-script> [--exclude 
 
 - **`--folder`** (required): Directory to watch for changes
 - **`--command`** (required): npm script to run if only this folder changed
-- **`--exclude`** (optional): Comma-separated directories to exclude (default: `src`)
+- **`--exclude`** (optional): Comma-separated files/directories to exclude (replaces defaults)
+  - **Default exclusions**: Source code, config files, and build artifacts
+  - Directories: `src`, `lib`, `components`, `views`, `public`, `scripts`, `dist`, `.storybook`
+  - Files: `package-lock.json`, `index.js`, `server.js`, `heroku-prebuild`, `Procfile`, `.buildpacks`, `.nvmrc`
 - **`--dry-run`**: Show what would run without executing
 - **`--verbose`**: Show detailed file information
 
@@ -212,16 +216,39 @@ npm run pr:acceptance -- --verbose
 
 ### Tests running when they shouldn't
 
-Check your exclusions:
+Check if an excluded file was changed. By default, changes to source code, config files, and build artifacts will skip acceptance tests.
+
+### Customize exclusions
+
+If the defaults don't work for your project:
 
 ```bash
-# Add more exclusions
-"pr:acceptance": "react-scripts conditional-test --folder test --command acceptance --exclude src,lib,components,utils"
+"pr:acceptance": "react-scripts conditional-test --folder test --command acceptance --exclude src,lib"
 ```
+
+Note: This **replaces** all defaults, so list everything you want to exclude.
 
 ### No changes detected
 
 Make sure you've committed changes and Git is initialized.
+
+## Default Exclusions
+
+By default, acceptance tests are skipped if any of these change:
+
+**Source directories:**
+- `src/`, `lib/`, `components/`, `views/`
+
+**Build/deployment files:**
+- `package-lock.json`, `index.js`, `server.js`, `heroku-prebuild`, `Procfile`
+
+**Config files:**
+- `.buildpacks`, `.nvmrc`, `cypress.config.js`, `nyc.config.js`
+
+**Build output:**
+- `public/`, `scripts/`, `dist/`, `.storybook/`
+
+These defaults are chosen because changes to these files typically require full unit test runs.
 
 ## Related
 

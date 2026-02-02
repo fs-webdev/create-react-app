@@ -23,10 +23,37 @@ const { getChangedFiles } = require('./utils/detectChanges');
  * Parse command line arguments
  */
 function parseArgs(args) {
+  // Default exclusions - changes to these should not trigger acceptance tests
+  // These are typically source code, config files, or build artifacts
+  const defaultExclusions = [
+    // Source directories
+    'src',
+    'lib',
+    'components',
+    'views',
+
+    // Build/deployment files
+    'package-lock.json',
+    'index.js',
+    'server.js',
+    'heroku-prebuild',
+    'Procfile',
+
+    // Config files
+    '.buildpacks',
+    '.nvmrc'
+
+    // Directories
+    'public',
+    'scripts',
+    'dist',
+    '.storybook'
+  ];
+
   const parsed = {
     folder: null,
     command: null,
-    exclude: ['src'],  // Default exclude src/
+    exclude: defaultExclusions,
     dryRun: false,
     verbose: false,
   };
@@ -39,6 +66,7 @@ function parseArgs(args) {
     } else if (arg === '--command' && i + 1 < args.length) {
       parsed.command = args[++i];
     } else if (arg === '--exclude' && i + 1 < args.length) {
+      // User-provided exclusions replace defaults
       parsed.exclude = args[++i].split(',').map(s => s.trim());
     } else if (arg === '--dry-run') {
       parsed.dryRun = true;
@@ -59,12 +87,22 @@ function filesInFolder(files, folder) {
 }
 
 /**
- * Check if any files match excluded directories
+ * Check if any files match excluded patterns (directories or files)
  */
-function hasExcludedFiles(files, excludeFolders) {
-  return excludeFolders.some(folder => {
-    const pattern = folder.endsWith('/') ? folder : folder + '/';
-    return files.some(file => file.startsWith(pattern));
+function hasExcludedFiles(files, excludePatterns) {
+  return excludePatterns.some(pattern => {
+    // Check if it's a specific file (has extension or no slash)
+    if (pattern.includes('.') || !pattern.includes('/')) {
+      // Match exact file or file in any directory
+      return files.some(file =>
+        file === pattern ||
+        file.endsWith('/' + pattern) ||
+        file.startsWith(pattern + '/')
+      );
+    }
+    // It's a directory pattern
+    const dirPattern = pattern.endsWith('/') ? pattern : pattern + '/';
+    return files.some(file => file.startsWith(dirPattern));
   });
 }
 
