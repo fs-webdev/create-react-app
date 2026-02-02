@@ -88,7 +88,7 @@ function main() {
   const changedFiles = getChangedFiles();
 
   if (changedFiles.length === 0) {
-    console.log(chalk.yellow('No changes detected - skipping tests'));
+    console.log(chalk.yellow('No changes detected - skipping acceptance tests'));
     process.exit(0);
   }
 
