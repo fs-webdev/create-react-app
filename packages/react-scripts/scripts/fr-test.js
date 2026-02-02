@@ -29,6 +29,26 @@ if(!process.env.CI){
   return
 }
 
+// CI mode - check if pr:acceptance script exists
+try {
+  const packageJson = require(join(process.cwd(), 'package.json'));
+  const scripts = packageJson.scripts || {};
+
+  if (scripts['pr:acceptance']) {
+    console.log('Found pr:acceptance script, running conditional test...\n');
+    try {
+      execSync('npm run pr:acceptance', { cwd: process.cwd(), stdio: 'inherit' });
+      // Script ran successfully, exit
+      process.exit(0);
+    } catch (error) {
+      // Script failed, exit with error
+      process.exit(error.status || 1);
+    }
+  }
+} catch (error) {
+  // No package.json or error reading it, continue with normal tests
+}
+
 // reset
 existsSync('.nyc_output') && rmSync('.nyc_output', { recursive: true });
 existsSync('coverage') && rmSync('coverage', { recursive: true });
