@@ -29,15 +29,15 @@ if(!process.env.CI){
   return
 }
 
-// CI mode - check if pr:acceptance script exists
+// CI mode - check if acceptance:pr script exists
 try {
   const packageJson = require(join(process.cwd(), 'package.json'));
   const scripts = packageJson.scripts || {};
 
-  if (scripts['pr:acceptance']) {
-    console.log('Found pr:acceptance script, running conditional test...\n');
+  if (scripts['acceptance:pr']) {
+    console.log('Found acceptance:pr script, running conditional test...\n');
     try {
-      execSync('npm run pr:acceptance', { cwd: process.cwd(), stdio: 'inherit' });
+      execSync('npm run acceptance:pr', { cwd: process.cwd(), stdio: 'inherit' });
       // Script ran successfully, exit
       process.exit(0);
     } catch (error) {

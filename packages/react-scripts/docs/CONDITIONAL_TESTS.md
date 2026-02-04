@@ -4,27 +4,27 @@ Run acceptance tests when only test directories change, otherwise run unit tests
 
 ## Quick Start
 
-Add a `pr:acceptance` script to your `package.json`:
+Add a `acceptance:pr` script to your `package.json`:
 
 ```json
 {
   "scripts": {
     "test": "react-scripts fr-test",
     "acceptance": "npm run acceptance --prefix ./test",
-    "pr:acceptance": "react-scripts conditional-test --folder test --command acceptance"
+    "acceptance:pr": "react-scripts conditional-test --folder test --command acceptance"
   }
 }
 ```
 
 That's it! Now when CI runs `npm test`:
-- ✅ If `pr:acceptance` exists → Runs conditional test
+- ✅ If `acceptance:pr` exists → Runs conditional test
   - Only `test/` changed → Runs `npm run acceptance`
   - `src/` also changed → Skips, continues with unit tests
-- ✅ If `pr:acceptance` doesn't exist → Runs unit tests normally
+- ✅ If `acceptance:pr` doesn't exist → Runs unit tests normally
 
 ## How It Works
 
-In CI mode, `fr-test` automatically checks if a `pr:acceptance` script exists in package.json:
+In CI mode, `fr-test` automatically checks if a `acceptance:pr` script exists in package.json:
 1. **If it exists**: Runs it (which runs `conditional-test`)
 2. **If it doesn't**: Skips to normal unit/component tests
 
@@ -60,7 +60,7 @@ react-scripts conditional-test --folder <dir> --command <npm-script> [--exclude 
 ```json
 {
   "scripts": {
-    "pr:acceptance": "react-scripts conditional-test --folder test --command acceptance"
+    "acceptance:pr": "react-scripts conditional-test --folder test --command acceptance"
   }
 }
 ```
@@ -70,7 +70,7 @@ react-scripts conditional-test --folder <dir> --command <npm-script> [--exclude 
 ```json
 {
   "scripts": {
-    "pr:acceptance": "react-scripts conditional-test --folder test --command acceptance --exclude src,lib,components"
+    "acceptance:pr": "react-scripts conditional-test --folder test --command acceptance --exclude src,lib,components"
   }
 }
 ```
@@ -80,14 +80,14 @@ react-scripts conditional-test --folder <dir> --command <npm-script> [--exclude 
 ```json
 {
   "scripts": {
-    "pr:acceptance": "react-scripts conditional-test --folder e2e --command cy:ci"
+    "acceptance:pr": "react-scripts conditional-test --folder e2e --command cy:ci"
   }
 }
 ```
 
 ### Disable Conditional Testing
 
-Simply remove or rename the `pr:acceptance` script.
+Simply remove or rename the `acceptance:pr` script.
 
 ## CI/CD Integration
 
@@ -108,7 +108,7 @@ validations:
 
 When this validation runs `npm test`:
 1. `fr-test` runs in CI mode
-2. Checks for `pr:acceptance` script
+2. Checks for `acceptance:pr` script
 3. If found, runs it; otherwise runs unit tests
 
 ### Execution Flow
@@ -120,7 +120,7 @@ Blueprint runs: npm test
   ↓
 fr-test (CI mode)
   ↓
-pr:acceptance exists? ──Yes──→ Run pr:acceptance
+acceptance:pr exists? ──Yes──→ Run acceptance:pr
   │                              ↓
   │                         conditional-test checks files
   │                              ↓
@@ -139,13 +139,13 @@ Run unit/component tests
 
 ```bash
 # Run the script directly
-npm run pr:acceptance
+npm run acceptance:pr
 
 # Dry run to see what would happen
-npm run pr:acceptance -- --dry-run
+npm run acceptance:pr -- --dry-run
 
 # Verbose output to see file matching
-npm run pr:acceptance -- --verbose
+npm run acceptance:pr -- --verbose
 ```
 
 ## Use Cases
@@ -156,12 +156,12 @@ You have acceptance tests in a `test/` directory that take 10 minutes. When you'
 
 ### Solution
 
-Add the `pr:acceptance` script:
+Add the `acceptance:pr` script:
 
 ```json
 {
   "scripts": {
-    "pr:acceptance": "react-scripts conditional-test --folder test --command acceptance"
+    "acceptance:pr": "react-scripts conditional-test --folder test --command acceptance"
   }
 }
 ```
@@ -180,24 +180,24 @@ Add the `pr:acceptance` script:
 
 ### Custom Script Name
 
-By default, `fr-test` looks for a script named `pr:acceptance`. You can't change this name currently, but you can chain commands:
+By default, `fr-test` looks for a script named `acceptance:pr`. You can't change this name currently, but you can chain commands:
 
 ```json
 {
   "scripts": {
-    "pr:acceptance": "npm run my-custom-logic && react-scripts conditional-test --folder test --command acceptance"
+    "acceptance:pr": "npm run my-custom-logic && react-scripts conditional-test --folder test --command acceptance"
   }
 }
 ```
 
 ### Multiple Conditional Tests
 
-You can only have one `pr:acceptance` script, but you can run multiple conditional checks:
+You can only have one `acceptance:pr` script, but you can run multiple conditional checks:
 
 ```json
 {
   "scripts": {
-    "pr:acceptance": "npm run check:test && npm run check:e2e",
+    "acceptance:pr": "npm run check:test && npm run check:e2e",
     "check:test": "react-scripts conditional-test --folder test --command acceptance",
     "check:e2e": "react-scripts conditional-test --folder e2e --command cy:ci"
   }
@@ -211,7 +211,7 @@ You can only have one `pr:acceptance` script, but you can run multiple condition
 Run with `--verbose` to see file matching:
 
 ```bash
-npm run pr:acceptance -- --verbose
+npm run acceptance:pr -- --verbose
 ```
 
 ### Tests running when they shouldn't
@@ -223,7 +223,7 @@ Check if an excluded file was changed. By default, changes to source code, confi
 If the defaults don't work for your project:
 
 ```bash
-"pr:acceptance": "react-scripts conditional-test --folder test --command acceptance --exclude src,lib"
+"acceptance:pr": "react-scripts conditional-test --folder test --command acceptance --exclude src,lib"
 ```
 
 Note: This **replaces** all defaults, so list everything you want to exclude.

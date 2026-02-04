@@ -19,12 +19,12 @@ Run acceptance tests only when test directories change, skipping when source cod
 ```json
 {
   "scripts": {
-    "pr:acceptance": "react-scripts conditional-test --folder test --command acceptance"
+    "acceptance:pr": "react-scripts conditional-test --folder test --command acceptance"
   }
 }
 ```
 
-When `fr-test` runs in CI mode, it automatically detects the `pr:acceptance` script and runs it. The script checks which files changed and either runs acceptance tests or skips them.
+When `fr-test` runs in CI mode, it automatically detects the `acceptance:pr` script and runs it. The script checks which files changed and either runs acceptance tests or skips them.
 
 **Documentation:** See [CONDITIONAL_TESTS.md](./docs/CONDITIONAL_TESTS.md) for full usage guide.
 
