@@ -1,3 +1,6 @@
+## 8.15.0
+- Add conditional-test script to fr-test for enhanced QA testing
+
 ## 8.14.4
 - Adjust body-parser in proxy to work in all known cases
 
