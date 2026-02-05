@@ -1,3 +1,6 @@
+## 8.15.1
+- Fix a syntax issue in conditional-test
+
 ## 8.15.0
 - Add conditional-test script to fr-test for enhanced QA testing
 

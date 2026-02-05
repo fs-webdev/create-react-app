@@ -41,7 +41,7 @@ function parseArgs(args) {
 
     // Config files
     '.buildpacks',
-    '.nvmrc'
+    '.nvmrc',
 
     // Directories
     'public',
