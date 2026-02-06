@@ -5,10 +5,10 @@ node_js:
 before_install:
   - git config --global url."https://git@".insteadOf git://
   - echo -e "machine github.com\n  login $CI_USER_TOKEN" > ~/.netrc
-  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> ~/.npmrc
+  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_password=${NPM_PUBLISH_TOKEN}" >> ~/.npmrc
   - echo "@fs:registry=https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/" >> ~/.npmrc
     # because this is a weird monorepo and we cd into and out of directories, this is what worked for travis to publish
-  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> packages/react-scripts/.npmrc
+  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_password=${NPM_PUBLISH_TOKEN}" >> packages/react-scripts/.npmrc
   - echo "@fs:registry=https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/" >> packages/react-scripts/.npmrc
 install:
   - npm install
@@ -24,7 +24,7 @@ script:
   - cd ${HOME}/tmp/fresh-cra-template
 
   # this is necessary so we can do some additional npm installs in the freshCraTemplateUpdate.sh script
-  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> ${HOME}/tmp/fresh-cra-template/.npmrc
+  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_password=${NPM_PUBLISH_TOKEN}" >> ${HOME}/tmp/fresh-cra-template/.npmrc
   - echo "@fs:registry=https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/" >> ${HOME}/tmp/fresh-cra-template/.npmrc
 
   - CI=true npm test
