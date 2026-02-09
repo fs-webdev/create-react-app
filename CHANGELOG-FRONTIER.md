@@ -1,3 +1,6 @@
+## 8.15.2
+- Adjust fr-test to only run conditional-test while in GHA
+
 ## 8.15.1
 - Fix a syntax issue in conditional-test
 
