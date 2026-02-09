@@ -1,3 +1,15 @@
+## 8.15.2
+- Adjust fr-test to only run conditional-test while in GHA
+
+## 8.15.1
+- Fix a syntax issue in conditional-test
+
+## 8.15.0
+- Add conditional-test script to fr-test for enhanced QA testing
+
+## 8.14.4
+- Adjust body-parser in proxy to work in all known cases
+
 ## 8.14.3
 - Add translations for cookie and javascript warnings
 
