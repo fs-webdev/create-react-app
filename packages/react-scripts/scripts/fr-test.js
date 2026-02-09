@@ -29,6 +29,27 @@ if(!process.env.CI){
   return
 }
 
+// GitHub Actions mode - check if acceptance:pr script exists
+if (process.env.GITHUB_ACTIONS) {
+  try {
+    const packageJson = require(join(process.cwd(), 'package.json'));
+    const scripts = packageJson.scripts || {};
+
+    if (scripts['acceptance:pr']) {
+      console.log('Found acceptance:pr script, running conditional test...\n');
+      try {
+        execSync('npm run acceptance:pr', { cwd: process.cwd(), stdio: 'inherit', env: { ...process.env, GITHUB_ACTIONS: 'true' } });
+        console.log('\nConditional tests completed, continuing with unit tests...\n');
+      } catch (error) {
+        // Script failed, but continue with unit tests to get full feedback
+        console.error('\nConditional tests failed, but continuing with unit tests...\n');
+      }
+    }
+  } catch (error) {
+    // No package.json or error reading it, continue with normal tests
+  }
+}
+
 // reset
 existsSync('.nyc_output') && rmSync('.nyc_output', { recursive: true });
 existsSync('coverage') && rmSync('coverage', { recursive: true });
