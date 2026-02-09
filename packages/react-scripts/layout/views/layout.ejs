@@ -20,11 +20,12 @@
     
     <% if (typeof manifestJsonExists === 'undefined' || manifestJsonExists) { %>
       <%
-        var manifestPath = typeof appPathOverride !== 'undefined' ? appPathOverride : appPath('');
-        // Strip query parameters for manifest path to avoid malformed URLs like /africa?lang=en/manifest.json
-        manifestPath = manifestPath.split('?')[0];
+        // Construct manifest URL using URL constructor to extract relative path with query params
+        // e.g., http://localhost:5006/africa?lang=en/manifest.json becomes /africa/manifest.json?lang=en
+        var url = new URL(appPath('/manifest.json'));
+        var manifestUrl = url.pathname + url.search;
       %>
-      <link rel="manifest" href="<%= manifestPath %>/manifest.json" type="application/manifest+json" crossorigin="use-credentials" />
+      <link rel="manifest" href="<%= manifestUrl %>" type="application/manifest+json" crossorigin="use-credentials" />
     <% } %>
 
     <!-- Resource Hints -->
