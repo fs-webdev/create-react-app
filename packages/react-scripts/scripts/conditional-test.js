@@ -5,6 +5,10 @@
  * Runs a test command only if a specific folder has changes and excluded folders don't.
  * Useful for running E2E tests only when test directories change, skipping when src/ changes.
  *
+ * Important: Exclusions are ignored for files within the target folder. This means if you
+ * change test/package-lock.json, tests will run even though package-lock.json is normally
+ * excluded. Only changes to excluded files OUTSIDE the target folder will skip tests.
+ *
  * Usage:
  *   react-scripts conditional-test --folder test --command acceptance --exclude src
  *
@@ -134,16 +138,19 @@ function main() {
   const folderFiles = filesInFolder(changedFiles, options.folder);
   const hasChanges = folderFiles.length > 0;
 
-  // Check if excluded folders have changes
-  const hasExclusions = hasExcludedFiles(changedFiles, options.exclude);
+  // Check if excluded folders have changes (but ignore exclusions in target folder)
+  // This allows test/package-lock.json to trigger tests even though package-lock.json is excluded
+  const filesOutsideTargetFolder = changedFiles.filter(file => !folderFiles.includes(file));
+  const hasExclusions = hasExcludedFiles(filesOutsideTargetFolder, options.exclude);
 
   if (options.verbose || options.dryRun) {
     console.log(chalk.blue('=== Conditional Test Execution ==='));
     console.log(chalk.gray(`Watching folder: ${options.folder}/`));
-    console.log(chalk.gray(`Excluding folders: ${options.exclude.join(', ')}`));
+    console.log(chalk.gray(`Excluding patterns: ${options.exclude.join(', ')}`));
     console.log(chalk.gray(`Total changed files: ${changedFiles.length}`));
     console.log(chalk.gray(`Changes in ${options.folder}/: ${folderFiles.length}`));
-    console.log(chalk.gray(`Changes in excluded folders: ${hasExclusions ? 'YES' : 'NO'}`));
+    console.log(chalk.gray(`Changes outside ${options.folder}/: ${filesOutsideTargetFolder.length}`));
+    console.log(chalk.gray(`Excluded changes outside target folder: ${hasExclusions ? 'YES' : 'NO'}`));
     console.log('');
   }
 
