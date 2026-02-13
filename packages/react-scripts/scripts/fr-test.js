@@ -31,22 +31,17 @@ if(!process.env.CI){
 
 // GitHub Actions mode - check if acceptance:pr script exists
 if (process.env.GITHUB_ACTIONS) {
+  let packageJson;
   try {
-    const packageJson = require(join(process.cwd(), 'package.json'));
-    const scripts = packageJson.scripts || {};
-
-    if (scripts['acceptance:pr']) {
-      console.log('Found acceptance:pr script, running conditional test...\n');
-      try {
-        execSync('npm run acceptance:pr', { cwd: process.cwd(), stdio: 'inherit', env: { ...process.env, GITHUB_ACTIONS: 'true' } });
-        console.log('\nConditional tests completed, continuing with unit tests...\n');
-      } catch (error) {
-        // Script failed, but continue with unit tests to get full feedback
-        console.error('\nConditional tests failed, but continuing with unit tests...\n');
-      }
-    }
+    packageJson = require(join(process.cwd(), 'package.json'));
   } catch (error) {
     // No package.json or error reading it, continue with normal tests
+    packageJson = null;
+  }
+
+  if (packageJson && packageJson.scripts && packageJson.scripts['acceptance:pr']) {
+    console.log('Found acceptance:pr script, running conditional test...\n');
+    execSync('npm run acceptance:pr', { cwd: process.cwd(), stdio: 'inherit', env: { ...process.env, GITHUB_ACTIONS: 'true' } });
   }
 }
 
@@ -74,7 +69,7 @@ if(jestTestsExist){
 // If both types exist, merge coverage reports
 if(cypressTestsExist && jestTestsExist){
   mergeReports()
-  
+
   // if only cypress tests exist, move the coverage reports to the coverage directory
 } else if(cypressTestsExist){
   renameSync('coverage-cypress', 'coverage');
