@@ -1,3 +1,6 @@
+## 8.15.3
+- Enhance conditional-test to ignore file exclusions when files are in the target folder
+
 ## 8.15.2
 - Adjust fr-test to only run conditional-test while in GHA
 
