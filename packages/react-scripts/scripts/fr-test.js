@@ -69,7 +69,6 @@ if(jestTestsExist){
 // If both types exist, merge coverage reports
 if(cypressTestsExist && jestTestsExist){
   mergeReports()
-
   // if only cypress tests exist, move the coverage reports to the coverage directory
 } else if(cypressTestsExist){
   renameSync('coverage-cypress', 'coverage');
