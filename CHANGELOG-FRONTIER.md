@@ -1,3 +1,6 @@
+## 8.15.4
+- Fix fr-test to fail immediately when acceptance tests fail (consistent with Cypress and Jest behavior)
+
 ## 8.15.3
 - Enhance conditional-test to ignore file exclusions when files are in the target folder
 
