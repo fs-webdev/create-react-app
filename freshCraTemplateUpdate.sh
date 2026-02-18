@@ -23,7 +23,7 @@ rm blueprint.yml.bak
 rm .npmrc
 
 # Commit and push to the existing fs-webdev/fresh-cra-template repo on github
-git commit -a -m 'editing blueprint.yml, fixing @fs/react-scripts version'
+git commit -a -m 'Updated from create-react-app - editing blueprint.yml, fixing @fs/react-scripts version'
 git remote add origin https://github.com/fs-webdev/fresh-cra-template.git
 
 if [ "$1" == next ]; then
