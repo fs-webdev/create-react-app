@@ -1,28 +1,43 @@
+## 8.15.5
+
+- More logging during create-react-app init script
+- add dependency on body-parser used in setupProxy.js file
+  - using the exact same semver range as used in @fs/snow. Not sure why snow is tilde pinned
+
 ## 8.15.4
+
 - Fix fr-test to fail immediately when acceptance tests fail (consistent with Cypress and Jest behavior)
 
 ## 8.15.3
+
 - Enhance conditional-test to ignore file exclusions when files are in the target folder
 
 ## 8.15.2
+
 - Adjust fr-test to only run conditional-test while in GHA
 
 ## 8.15.1
+
 - Fix a syntax issue in conditional-test
 
 ## 8.15.0
+
 - Add conditional-test script to fr-test for enhanced QA testing
 
 ## 8.14.4
+
 - Adjust body-parser in proxy to work in all known cases
 
 ## 8.14.3
+
 - Add translations for cookie and javascript warnings
 
 ## 8.14.2
+
 - Fix issue where body-parser was hanging up on streamed requests that were proxied
 
 ## 8.14.1
+
 - Add body-parser to proxy to support auth-middleware v3
 
 ## 8.14.0

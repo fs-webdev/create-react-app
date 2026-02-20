@@ -1,6 +1,6 @@
 {
   "name": "@fs/react-scripts",
-  "version": "8.15.4",
+  "version": "8.15.5",
   "upstreamVersion": "5.0.1",
   "description": "Configuration and scripts for Create React App.",
   "repository": {
@@ -61,6 +61,7 @@
     "babel-plugin-bundled-import-meta": "^0.3.2",
     "babel-plugin-named-asset-import": "^0.3.8",
     "bfj": "^7.0.2",
+    "body-parser": "~1.12.4",
     "browser-resolve": "^2.0.0",
     "browserslist": "^4.18.1",
     "camelcase": "^6.2.1",
