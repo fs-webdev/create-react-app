@@ -123,10 +123,15 @@ module.exports = function (
 
 
   const templateJsonPath = path.join(templatePath, 'template.json');
+  const templatePackageJsonPath = path.join(templatePath, 'package.json');
 
   let templateJson = {};
   if (fs.existsSync(templateJsonPath)) {
     templateJson = require(templateJsonPath);
+  }
+  if (fs.existsSync(templatePackageJsonPath)) {
+    const templatePackageJson = require(templateJsonPath);
+    console.log('templatePackageJson.version: ', templatePackageJson.version)
   }
 
   const templatePackage = templateJson.package || {};
