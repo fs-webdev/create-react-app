@@ -1,6 +1,6 @@
 ## 8.15.6
 
-- Strip query params from the app path before building the manifest.json in the layout template
+- Exempting assets from having language query params from the app path before building the manifest.json in the layout template and putting the lang in the appropriate place for the url.
 
 ## 8.15.5
 
