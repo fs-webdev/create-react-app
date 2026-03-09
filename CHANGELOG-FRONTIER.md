@@ -1,3 +1,6 @@
+## 8.15.4
+- Strip query params from the app path before building the manifest.json in the layout template
+
 ## 8.15.3
 - Enhance conditional-test to ignore file exclusions when files are in the target folder
 
