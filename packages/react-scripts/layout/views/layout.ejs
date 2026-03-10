@@ -19,7 +19,16 @@
     <link rel="apple-touch-icon" href="<%= typeof logoHref !== 'undefined' ? logoHref : 'https://edge.fscdn.org/assets/components/hf/assets/img/tree-touch-icon-11024a277f1fda5735de5a9f0f4f75ca.png' %>" />
     
     <% if (typeof manifestJsonExists === 'undefined' || manifestJsonExists) { %>
-      <link rel="manifest" href="<%= typeof appPathOverride !== 'undefined' ? appPathOverride : appPath('') %>/manifest.json" type="application/manifest+json" crossorigin="use-credentials" />
+      <%
+        // Construct manifest URL using URL constructor to extract relative path with query params
+        // Supports both normal app paths and appPathOverride for special routing scenarios
+        // e.g., http://localhost:5006/africa?lang=en becomes /africa/manifest.json?lang=en
+        var basePath = typeof appPathOverride !== 'undefined' ? appPathOverride : appPath('');
+        var url = new URL(basePath);
+        url.pathname = url.pathname.replace(/\/$/, '') + '/manifest.json';
+        var manifestUrl = url.pathname + url.search;
+      %>
+      <link rel="manifest" href="<%= manifestUrl %>" type="application/manifest+json" crossorigin="use-credentials" />
     <% } %>
 
     <!-- Resource Hints -->
