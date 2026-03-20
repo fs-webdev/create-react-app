@@ -1,6 +1,8 @@
 'use strict';
 const debug = require('debug')('coalesceLocales');
 const dependencyTree = require('dependency-tree');
+const cabinet = require('filing-cabinet');
+const resolve = require('resolve');
 const jsonfile = require('jsonfile');
 const path = require('path');
 const fs = require('fs');
@@ -8,6 +10,29 @@ const rimraf = require('rimraf');
 const chokidar = require('chokidar');
 const _ = require('lodash');
 const glob = require('fast-glob')
+
+// Register a custom .js/.jsx resolver in filing-cabinet that also tries .ts/.tsx extensions
+// for relative imports. This lets dependency-tree traverse from .js files into .tsx files
+// (e.g. App.js → TreeChangesPage.tsx) without disrupting node_modules resolution, which must
+// use resolve.sync + nodeModulesConfig to prefer dist/es builds over dist/cjs.
+function jsWithTsxLookup({ dependency, filename, directory, nodeModulesConfig }) {
+  if (!dependency) return '';
+  const isRelative = dependency[0] === '.';
+  const resolvedDep = isRelative ? path.resolve(path.dirname(filename), dependency) : dependency;
+  const extensions = isRelative ? ['.js', '.jsx', '.ts', '.tsx'] : ['.js', '.jsx'];
+  try {
+    return resolve.sync(resolvedDep, {
+      extensions,
+      basedir: directory,
+      packageFilter: nodeModulesConfig?.entry ? pkg => { pkg.main = pkg[nodeModulesConfig.entry] ?? pkg.main; return pkg; } : undefined,
+      moduleDirectory: ['node_modules', directory],
+    });
+  } catch {
+    return '';
+  }
+}
+cabinet.register('.js', jsWithTsxLookup);
+cabinet.register('.jsx', jsWithTsxLookup);
 
 exports.coalesceLocales = paths => {
   console.time('per-locale coalesce');

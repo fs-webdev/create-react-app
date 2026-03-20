@@ -1,3 +1,8 @@
+## 8.15.7
+
+- Fix coalesceLocales not traversing from `.js` files into `.tsx` files, causing translations from packages only reachable through `.tsx` imports to be silently missing from the coalesced output
+- Update `dependency-tree` from `^10.0.9` to `^11.4.0`
+
 ## 8.15.6
 
 - Exempting assets from having language query params from the app path before building the manifest.json in the layout template and putting the lang in the appropriate place for the url.
