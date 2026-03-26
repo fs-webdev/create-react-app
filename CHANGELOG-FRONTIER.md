@@ -1,3 +1,7 @@
+## 8.15.8
+
+- Default TSC_COMPILE_ON_ERROR to true in the dev server so TypeScript errors are non-blocking during local development
+
 ## 8.15.7
 
 - Fix coalesceLocales not traversing from `.js` files into `.tsx` files, causing translations from packages only reachable through `.tsx` imports to be silently missing from the coalesced output
