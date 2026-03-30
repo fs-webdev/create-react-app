@@ -59,7 +59,7 @@
       })();
     </script>
 
-    <%# Check if cookies are enabled %> 
+    <%# Check if cookies are enabled %>
     <script>
       (function() {
         try {
@@ -71,15 +71,21 @@
           }
 
           if (!cookiesEnabled) {
-            var warningElement = document.querySelector(".nocookies-container");
-            if (warningElement) {
-              warningElement.style.display = "flex";
+            var shadowHost = document.getElementById('nocookies-shadow-host');
+            if (shadowHost && shadowHost.shadowRoot) {
+              var warningElement = shadowHost.shadowRoot.querySelector(".nocookies-container");
+              if (warningElement) {
+                warningElement.style.display = "flex";
+              }
             }
           }
         } catch (e) {
-          var warningElement = document.querySelector(".nocookies-container");
-          if (warningElement) {
-            warningElement.style.display = "flex";
+          var shadowHost = document.getElementById('nocookies-shadow-host');
+          if (shadowHost && shadowHost.shadowRoot) {
+            var warningElement = shadowHost.shadowRoot.querySelector(".nocookies-container");
+            if (warningElement) {
+              warningElement.style.display = "flex";
+            }
           }
         }
       })();
