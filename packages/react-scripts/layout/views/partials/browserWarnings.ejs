@@ -1,49 +1,63 @@
-    <%# No Cookies Warning %> 
-    <style>
-      .nocookies-container {
-        display: none;
-        flex-direction: column;
-        justify-content: center;
-        min-height: 100vh;
-        font-family: sans-serif;
-        max-width: 550px;
-        margin: 0 auto;
-      }
+    <%# No Cookies Warning %>
+    <div id="nocookies-shadow-host"></div>
+    <script>
+      (function() {
+        const shadowHost = document.getElementById('nocookies-shadow-host');
+        const shadow = shadowHost.attachShadow({ mode: 'open' });
 
-      .nocookies-link {
-        display: inline-block;
-        border: 1px solid black;
-        color: black;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 8px;
-      }
+        shadow.innerHTML = `
+          <style>
+            :host {
+              display: contents;
+            }
 
-      .nocookies-message {
-        margin-bottom: 10px;
-      }
+            .nocookies-container {
+              display: none;
+              flex-direction: column;
+              justify-content: center;
+              min-height: 100vh;
+              font-family: sans-serif;
+              max-width: 550px;
+              margin: 0 auto;
+            }
 
-      .nocookies-last-message {
-        margin-bottom: 20px;
-      }
+            .nocookies-link {
+              display: inline-block;
+              border: 1px solid black;
+              color: black;
+              padding: 10px 20px;
+              text-decoration: none;
+              border-radius: 8px;
+            }
 
-      .nocookies-container svg {
-        display: flex;
-        align-self: center;
-        max-width: 72px;
-        height: auto;
-        margin-bottom: 20px;
-      }
-    </style>
-    <div id="nocookies-warning" class="nocookies-container">
-      <svg fill="none"><path stroke="#B5B8B8" stroke-dasharray="3 5" stroke-linecap="round" stroke-width="2" d="M28.92 1c56.58 65.5 0 73.14 0 50.32S68.5 31.5 52.68 80.022" style="stroke:#b5b8b8;stroke:color(display-p3 .7098 .7216 .7216);stroke-opacity:1"/><path fill="#83AF1D" d="M11.23 127.312s-1.742-17.022 7.845-27.404c9.586-10.383 26.711-10.204 26.711-10.204s1.742 17.022-7.844 27.405c-9.587 10.382-26.712 10.203-26.712 10.203Z" style="fill:#83af1d;fill:color(display-p3 .5137 .6863 .1137);fill-opacity:1"/><path fill="#A7C41A" fill-rule="evenodd" d="M48.621 86.664c.478.442.188 1.133 0 1.336l-30.516 32.374a.5.5 0 0 1-.733-.68L47.5 86.664c.188-.203.643-.442 1.121 0Z" clip-rule="evenodd" style="fill:#a7c41a;fill:color(display-p3 .6549 .7686 .102);fill-opacity:1"/><path stroke="#A7C41A" stroke-linecap="round" d="m16.708 114.07 6.517.148 1.795 5.411m6.666-6.37-2.295-5.383-6.625-2.145m14.56.714-1.795-5.411-7.071-1.12" style="stroke:#a7c41a;stroke:color(display-p3 .6549 .7686 .102);stroke-opacity:1"/></svg>
-      <h1><%- i18n('nocookies-title')%></h1>
-      <p class="nocookies-message"><%- i18n('nocookies-message')%></p>
-      <p class="nocookies-last-message"><%- i18n('nocookies-last-message')%></p>
-      <p>
-        <a href="https://www.whatismybrowser.com/guides/how-to-enable-cookies/" target="_blank" rel="noopener noreferrer" class="nocookies-link"><%- i18n('nocookies-link')%></a>
-      </p>
-    </div>
+            .nocookies-message {
+              margin-bottom: 10px;
+            }
+
+            .nocookies-last-message {
+              margin-bottom: 20px;
+            }
+
+            .nocookies-container svg {
+              display: flex;
+              align-self: center;
+              max-width: 72px;
+              height: auto;
+              margin-bottom: 20px;
+            }
+          </style>
+          <div class="nocookies-container">
+            <svg fill="none"><path stroke="#B5B8B8" stroke-dasharray="3 5" stroke-linecap="round" stroke-width="2" d="M28.92 1c56.58 65.5 0 73.14 0 50.32S68.5 31.5 52.68 80.022" style="stroke:#b5b8b8;stroke:color(display-p3 .7098 .7216 .7216);stroke-opacity:1"/><path fill="#83AF1D" d="M11.23 127.312s-1.742-17.022 7.845-27.404c9.586-10.383 26.711-10.204 26.711-10.204s1.742 17.022-7.844 27.405c-9.587 10.382-26.712 10.203-26.712 10.203Z" style="fill:#83af1d;fill:color(display-p3 .5137 .6863 .1137);fill-opacity:1"/><path fill="#A7C41A" fill-rule="evenodd" d="M48.621 86.664c.478.442.188 1.133 0 1.336l-30.516 32.374a.5.5 0 0 1-.733-.68L47.5 86.664c.188-.203.643-.442 1.121 0Z" clip-rule="evenodd" style="fill:#a7c41a;fill:color(display-p3 .6549 .7686 .102);fill-opacity:1"/><path stroke="#A7C41A" stroke-linecap="round" d="m16.708 114.07 6.517.148 1.795 5.411m6.666-6.37-2.295-5.383-6.625-2.145m14.56.714-1.795-5.411-7.071-1.12" style="stroke:#a7c41a;stroke:color(display-p3 .6549 .7686 .102);stroke-opacity:1"/></svg>
+            <h1><%- i18n('nocookies-title')%></h1>
+            <p class="nocookies-message"><%- i18n('nocookies-message')%></p>
+            <p class="nocookies-last-message"><%- i18n('nocookies-last-message')%></p>
+            <p>
+              <a href="https://www.whatismybrowser.com/guides/how-to-enable-cookies/" target="_blank" rel="noopener noreferrer" class="nocookies-link"><%- i18n('nocookies-link')%></a>
+            </p>
+          </div>
+        `;
+      })();
+    </script>
 
     <%# Check if cookies are enabled %> 
     <script>

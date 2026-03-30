@@ -1,3 +1,7 @@
+## 8.15.9
+
+- Move nocookies warning to Shadow DOM to prevent WebDriver detection
+
 ## 8.15.8
 
 - Default TSC_COMPILE_ON_ERROR to true in the dev server so TypeScript errors are non-blocking during local development
