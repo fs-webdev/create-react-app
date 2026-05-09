@@ -52,7 +52,7 @@ module.exports = (resolve, rootDir, isEjecting) => {
     ],
     testEnvironment: 'jsdom',
     transform: {
-      "\\.(gql|graphql)$": "jest-transform-graphql",
+      "\\.(gql|graphql)$": require.resolve("jest-transform-graphql"),
       '^.+\\.(js|jsx|mjs|cjs|ts|tsx)$': resolve(
         'config/jest/babelTransform.js'
       ),
