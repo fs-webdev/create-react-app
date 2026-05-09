@@ -1,3 +1,12 @@
+## 8.16.0
+
+- Enable Jest CLI argument passing through test wrapper scripts (fr-test and conditional-test)
+  - Developers can now pass Jest flags directly: `npm test -- --maxWorkers=2`
+  - Support for test filtering: `npm test -- --testNamePattern="login"`
+  - Support for file/directory paths: `npm test -- src/features/`
+  - Fixed argument forwarding in conditional-test to support all Jest CLI options
+  - Switched from string interpolation to array-based spawn.sync for safer argument handling
+
 ## 8.15.9
 
 - Move nocookies warning to Shadow DOM to prevent WebDriver detection
