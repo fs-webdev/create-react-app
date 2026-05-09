@@ -25,6 +25,70 @@ If you have cloned this repo and made changes locally and want to test them befo
 
 Before running `npm link`, run `npm publish --dry-run` to ensure modernizr.js is added in `./packages/react-scripts/layout`
 
+## Test Commands - CLI Arguments
+
+The `react-scripts fr-test` and `react-scripts conditional-test` commands support passing arguments to Jest and Cypress.
+
+### fr-test - Flexible Jest/Cypress Test Runner
+
+Basic setup in package.json:
+```json
+{
+  "test": "react-scripts fr-test"
+}
+```
+
+CLI usage examples:
+```bash
+# Control Jest parallelization
+npm run test -- --maxWorkers=2
+
+# Run tests in a specific directory
+npm run test -- src/features/
+
+# Run a single test file
+npm run test -- Auth.test.js
+
+# Filter tests by name pattern
+npm run test -- --testNamePattern="login"
+
+# Combine multiple arguments
+npm run test -- src/features/ --maxWorkers=1 --testNamePattern="auth"
+
+# Watch mode (dev only, not in CI)
+npm run test -- --watch
+
+# Run in CI mode (coverage, no watch)
+CI=true npm run test
+```
+
+### conditional-test - Run Tests Only on Relevant Changes
+
+Example setup:
+```json
+{
+  "test:acceptance": "react-scripts conditional-test --folder test --command acceptance"
+}
+```
+
+CLI usage with arguments:
+```bash
+# Run acceptance tests only if test/ folder changed
+npm run test:acceptance
+
+# With Jest arguments
+npm run test:acceptance -- --maxWorkers=2
+
+# Filter by test name
+npm run test:acceptance -- --testNamePattern="api"
+
+# Dry run to see what would execute
+npm run test:acceptance -- --dry-run
+
+# Verbose mode to see change detection details
+npm run test:acceptance -- --verbose
+```
+
 ## Development and Cutting a Release
 
 - All development will be done from the frontierMaster branch
