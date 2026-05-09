@@ -41,10 +41,18 @@ const mergeReports = ()=>{
   // report the coverage
   execSync("npx nyc report --include 'src/**/*.{js,ts,tsx}' --report-dir coverage --reporter lcov --reporter text --reporter text-summary --check-coverage --colors", {stdio: 'inherit'})
 }
-// dev ran npm test
+// dev ran npm test - exit after running, don't continue to CI/coverage logic
 if(!process.env.CI){
   const args = process.argv.slice(2);
   const result = spawn.sync('react-scripts', ['test'].concat(args), { stdio: 'inherit' })
+  if (result.error) {
+    console.error('Failed to start Jest:', result.error.message);
+    process.exit(1);
+  }
+  if (result.signal) {
+    console.error(`Jest was killed by signal: ${result.signal}`);
+    process.exit(1);
+  }
   process.exit(result.status || 0)
 }
 
@@ -84,6 +92,14 @@ if(jestTestsExist){
   console.log('RUNNING JEST TESTS')
   const args = process.argv.slice(2);
   const result = spawn.sync('react-scripts', ['test', '--coverage', '--colors'].concat(args), { cwd: process.cwd(), stdio: 'inherit' })
+  if (result.error) {
+    console.error('Failed to start Jest:', result.error.message);
+    process.exit(1);
+  }
+  if (result.signal) {
+    console.error(`Jest was killed by signal: ${result.signal}`);
+    process.exit(1);
+  }
   if(result.status) {
     process.exit(result.status)
   }

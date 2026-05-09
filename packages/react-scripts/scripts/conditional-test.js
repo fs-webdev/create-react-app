@@ -96,6 +96,11 @@ function parseArgs(args) {
       break;
     } else {
       // Unrecognized arguments are collected as test arguments to forward
+      // Warn if argument looks like a flag (starts with --) in case of typo
+      if (arg.startsWith('--')) {
+        console.warn(chalk.yellow(`⚠️  Warning: Unrecognized flag "${arg}" will be forwarded to the test command.`));
+        console.warn(chalk.yellow(`   Valid conditional-test flags: ${recognizedFlags.join(', ')}`));
+      }
       parsed.testArgs.push(arg);
     }
   }
@@ -207,6 +212,17 @@ function main() {
   const result = spawn.sync('npm', npmArgs, {
     stdio: 'inherit',
   });
+
+  if (result.error) {
+    console.error(chalk.red(`Failed to execute: npm ${npmArgs.join(' ')}`));
+    console.error(chalk.red(result.error.message));
+    process.exit(1);
+  }
+
+  if (result.signal) {
+    console.error(chalk.red(`npm was killed by signal: ${result.signal}`));
+    process.exit(1);
+  }
 
   process.exit(result.status || 0);
 }
