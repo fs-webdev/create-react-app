@@ -9,12 +9,23 @@
  * change test/package-lock.json, tests will run even though package-lock.json is normally
  * excluded. Only changes to excluded files OUTSIDE the target folder will skip tests.
  *
- * Usage:
- *   react-scripts conditional-test --folder test --command acceptance --exclude src
+ * Conditional Test Flags:
+ *   --folder <dir>              Target folder to watch for changes (required)
+ *   --command <npm-script>      NPM script to run if changes detected (required)
+ *   --exclude <dirs>            Comma-separated folders to exclude (optional, has defaults)
+ *   --dry-run                   Show what would run without executing
+ *   --verbose                   Show detailed change detection info
+ *
+ * Test Arguments (forwarded to the npm script):
+ *   Arguments after -- are passed to the npm script being called
+ *   npm run test:acceptance -- --maxWorkers=2       Forward Jest flags
+ *   npm run test:acceptance -- src/features/        Run tests in specific directory
+ *   npm run test:acceptance -- --testNamePattern="login"  Filter by test name
  *
  * Examples:
  *   "test:acceptance": "react-scripts conditional-test --folder test --command acceptance"
  *   "test:e2e": "react-scripts conditional-test --folder cypress --command cy:ci --exclude src,lib"
+ *   "test:acceptance": "npm run test:acceptance -- --maxWorkers=2"  (forward args to npm script)
  */
 
 'use strict';
@@ -60,7 +71,10 @@ function parseArgs(args) {
     exclude: defaultExclusions,
     dryRun: false,
     verbose: false,
+    testArgs: [], // Arguments to forward to the test command
   };
+
+  const recognizedFlags = ['--folder', '--command', '--exclude', '--dry-run', '--verbose'];
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -76,6 +90,18 @@ function parseArgs(args) {
       parsed.dryRun = true;
     } else if (arg === '--verbose') {
       parsed.verbose = true;
+    } else if (arg === '--') {
+      // Everything after -- is test arguments
+      parsed.testArgs = args.slice(i + 1);
+      break;
+    } else {
+      // Unrecognized arguments are collected as test arguments to forward
+      // Warn if argument looks like a flag (starts with --) in case of typo
+      if (arg.startsWith('--')) {
+        console.warn(chalk.yellow(`⚠️  Warning: Unrecognized flag "${arg}" will be forwarded to the test command.`));
+        console.warn(chalk.yellow(`   Valid conditional-test flags: ${recognizedFlags.join(', ')}`));
+      }
+      parsed.testArgs.push(arg);
     }
   }
 
@@ -176,19 +202,29 @@ function main() {
     process.exit(0);
   }
 
-  // Execute the command
-  const child = spawn('npm', ['run', options.command], {
+  // Execute the command, forwarding any test arguments via --
+  const npmArgs = ['run', options.command];
+  if (options.testArgs.length > 0) {
+    npmArgs.push('--');
+    npmArgs.push(...options.testArgs);
+  }
+
+  const result = spawn.sync('npm', npmArgs, {
     stdio: 'inherit',
   });
 
-  child.on('exit', code => {
-    process.exit(code || 0);
-  });
-
-  child.on('error', error => {
-    console.error(chalk.red('Failed to execute command:'), error);
+  if (result.error) {
+    console.error(chalk.red(`Failed to execute: npm ${npmArgs.join(' ')}`));
+    console.error(chalk.red(result.error.message));
     process.exit(1);
-  });
+  }
+
+  if (result.signal) {
+    console.error(chalk.red(`npm was killed by signal: ${result.signal}`));
+    process.exit(1);
+  }
+
+  process.exit(result.status || 0);
 }
 
 // Run if executed directly

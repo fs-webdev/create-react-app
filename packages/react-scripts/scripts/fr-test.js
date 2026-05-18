@@ -1,6 +1,25 @@
+/**
+ * FamilySearch Test Runner
+ *
+ * Runs Jest and/or Cypress component tests depending on what exists in src/
+ * - Automatically detects .test.* and .cy.* files
+ * - Runs both test types if present
+ * - Merges coverage reports from Jest and Cypress
+ *
+ * CLI Arguments (forwarded to Jest/Cypress):
+ *   npm run test -- --maxWorkers=2              Control parallelization
+ *   npm run test -- src/features/                Run tests in a specific directory
+ *   npm run test -- Auth.test.js                 Run a single test file
+ *   npm run test -- --testNamePattern="login"   Filter tests by name pattern
+ *   npm run test -- --watch                      Watch mode (dev only)
+ *
+ * Environment Variables:
+ *   CI=true          Run in CI mode (with coverage, no watch)
+ */
 'use strict'
 const {renameSync, existsSync, rmSync, mkdirSync, copyFileSync} = require('fs');
 const { execSync } = require('child_process')
+const spawn = require('react-dev-utils/crossSpawn');
 const glob = require('fast-glob')
 const { join } = require('path')
 
@@ -22,11 +41,19 @@ const mergeReports = ()=>{
   // report the coverage
   execSync("npx nyc report --include 'src/**/*.{js,ts,tsx}' --report-dir coverage --reporter lcov --reporter text --reporter text-summary --check-coverage --colors", {stdio: 'inherit'})
 }
-// dev ran npm test
+// dev ran npm test - exit after running, don't continue to CI/coverage logic
 if(!process.env.CI){
-  const args = process.argv.slice(2).join(' ')
-  execSync(`react-scripts test ${args}`, { stdio: 'inherit' })
-  return
+  const args = process.argv.slice(2);
+  const result = spawn.sync('react-scripts', ['test'].concat(args), { stdio: 'inherit' })
+  if (result.error) {
+    console.error('Failed to start Jest:', result.error.message);
+    process.exit(1);
+  }
+  if (result.signal) {
+    console.error(`Jest was killed by signal: ${result.signal}`);
+    process.exit(1);
+  }
+  process.exit(result.status || 0)
 }
 
 // GitHub Actions mode - check if acceptance:pr script exists
@@ -63,7 +90,19 @@ if(cypressTestsExist){
 
 if(jestTestsExist){
   console.log('RUNNING JEST TESTS')
-  execSync('react-scripts test --coverage --colors', { cwd: process.cwd(), stdio: 'inherit' })
+  const args = process.argv.slice(2);
+  const result = spawn.sync('react-scripts', ['test', '--coverage', '--colors'].concat(args), { cwd: process.cwd(), stdio: 'inherit' })
+  if (result.error) {
+    console.error('Failed to start Jest:', result.error.message);
+    process.exit(1);
+  }
+  if (result.signal) {
+    console.error(`Jest was killed by signal: ${result.signal}`);
+    process.exit(1);
+  }
+  if(result.status) {
+    process.exit(result.status)
+  }
 }
 
 // If both types exist, merge coverage reports
