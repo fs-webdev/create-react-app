@@ -22,18 +22,22 @@ if (typeof getFeatureFlag !== 'undefined') {
 
   // New RUM 1.329+ version URLs (SRI variant with integrity hashes)
   const cdnUrlsNew = {
-    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js',
+    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10337260504112723.js',
     beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js',
     prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js'
   }
 
-  const cdnIntegrityNew = 'sha256-6PrnNTp1/05LJTqnB9OOhKEVMId1XHk4Xa1x3cPF2Ec='
+  const cdnIntegrityNew = {
+    int: 'sha256-KHFYWCusB88n37My9yKVX/ES9BX6Wy+k74hsDScU5jY=',
+    beta: 'sha256-6PrnNTp1/05LJTqnB9OOhKEVMId1XHk4Xa1x3cPF2Ec=',
+    prod: 'sha256-6PrnNTp1/05LJTqnB9OOhKEVMId1XHk4Xa1x3cPF2Ec='
+  }
 
   const selectedCdnUrls = useNewRUM ? cdnUrlsNew : cdnUrls;
 
   if (dynatraceFlag.treatment === 'asyncCS-script') { %>
     <% if (useNewRUM) { %>
-      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew %>" async></script>
+      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew[env] %>" async></script>
     <% } else { %>
       <script type="text/javascript" src="<%= edgeUrls[env] %>" crossorigin="anonymous"></script>
     <% } %>
@@ -45,7 +49,7 @@ if (typeof getFeatureFlag !== 'undefined') {
     <% } %>
   <% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
     <% if (useNewRUM) { %>
-      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew %>" async></script>
+      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew[env] %>" async></script>
     <% } else { %>
       <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous"></script>
     <% } %>
