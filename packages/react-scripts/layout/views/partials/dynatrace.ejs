@@ -3,8 +3,11 @@
 
 if (typeof getFeatureFlag !== 'undefined') {
   const dynatraceFlag = getFeatureFlag('frontier_snow_dynatraceRUM', {appName: process.env.APP_NAME});
+  const dynatraceNewFlag = getFeatureFlag('frontier_snow_dynatraceNewRUM', {appName: process.env.APP_NAME});
   const env = envType();
+  const useNewRUM = dynatraceNewFlag.isOn;
 
+  // Old RUM version URLs
   const cdnUrls = {
     int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/3faf90e849295814_complete.js',
     beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/c4242bb1eb216374_complete.js',
@@ -17,12 +20,35 @@ if (typeof getFeatureFlag !== 'undefined') {
     prod: 'https://edge.fscdn.org/assets/components/hf/assets/js/monitoring/dynatrace-20221104-prod.min-44bb9345beec8a984c2fca40385b4f41.js'
   }
 
+  // New RUM 1.329+ version URLs (SRI variant with integrity hashes)
+  const cdnUrlsNew = {
+    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js',
+    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js',
+    prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js'
+  }
+
+  const cdnIntegrityNew = 'sha256-6PrnNTp1/05LJTqnB9OOhKEVMId1XHk4Xa1x3cPF2Ec='
+
+  const selectedCdnUrls = useNewRUM ? cdnUrlsNew : cdnUrls;
+
   if (dynatraceFlag.treatment === 'asyncCS-script') { %>
-    <script type="text/javascript" src="<%= edgeUrls[env] %>" crossorigin="anonymous"></script>
-    <% } else if (dynatraceFlag.treatment === 'asyncCS-inline') { %>
-    <%- include(`./partials/dynatrace/_inline_${env}`) %>
+    <% if (useNewRUM) { %>
+      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew %>" async></script>
+    <% } else { %>
+      <script type="text/javascript" src="<%= edgeUrls[env] %>" crossorigin="anonymous"></script>
+    <% } %>
+  <% } else if (dynatraceFlag.treatment === 'asyncCS-inline') { %>
+    <% if (useNewRUM) { %>
+      <%- include(`./partials/dynatrace/_inline_${env}_new`) %>
+    <% } else { %>
+      <%- include(`./partials/dynatrace/_inline_${env}`) %>
+    <% } %>
   <% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
-      <script type="text/javascript" src="<%= cdnUrls[env] %>" crossorigin="anonymous"></script>
+    <% if (useNewRUM) { %>
+      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew %>" async></script>
+    <% } else { %>
+      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous"></script>
+    <% } %>
   <% } %>
 
 <% } %>

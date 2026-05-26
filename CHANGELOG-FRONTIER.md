@@ -1,3 +1,15 @@
+## 8.17.0
+
+- Upgrade Dynatrace RUM agent to version 1.329+ and enable new RUM experience
+  - Updated inline scripts for all three environments (int, beta, prod) to latest agent version (10337260504112723)
+  - Updated global CDN URLs to use SRI (Subresource Integrity) variant with integrity hashes for added security
+  - Added new feature flag `frontier_snow_dynatraceNewRUM` to control RUM version selection (gradual rollout support)
+  - All three loading mechanisms (asyncCS-script, asyncCS-inline, global-cdn) now support new RUM version
+  - Existing `frontier_snow_dynatraceRUM` flag still controls mechanism selection; new flag controls version
+  - New RUM experience includes enhanced data collection with owasp=1 and uxrgce=1 parameters
+  - When new flag is OFF: uses existing RUM version and URLs (backward compatible)
+  - When new flag is ON: uses new 1.329+ version with SRI integrity checks
+
 ## 8.16.0
 
 - Enable Jest CLI argument passing through test wrapper scripts (fr-test and conditional-test)
