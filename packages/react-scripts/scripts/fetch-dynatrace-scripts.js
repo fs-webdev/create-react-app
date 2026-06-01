@@ -186,6 +186,10 @@ async function fetchScripts() {
       console.log(`📥 Fetching ${env.toUpperCase()} environment (entity: ${entityId})...`);
 
       try {
+        // Fetch simple JavaScript tag (basic, no SRI)
+        const simplePath = `${basePath}/api/v2/rum/javaScriptTag/${entityId}`;
+        const simpleResponse = await makeRequest(hostname, simplePath);
+
         // Fetch OneAgent JavaScript tag with SRI (for CDN URL, config, integrity hash)
         const tagPath = `${basePath}/api/v2/rum/oneAgentJavaScriptTagWithSri/${entityId}`;
         const tagResponse = await makeRequest(hostname, tagPath);
@@ -195,17 +199,24 @@ async function fetchScripts() {
         const inlineResponse = await makeRequest(hostname, inlinePath);
 
         results[env] = {
+          simpleTag: simpleResponse.trim(),
           completeTag: tagResponse.trim(),
           inlineCode: inlineResponse.trim(),
         };
 
+        console.log(`   ✅ Simple tag fetched (${simpleResponse.length} chars)`);
         console.log(`   ✅ Complete tag fetched (${tagResponse.length} chars)`);
         console.log(`   ✅ Inline code fetched (${inlineResponse.length} chars)`);
 
-        // Extract CDN URL from complete tag
-        const srcMatch = tagResponse.match(/src="([^"]+)"/);
-        if (srcMatch) {
-          console.log(`   📌 CDN URL: ${srcMatch[1]}`);
+        // Extract CDN URL from both simple and complete tags
+        const simpleSrcMatch = simpleResponse.match(/src="([^"]+)"/);
+        if (simpleSrcMatch) {
+          console.log(`   📌 Simple CDN URL: ${simpleSrcMatch[1]}`);
+        }
+
+        const sriBenchMatch = tagResponse.match(/src="([^"]+)"/);
+        if (sriBenchMatch) {
+          console.log(`   📌 SRI CDN URL: ${sriBenchMatch[1]}`);
         }
 
         // Extract integrity hash if present
