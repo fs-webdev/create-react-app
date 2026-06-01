@@ -186,30 +186,36 @@ async function fetchScripts() {
       console.log(`📥 Fetching ${env.toUpperCase()} environment (entity: ${entityId})...`);
 
       try {
-        // Fetch OneAgent JavaScript tag with SRI (includes inline script and complete tag)
-        const path = `${basePath}/api/v2/rum/oneAgentJavaScriptTagWithSri/${entityId}`;
-        const response = await makeRequest(hostname, path);
+        // Fetch OneAgent JavaScript tag with SRI (for CDN URL, config, integrity hash)
+        const tagPath = `${basePath}/api/v2/rum/oneAgentJavaScriptTagWithSri/${entityId}`;
+        const tagResponse = await makeRequest(hostname, tagPath);
+
+        // Fetch inline code (actual JavaScript to embed)
+        const inlinePath = `${basePath}/api/v2/rum/inlineCode/${entityId}`;
+        const inlineResponse = await makeRequest(hostname, inlinePath);
 
         results[env] = {
-          completeTag: response.trim(),
+          completeTag: tagResponse.trim(),
+          inlineCode: inlineResponse.trim(),
         };
 
-        console.log(`   ✅ Complete tag fetched (${response.length} chars)`);
+        console.log(`   ✅ Complete tag fetched (${tagResponse.length} chars)`);
+        console.log(`   ✅ Inline code fetched (${inlineResponse.length} chars)`);
 
         // Extract CDN URL from complete tag
-        const srcMatch = response.match(/src="([^"]+)"/);
+        const srcMatch = tagResponse.match(/src="([^"]+)"/);
         if (srcMatch) {
           console.log(`   📌 CDN URL: ${srcMatch[1]}`);
         }
 
         // Extract integrity hash if present
-        const integrityMatch = response.match(/integrity="([^"]+)"/);
+        const integrityMatch = tagResponse.match(/integrity="([^"]+)"/);
         if (integrityMatch) {
           console.log(`   🔒 Integrity: ${integrityMatch[1]}`);
         }
 
         // Extract data-dtconfig if present
-        const configMatch = response.match(/data-dtconfig="([^"]+)"/);
+        const configMatch = tagResponse.match(/data-dtconfig="([^"]+)"/);
         if (configMatch) {
           console.log(`   ⚙️  Config includes reportUrl for direct beacon delivery`);
         }
@@ -230,7 +236,7 @@ async function fetchScripts() {
       const inlineFilePath = path.join(inlineScriptDir, `_inline_${env}_new.ejs`);
 
       try {
-        fs.writeFileSync(inlineFilePath, data.completeTag, 'utf8');
+        fs.writeFileSync(inlineFilePath, data.inlineCode, 'utf8');
         console.log(`   ✅ Wrote ${path.basename(inlineFilePath)}`);
       } catch (error) {
         console.error(`   ❌ Failed to write ${env} inline script: ${error.message}`);
