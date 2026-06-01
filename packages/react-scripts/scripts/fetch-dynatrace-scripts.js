@@ -143,8 +143,21 @@ function updateDynatraceEjs(results) {
     `const cdnIntegrityNew = {\n${integrityLines}\n  }`
   );
 
+  // Build replacement cdnConfigNew block (per-env object with data-dtconfig)
+  const configLines = Object.entries(results).map(([env, data]) => {
+    const config = data.completeTag.match(/data-dtconfig="([^"]+)"/)?.[1] || '';
+    return `    ${env}: '${config}'`;
+  }).join(',\n');
+  content = content.replace(
+    /const cdnConfigNew = (\{[^}]+\}|'[^']+')/s,
+    `const cdnConfigNew = {\n${configLines}\n  }`
+  ) || content.replace(
+    /const cdnIntegrityNew = \{[^}]+\}/s,
+    match => `${match}\n\n  const cdnConfigNew = {\n${configLines}\n  }`
+  );
+
   fs.writeFileSync(ejsPath, content, 'utf8');
-  console.log("   ✅ Updated dynatrace.ejs (cdnUrlsNew + cdnIntegrityNew)");
+  console.log("   ✅ Updated dynatrace.ejs (cdnUrlsNew + cdnIntegrityNew + cdnConfigNew)");
 }
 
 async function fetchScripts() {
@@ -193,6 +206,12 @@ async function fetchScripts() {
         const integrityMatch = response.match(/integrity="([^"]+)"/);
         if (integrityMatch) {
           console.log(`   🔒 Integrity: ${integrityMatch[1]}`);
+        }
+
+        // Extract data-dtconfig if present
+        const configMatch = response.match(/data-dtconfig="([^"]+)"/);
+        if (configMatch) {
+          console.log(`   ⚙️  Config includes reportUrl for direct beacon delivery`);
         }
 
         console.log("");

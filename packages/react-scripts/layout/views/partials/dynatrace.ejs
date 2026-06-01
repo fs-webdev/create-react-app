@@ -33,11 +33,18 @@ if (typeof getFeatureFlag !== 'undefined') {
     prod: 'sha256-6PrnNTp1/05LJTqnB9OOhKEVMId1XHk4Xa1x3cPF2Ec='
   }
 
+  const cdnConfigNew = {
+    int: '',
+    beta: '',
+    prod: ''
+  }
+
   const selectedCdnUrls = useNewRUM ? cdnUrlsNew : cdnUrls;
+  const selectedCdnConfig = useNewRUM ? cdnConfigNew : {};
 
   if (dynatraceFlag.treatment === 'asyncCS-script') { %>
     <% if (useNewRUM) { %>
-      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew[env] %>" async></script>
+      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew[env] %>" data-dtconfig="<%= selectedCdnConfig[env] %>" async></script>
     <% } else { %>
       <script type="text/javascript" src="<%= edgeUrls[env] %>" crossorigin="anonymous"></script>
     <% } %>
@@ -49,7 +56,7 @@ if (typeof getFeatureFlag !== 'undefined') {
     <% } %>
   <% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
     <% if (useNewRUM) { %>
-      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew[env] %>" async></script>
+      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous" integrity="<%= cdnIntegrityNew[env] %>" data-dtconfig="<%= selectedCdnConfig[env] %>" async></script>
     <% } else { %>
       <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous"></script>
     <% } %>
