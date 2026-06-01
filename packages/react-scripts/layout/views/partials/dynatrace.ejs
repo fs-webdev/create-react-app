@@ -55,4 +55,11 @@ if (typeof getFeatureFlag !== 'undefined') {
     <% } %>
   <% } %>
 
+  <!-- Report RUM loading mechanism for performance comparison -->
+  <script type="text/javascript">
+    if (typeof window !== 'undefined' && window.dtrum) {
+      window.dtrum.reportCustomMetric('rum_loading_mechanism', 0, '<%= dynatraceFlag.treatment %>');
+    }
+  </script>
+
 <% } %>
