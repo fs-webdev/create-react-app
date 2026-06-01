@@ -119,45 +119,63 @@ async function makeRequest(hostname, path) {
   });
 }
 
+function extractEnvValues(results) {
+  const envs = Object.keys(results);
+  return {
+    cdnUrlsNew: Object.fromEntries(envs.map(env => [
+      env, results[env].completeTag.match(/src="([^"]+)"/)?.[1] || ''
+    ])),
+    cdnIntegrityNew: Object.fromEntries(envs.map(env => [
+      env, results[env].completeTag.match(/integrity="([^"]+)"/)?.[1] || ''
+    ])),
+    cdnConfigNew: Object.fromEntries(envs.map(env => [
+      env, results[env].completeTag.match(/data-dtconfig="([^"]+)"/)?.[1] || ''
+    ])),
+    inlineScriptNew: Object.fromEntries(envs.map(env => [
+      env, results[env].completeTag.trim()
+    ])),
+  };
+}
+
 function updateDynatraceEjs(results) {
   const ejsPath = path.join(__dirname, '../layout/views/partials/dynatrace.ejs');
   let content = fs.readFileSync(ejsPath, 'utf8');
+  const values = extractEnvValues(results);
 
-  // Build replacement cdnUrlsNew block
-  const urlLines = Object.entries(results).map(([env, data]) => {
-    const src = data.completeTag.match(/src="([^"]+)"/)?.[1] || '';
-    return `    ${env}: '${src}'`;
-  }).join(',\n');
+  const urlLines = Object.entries(values.cdnUrlsNew).map(([env, url]) =>
+    `    ${env}: '${url}'`).join(',\n');
   content = content.replace(
-    /const cdnUrlsNew = \{[^}]+\}/s,
-    `const cdnUrlsNew = {\n${urlLines}\n  }`
+    /const cdnUrlsNew = locals\.dynatrace\?\.cdnUrlsNew \|\| \{[^}]+\}/s,
+    `const cdnUrlsNew = locals.dynatrace?.cdnUrlsNew || {\n${urlLines}\n  }`
   );
 
-  // Build replacement cdnIntegrityNew block (per-env object)
-  const integrityLines = Object.entries(results).map(([env, data]) => {
-    const hash = data.completeTag.match(/integrity="([^"]+)"/)?.[1] || '';
-    return `    ${env}: '${hash}'`;
-  }).join(',\n');
+  const integrityLines = Object.entries(values.cdnIntegrityNew).map(([env, hash]) =>
+    `    ${env}: '${hash}'`).join(',\n');
   content = content.replace(
-    /const cdnIntegrityNew = (\{[^}]+\}|'[^']+')/s,
-    `const cdnIntegrityNew = {\n${integrityLines}\n  }`
+    /const cdnIntegrityNew = locals\.dynatrace\?\.cdnIntegrityNew \|\| \{[^}]+\}/s,
+    `const cdnIntegrityNew = locals.dynatrace?.cdnIntegrityNew || {\n${integrityLines}\n  }`
   );
 
-  // Build replacement cdnConfigNew block (per-env object with data-dtconfig)
-  const configLines = Object.entries(results).map(([env, data]) => {
-    const config = data.completeTag.match(/data-dtconfig="([^"]+)"/)?.[1] || '';
-    return `    ${env}: '${config}'`;
-  }).join(',\n');
+  const configLines = Object.entries(values.cdnConfigNew).map(([env, cfg]) =>
+    `    ${env}: '${cfg}'`).join(',\n');
   content = content.replace(
-    /const cdnConfigNew = (\{[^}]+\}|'[^']+')/s,
-    `const cdnConfigNew = {\n${configLines}\n  }`
-  ) || content.replace(
-    /const cdnIntegrityNew = \{[^}]+\}/s,
-    match => `${match}\n\n  const cdnConfigNew = {\n${configLines}\n  }`
+    /const cdnConfigNew = locals\.dynatrace\?\.cdnConfigNew \|\| \{[^}]+\}/s,
+    `const cdnConfigNew = locals.dynatrace?.cdnConfigNew || {\n${configLines}\n  }`
   );
 
   fs.writeFileSync(ejsPath, content, 'utf8');
-  console.log("   ✅ Updated dynatrace.ejs (cdnUrlsNew + cdnIntegrityNew + cdnConfigNew)");
+  console.log("   ✅ Updated dynatrace.ejs fallback values");
+}
+
+function writeCdnConfigJson(results) {
+  const values = extractEnvValues(results);
+  const config = {
+    generated: new Date().toISOString(),
+    ...values,
+  };
+  const configPath = path.join(__dirname, 'dynatrace-rum-config.json');
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+  console.log("   ✅ Wrote dynatrace-rum-config.json (publish this to CDN for Snow)");
 }
 
 async function fetchScripts() {
@@ -254,14 +272,18 @@ async function fetchScripts() {
       }
     }
 
-    // Update dynatrace.ejs with new CDN URLs and per-env integrity hashes
+    // Update dynatrace.ejs fallback values and write CDN config JSON
+    console.log("\n📝 Updating files...\n");
     updateDynatraceEjs(results);
+    writeCdnConfigJson(results);
 
-    console.log("\n✨ Scripts fetched and all files updated successfully!");
+    console.log("\n✨ Done!");
     console.log("\nNext steps:");
-    console.log("1. ✅ Inline scripts written to _inline_*_new.ejs files");
-    console.log("2. ✅ dynatrace.ejs updated with new CDN URLs and integrity hashes");
-    console.log("3. Test all three mechanisms (asyncCS-script, asyncCS-inline, global-cdn)");
+    console.log("1. ✅ _inline_*_new.ejs files written");
+    console.log("2. ✅ dynatrace.ejs fallback values updated");
+    console.log("3. ✅ dynatrace-rum-config.json written — publish to CDN for Snow to consume");
+    console.log("4. Commit and deploy react-scripts to update the fallback values");
+    console.log("5. Test all three mechanisms (asyncCS-script, asyncCS-inline, global-cdn)");
 
     return results;
   } catch (error) {
