@@ -46,29 +46,58 @@ if (typeof getFeatureFlag !== 'undefined') {
     <% if (useNewRUM) { %>
       <!-- For new RUM, inline script has correct JSON config that external script can read -->
       <%- include(`./partials/dynatrace/_inline_${env}_new`) %>
+      <!-- Report loading mechanism immediately after inline script loads -->
+      <script type="text/javascript">
+        if (typeof window !== 'undefined' && window.dtrum) {
+          window.dtrum.reportCustomMetric('rum_loading_mechanism', 0, 'asyncCS-script');
+        }
+      </script>
     <% } else { %>
       <script type="text/javascript" src="<%= edgeUrls[env] %>" crossorigin="anonymous"></script>
+      <!-- Report loading mechanism for old RUM -->
+      <script type="text/javascript">
+        if (typeof window !== 'undefined' && window.dtrum) {
+          window.dtrum.reportCustomMetric('rum_loading_mechanism', 0, 'asyncCS-script');
+        }
+      </script>
     <% } %>
   <% } else if (dynatraceFlag.treatment === 'asyncCS-inline') { %>
     <% if (useNewRUM) { %>
       <%- include(`./partials/dynatrace/_inline_${env}_new`) %>
+      <!-- Report loading mechanism immediately after inline script loads -->
+      <script type="text/javascript">
+        if (typeof window !== 'undefined' && window.dtrum) {
+          window.dtrum.reportCustomMetric('rum_loading_mechanism', 0, 'asyncCS-inline');
+        }
+      </script>
     <% } else { %>
       <%- include(`./partials/dynatrace/_inline_${env}`) %>
+      <!-- Report loading mechanism for old RUM -->
+      <script type="text/javascript">
+        if (typeof window !== 'undefined' && window.dtrum) {
+          window.dtrum.reportCustomMetric('rum_loading_mechanism', 0, 'asyncCS-inline');
+        }
+      </script>
     <% } %>
   <% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
     <% if (useNewRUM) { %>
       <!-- For new RUM, inline script has correct JSON config that external script can read -->
       <%- include(`./partials/dynatrace/_inline_${env}_new`) %>
+      <!-- Report loading mechanism immediately after inline script loads -->
+      <script type="text/javascript">
+        if (typeof window !== 'undefined' && window.dtrum) {
+          window.dtrum.reportCustomMetric('rum_loading_mechanism', 0, 'global-cdn');
+        }
+      </script>
     <% } else { %>
       <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous"></script>
+      <!-- Report loading mechanism for old RUM -->
+      <script type="text/javascript">
+        if (typeof window !== 'undefined' && window.dtrum) {
+          window.dtrum.reportCustomMetric('rum_loading_mechanism', 0, 'global-cdn');
+        }
+      </script>
     <% } %>
   <% } %>
-
-  <!-- Report RUM loading mechanism for performance comparison -->
-  <script type="text/javascript">
-    if (typeof window !== 'undefined' && window.dtrum) {
-      window.dtrum.reportCustomMetric('rum_loading_mechanism', 0, '<%= dynatraceFlag.treatment %>');
-    }
-  </script>
 
 <% } %>
