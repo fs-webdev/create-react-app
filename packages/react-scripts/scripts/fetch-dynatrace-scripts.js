@@ -145,16 +145,16 @@ async function makeRequest(hostname, path) {
 function extractEnvValues(results) {
   const envs = Object.keys(results);
   return {
-    cdnUrlsNew: Object.fromEntries(envs.map(env => [
+    cdnUrls: Object.fromEntries(envs.map(env => [
       env, results[env].completeTag.match(/src="([^"]+)"/)?.[1] || ''
     ])),
-    cdnIntegrityNew: Object.fromEntries(envs.map(env => [
+    cdnIntegrity: Object.fromEntries(envs.map(env => [
       env, results[env].completeTag.match(/integrity="([^"]+)"/)?.[1] || ''
     ])),
-    cdnConfigNew: Object.fromEntries(envs.map(env => [
+    cdnConfig: Object.fromEntries(envs.map(env => [
       env, results[env].completeTag.match(/data-dtconfig="([^"]+)"/)?.[1] || ''
     ])),
-    inlineScriptNew: Object.fromEntries(envs.map(env => [
+    inlineScript: Object.fromEntries(envs.map(env => [
       env, results[env].completeTag.trim()
     ])),
   };
@@ -165,25 +165,25 @@ function updateDynatraceEjs(results) {
   let content = fs.readFileSync(ejsPath, 'utf8');
   const values = extractEnvValues(results);
 
-  const urlLines = Object.entries(values.cdnUrlsNew).map(([env, url]) =>
+  const urlLines = Object.entries(values.cdnUrls).map(([env, url]) =>
     `    ${env}: '${url}'`).join(',\n');
   content = content.replace(
     /const cdnUrlsNew = locals\.dynatrace\?\.cdnUrlsNew \|\| \{[^}]+\}/s,
-    `const cdnUrlsNew = locals.dynatrace?.cdnUrlsNew || {\n${urlLines}\n  }`
+    `const cdnUrlsNew = locals.dynatrace?.cdnUrls || {\n${urlLines}\n  }`
   );
 
-  const integrityLines = Object.entries(values.cdnIntegrityNew).map(([env, hash]) =>
+  const integrityLines = Object.entries(values.cdnIntegrity).map(([env, hash]) =>
     `    ${env}: '${hash}'`).join(',\n');
   content = content.replace(
     /const cdnIntegrityNew = locals\.dynatrace\?\.cdnIntegrityNew \|\| \{[^}]+\}/s,
-    `const cdnIntegrityNew = locals.dynatrace?.cdnIntegrityNew || {\n${integrityLines}\n  }`
+    `const cdnIntegrityNew = locals.dynatrace?.cdnIntegrity || {\n${integrityLines}\n  }`
   );
 
-  const configLines = Object.entries(values.cdnConfigNew).map(([env, cfg]) =>
+  const configLines = Object.entries(values.cdnConfig).map(([env, cfg]) =>
     `    ${env}: '${cfg}'`).join(',\n');
   content = content.replace(
     /const cdnConfigNew = locals\.dynatrace\?\.cdnConfigNew \|\| \{[^}]+\}/s,
-    `const cdnConfigNew = locals.dynatrace?.cdnConfigNew || {\n${configLines}\n  }`
+    `const cdnConfigNew = locals.dynatrace?.cdnConfig || {\n${configLines}\n  }`
   );
 
   fs.writeFileSync(ejsPath, content, 'utf8');
