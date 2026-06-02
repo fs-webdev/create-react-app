@@ -97,7 +97,7 @@ const DYNATRACE_ENVIRONMENT_URL = process.env.DYNATRACE_ENV_URL || "https://bjm3
 const DYNATRACE_API_TOKEN = process.env.DYNATRACE_API_TOKEN || getKeychainSecret(KEYCHAIN_SERVICE_DYNATRACE);
 
 // S3 CDN configuration (for publishing dynatrace-rum-config.json via AWS CLI)
-const S3_PUBLISH_BUCKET = process.env.S3_PUBLISH_BUCKET || "frontier-rum-config";
+const S3_PUBLISH_BUCKET = process.env.S3_PUBLISH_BUCKET || "fs-static-prod/assets/dynatrace";
 const S3_PUBLISH_REGION = process.env.S3_PUBLISH_REGION || "us-east-1";
 
 // Entity IDs for your RUM applications in each environment
@@ -209,7 +209,7 @@ async function publishToS3(config) {
     fs.writeFileSync(tempFile, configJson, 'utf8');
 
     // Use AWS CLI for S3 upload (leverages configured AWS credentials)
-    const awsCmd = `aws s3 cp "${tempFile}" s3://${S3_PUBLISH_BUCKET}/dynatrace-rum-config.json --region ${S3_PUBLISH_REGION} --metadata "generated=$(date +%s)" --cache-control "max-age=300"`;
+    const awsCmd = `aws s3 cp "${tempFile}" s3://${S3_PUBLISH_BUCKET}/dynatrace-rum-config.json --region ${S3_PUBLISH_REGION} --metadata "generated=$(date +%s)" --cache-control "max-age=300" --acl public-read`;
 
     execSync(awsCmd, { stdio: 'inherit' });
     fs.unlinkSync(tempFile);
