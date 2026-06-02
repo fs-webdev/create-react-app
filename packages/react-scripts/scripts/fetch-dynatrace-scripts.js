@@ -3,24 +3,34 @@
  * Dynatrace RUM Script Fetcher
  *
  * Fetches the latest RUM inline scripts and tags from Dynatrace using the API.
- * Automatically updates inline script files and displays CDN URLs for updating dynatrace.ejs.
- * Requires Dynatrace API token with RUM manual insertion tags read scope.
+ * Automatically updates inline script files, dynatrace.ejs fallbacks, and publishes
+ * dynatrace-rum-config.json to S3 for Snow to consume.
  *
- * IMPORTANT: This API may not be available on all Dynatrace instances or configurations.
- * If the API is not accessible, fetch scripts manually from:
+ * Requires:
+ *   - Dynatrace API token with "Read RUM manual insertion tags" scope
+ *   - AWS CLI configured with S3 write access to the CDN bucket
+ *
+ * IMPORTANT: Dynatrace API may not be available on all instances.
+ * If unavailable, fetch scripts manually from:
  *   Dynatrace UI → Settings → Real User Monitoring → Managed JavaScript
- *   (copy the inline script and CDN URL for each environment)
  *
  * Usage:
- *   node fetch-dynatrace-scripts.js                        # reads token from macOS keychain
+ *   node fetch-dynatrace-scripts.js                        # reads token from keychain
  *   DYNATRACE_API_TOKEN="xxx" node fetch-dynatrace-scripts.js  # override for one run
  *
- * Token setup (one-time):
- *   security add-generic-password -a dynatrace-rum-fetch -s dynatrace-api-token -w
+ * Setup (one-time):
+ *   1. Store Dynatrace API token in keychain:
+ *      security add-generic-password -a dynatrace-rum-fetch -s dynatrace-api-token -w
+ *
+ *   2. Configure AWS CLI (uses standard AWS credential chain):
+ *      aws configure          # or set AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY env vars
+ *      aws s3 ls              # verify you have S3 access
  *
  * Configuration:
- *   - Token is auto-read from keychain; set DYNATRACE_API_TOKEN env var to override
- *   - Update DYNATRACE_ENVIRONMENT_URL and ENTITY_IDS below with your values
+ *   - Dynatrace token: auto-read from keychain; override with DYNATRACE_API_TOKEN
+ *   - AWS credentials: read via AWS CLI (no keychain needed; uses ~/.aws/credentials or env vars)
+ *   - S3 bucket/region: set via S3_PUBLISH_BUCKET and S3_PUBLISH_REGION env vars
+ *   - Dynatrace/Entity IDs: set via DYNATRACE_ENV_URL and *_ENTITY_ID env vars
  *
  * API Documentation:
  *   https://docs.dynatrace.com/docs/dynatrace-api/environment-api/rum/rum-manual-insertion-tags
@@ -32,15 +42,16 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const KEYCHAIN_ACCOUNT = 'dynatrace-rum-fetch';
-const KEYCHAIN_SERVICE = 'dynatrace-api-token';
+const KEYCHAIN_SERVICE_DYNATRACE = 'dynatrace-api-token';
+const KEYCHAIN_SERVICE_S3 = 's3-publish-key';
 
-function getTokenFromKeychain() {
+function getKeychainSecret(service) {
   try {
-    const token = execSync(
-      `security find-generic-password -a "${KEYCHAIN_ACCOUNT}" -s "${KEYCHAIN_SERVICE}" -w`,
+    const secret = execSync(
+      `security find-generic-password -a "${KEYCHAIN_ACCOUNT}" -s "${service}" -w`,
       { stdio: ['pipe', 'pipe', 'pipe'] }
     ).toString().trim();
-    return token || null;
+    return secret || null;
   } catch {
     return null;
   }
@@ -48,34 +59,46 @@ function getTokenFromKeychain() {
 
 function printKeychainSetupInstructions() {
   console.error(`
-ERROR: No Dynatrace API token found.
+ERROR: No Dynatrace API token found in keychain.
 
-To store your token in the macOS keychain (one-time setup):
+To store your Dynatrace token (one-time setup):
 
   security add-generic-password \\
     -a "${KEYCHAIN_ACCOUNT}" \\
-    -s "${KEYCHAIN_SERVICE}" \\
+    -s "${KEYCHAIN_SERVICE_DYNATRACE}" \\
     -w
 
-You'll be prompted to enter the token value (it won't appear in shell history).
+You'll be prompted to enter the token (won't appear in shell history).
 
-To get a token:
+To get a Dynatrace token:
   1. Log into https://bjm35087.live.dynatrace.com
   2. Go to Account → Access Tokens → Generate new token
   3. Add scope: "Read RUM manual insertion tags"
+  4. Paste the token when prompted above
 
 To update an existing token:
-  security delete-generic-password -a "${KEYCHAIN_ACCOUNT}" -s "${KEYCHAIN_SERVICE}"
-  security add-generic-password -a "${KEYCHAIN_ACCOUNT}" -s "${KEYCHAIN_SERVICE}" -w
+  security delete-generic-password -a "${KEYCHAIN_ACCOUNT}" -s "${KEYCHAIN_SERVICE_DYNATRACE}"
+  security add-generic-password -a "${KEYCHAIN_ACCOUNT}" -s "${KEYCHAIN_SERVICE_DYNATRACE}" -w
 
-Or override for a single run:
+For AWS S3 access (used for publishing config):
+  Ensure AWS CLI is configured with credentials:
+    aws configure
+  Or set environment variables:
+    export AWS_ACCESS_KEY_ID="your-key"
+    export AWS_SECRET_ACCESS_KEY="your-secret"
+
+Or override Dynatrace token for a single run:
   DYNATRACE_API_TOKEN="dt0c01.xxx" node fetch-dynatrace-scripts.js
 `);
 }
 
 // Configuration
 const DYNATRACE_ENVIRONMENT_URL = process.env.DYNATRACE_ENV_URL || "https://bjm35087.live.dynatrace.com";
-const DYNATRACE_API_TOKEN = process.env.DYNATRACE_API_TOKEN || getTokenFromKeychain();
+const DYNATRACE_API_TOKEN = process.env.DYNATRACE_API_TOKEN || getKeychainSecret(KEYCHAIN_SERVICE_DYNATRACE);
+
+// S3 CDN configuration (for publishing dynatrace-rum-config.json via AWS CLI)
+const S3_PUBLISH_BUCKET = process.env.S3_PUBLISH_BUCKET || "frontier-rum-config";
+const S3_PUBLISH_REGION = process.env.S3_PUBLISH_REGION || "us-east-1";
 
 // Entity IDs for your RUM applications in each environment
 // Get from Dynatrace UI: Applications → select app → Settings → note the entity ID
@@ -175,7 +198,29 @@ function writeCdnConfigJson(results) {
   };
   const configPath = path.join(__dirname, 'dynatrace-rum-config.json');
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
-  console.log("   ✅ Wrote dynatrace-rum-config.json (publish this to CDN for Snow)");
+  console.log("   ✅ Wrote dynatrace-rum-config.json");
+  return config;
+}
+
+async function publishToS3(config) {
+  try {
+    const configJson = JSON.stringify(config);
+    const tempFile = path.join(__dirname, '.dynatrace-rum-config-temp.json');
+    fs.writeFileSync(tempFile, configJson, 'utf8');
+
+    // Use AWS CLI for S3 upload (leverages configured AWS credentials)
+    const awsCmd = `aws s3 cp "${tempFile}" s3://${S3_PUBLISH_BUCKET}/dynatrace-rum-config.json --region ${S3_PUBLISH_REGION} --metadata "generated=$(date +%s)" --cache-control "max-age=300"`;
+
+    execSync(awsCmd, { stdio: 'inherit' });
+    fs.unlinkSync(tempFile);
+
+    console.log(`   ✅ Published dynatrace-rum-config.json to S3 (s3://${S3_PUBLISH_BUCKET}/dynatrace-rum-config.json)`);
+  } catch (error) {
+    console.error(`   ❌ Failed to publish to S3: ${error.message}`);
+    console.error(`      Ensure AWS CLI is installed and configured with appropriate credentials:`);
+    console.error(`      aws configure`);
+    throw error;
+  }
 }
 
 async function fetchScripts() {
@@ -275,13 +320,17 @@ async function fetchScripts() {
     // Update dynatrace.ejs fallback values and write CDN config JSON
     console.log("\n📝 Updating files...\n");
     updateDynatraceEjs(results);
-    writeCdnConfigJson(results);
+    const cdnConfig = writeCdnConfigJson(results);
+
+    // Publish to S3
+    console.log("\n📤 Publishing to S3...\n");
+    await publishToS3(cdnConfig);
 
     console.log("\n✨ Done!");
     console.log("\nNext steps:");
     console.log("1. ✅ _inline_*_new.ejs files written");
     console.log("2. ✅ dynatrace.ejs fallback values updated");
-    console.log("3. ✅ dynatrace-rum-config.json written — publish to CDN for Snow to consume");
+    console.log("3. ✅ dynatrace-rum-config.json published to S3");
     console.log("4. Commit and deploy react-scripts to update the fallback values");
     console.log("5. Test all three mechanisms (asyncCS-script, asyncCS-inline, global-cdn)");
 
