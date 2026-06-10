@@ -49,8 +49,7 @@ if (typeof getFeatureFlag !== 'undefined') {
         <%- locals.dynatrace.inlineScript[env] %>
       <% } else { %>
         <!-- Fallback: Load new RUM from CDN asynchronously -->
-        <% const inlineNewPath = 'partials/dynatrace/_inline_' + env + '_new'; %>
-        <% include inlineNewPath %>
+        <%- include('./partials/dynatrace/_inline_' + env + '_new') %>
       <% } %>
     <% } else { %>
       <!-- Load old RUM from Edge CDN asynchronously -->
@@ -67,13 +66,11 @@ if (typeof getFeatureFlag !== 'undefined') {
       <% if (locals.dynatrace?.inlineScript?.[env]) { %>
         <%- locals.dynatrace.inlineScript[env] %>
       <% } else { %>
-        <% const inlineNewPath2 = 'partials/dynatrace/_inline_' + env + '_new'; %>
-        <% include inlineNewPath2 %>
+        <%- include('./partials/dynatrace/_inline_' + env + '_new') %>
       <% } %>
       <!-- Report loading mechanism immediately after inline script loads -->
     <% } else { %>
-      <% const inlineOldPath = 'partials/dynatrace/_inline_' + env; %>
-      <% include inlineOldPath %>
+      <%- include('./partials/dynatrace/_inline_' + env) %>
     <% } %>
   <% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
     <% if (useNewRUM) { %>
@@ -81,8 +78,7 @@ if (typeof getFeatureFlag !== 'undefined') {
         <%- locals.dynatrace.inlineScript[env] %>
       <% } else { %>
         <!-- Fallback: Load new RUM from Dynatrace CDN (global, synchronous by default) -->
-        <% const inlineNewPath3 = 'partials/dynatrace/_inline_' + env + '_new'; %>
-        <% include inlineNewPath3 %>
+        <%- include('./partials/dynatrace/_inline_' + env + '_new') %>
       <% } %>
     <% } else { %>
       <!-- Load old RUM from Dynatrace CDN -->
