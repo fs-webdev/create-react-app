@@ -6,6 +6,7 @@ if (typeof getFeatureFlag !== 'undefined') {
   const dynatraceNewFlag = getFeatureFlag('frontier_snow_dynatraceNewRUM', {appName: process.env.APP_NAME});
   const env = envType();
   const useNewRUM = dynatraceNewFlag.isOn;
+  console.log('[dynatrace.ejs] Loaded - env:', env, 'useNewRUM:', useNewRUM, 'treatment:', dynatraceFlag.treatment);
 
   // Old RUM version URLs
   const cdnUrls = {
@@ -47,8 +48,10 @@ if (typeof getFeatureFlag !== 'undefined') {
     <% if (useNewRUM) { %>
       <% if (locals.dynatrace?.inlineScript?.[env]) { %>
         <%- locals.dynatrace.inlineScript[env] %>
+        <% console.log('[dynatrace.ejs] asyncCS-script: Using inlineScript from locals'); %>
       <% } else { %>
         <!-- Fallback: Load new RUM from CDN asynchronously -->
+        <% console.log('[dynatrace.ejs] asyncCS-script: Using fallback include for env=' + env); %>
         <%- include('./partials/dynatrace/_inline_' + env + '_new') %>
       <% } %>
     <% } else { %>
@@ -65,19 +68,24 @@ if (typeof getFeatureFlag !== 'undefined') {
     <% if (useNewRUM) { %>
       <% if (locals.dynatrace?.inlineScript?.[env]) { %>
         <%- locals.dynatrace.inlineScript[env] %>
+        <% console.log('[dynatrace.ejs] asyncCS-inline: Using inlineScript from locals'); %>
       <% } else { %>
+        <% console.log('[dynatrace.ejs] asyncCS-inline: Using fallback include for env=' + env); %>
         <%- include('./partials/dynatrace/_inline_' + env + '_new') %>
       <% } %>
       <!-- Report loading mechanism immediately after inline script loads -->
     <% } else { %>
+      <% console.log('[dynatrace.ejs] asyncCS-inline (old RUM): Using fallback include for env=' + env); %>
       <%- include('./partials/dynatrace/_inline_' + env) %>
     <% } %>
   <% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
     <% if (useNewRUM) { %>
       <% if (locals.dynatrace?.inlineScript?.[env]) { %>
         <%- locals.dynatrace.inlineScript[env] %>
+        <% console.log('[dynatrace.ejs] global-cdn: Using inlineScript from locals'); %>
       <% } else { %>
         <!-- Fallback: Load new RUM from Dynatrace CDN (global, synchronous by default) -->
+        <% console.log('[dynatrace.ejs] global-cdn: Using fallback include for env=' + env); %>
         <%- include('./partials/dynatrace/_inline_' + env + '_new') %>
       <% } %>
     <% } else { %>
