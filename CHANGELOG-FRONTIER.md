@@ -1,14 +1,16 @@
 ## 8.17.0
 
 - Upgrade Dynatrace RUM agent to version 1.329+ and enable new RUM experience
-  - Updated inline scripts for all three environments (int, beta, prod) to latest agent version (10337260504112723)
-  - Updated global CDN URLs to use SRI (Subresource Integrity) variant with integrity hashes for added security
-  - Added new feature flag `frontier_snow_dynatraceNewRUM` to control RUM version selection (gradual rollout support)
-  - All three loading mechanisms (asyncCS-script, asyncCS-inline, global-cdn) now support new RUM version
-  - Existing `frontier_snow_dynatraceRUM` flag still controls mechanism selection; new flag controls version
-  - New RUM experience includes enhanced data collection with owasp=1 and uxrgce=1 parameters
-  - When new flag is OFF: uses existing RUM version and URLs (backward compatible)
-  - When new flag is ON: uses new 1.329+ version with SRI integrity checks
+  - Added feature flag `frontier_snow_dynatraceNewRUM` to control RUM version selection (gradual rollout); the existing `frontier_snow_dynatraceRUM` flag still selects the loading mechanism
+  - New RUM is loaded exclusively via `<script>` tags (never inlined). This fixes a 500 error (`Could not find matching close tag for "<%"`) caused by EJS `include()` compiling the agent JS as a template — the new agent's minified code contains the `<%` sequence — and avoids re-shipping 300–460 KB on every page view
+  - Mapped each mechanism to a Dynatrace snippet format for the new RUM (treatment names kept for old-RUM compatibility):
+    - `asyncCS-script` → OneAgent JavaScript tag + SRI, loaded `async`
+    - `asyncCS-inline` → OneAgent JavaScript tag + SRI, loaded `sync` (closest analog to the old sync inline bootstrap; the new RUM has no small-bootstrap format, so this no longer inlines)
+    - `global-cdn` → JavaScript tag (`_complete.js`), loaded `async`
+  - SRI (Subresource Integrity) integrity hashes and `data-dtconfig` are emitted on the OneAgent tags; new RUM includes enhanced data collection (owasp=1, uxrgce=1)
+  - Snow can supply fresh values at runtime via `locals.dynatrace.*` (`cdnUrls`/`cdnIntegrity`/`cdnConfig`/`cdnCompleteUrls`), published to S3 as `dynatrace-rum-config.json`; publish-time fallbacks are baked into `dynatrace.ejs`
+  - `fetch-dynatrace-scripts.js` no longer fetches `/inlineCode` or writes `_inline_*_new.ejs`; old-RUM `_inline_*.ejs` bootstrap files are unchanged
+  - When the new flag is OFF: uses the existing RUM version and URLs (backward compatible)
 
 ## 8.16.0
 

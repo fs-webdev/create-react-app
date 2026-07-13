@@ -24,83 +24,76 @@ if (typeof getFeatureFlag !== 'undefined') {
   // New RUM 1.329+ — Snow provides fresh values via locals.dynatrace (from CDN config file);
   // fallback to values current at react-scripts publish time.
   const cdnUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnUrls) || {
-    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10337260504112723.js',
-    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js',
-    prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js'
+    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10337260526121002.js',
+    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260526121002.js',
+    prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260526121002.js'
   }
 
   const cdnIntegrityNew = (locals && locals.dynatrace && locals.dynatrace.cdnIntegrity) || {
-    int: 'sha256-KHFYWCusB88n37My9yKVX/ES9BX6Wy+k74hsDScU5jY=',
-    beta: 'sha256-6PrnNTp1/05LJTqnB9OOhKEVMId1XHk4Xa1x3cPF2Ec=',
-    prod: 'sha256-6PrnNTp1/05LJTqnB9OOhKEVMId1XHk4Xa1x3cPF2Ec='
+    int: 'sha256-E9xfiBmPogHrbv/6I2PQj3vHKrnaNHm6m4qQYSbapMc=',
+    beta: 'sha256-W1Z7sTNT6A8JAPs/xxCDc5hRtx1gY5aKfuYP48xO/Rc=',
+    prod: 'sha256-W1Z7sTNT6A8JAPs/xxCDc5hRtx1gY5aKfuYP48xO/Rc='
   }
 
   const cdnConfigNew = (locals && locals.dynatrace && locals.dynatrace.cdnConfig) || {
-    int: 'app=3faf90e849295814|cors=1|owasp=1|featureHash=ICA15789NPQRTUVXfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.User.profile.cisId,mdcc3=bs.pageName,mdcc4=bFS.attrs.anonId,mdcc5=bFS.attrs.country,mdcc6=bFS.attrs.cisId|lastModification=1780298395720|mdp=mdcc4,mdcc5|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10337260504112723.js',
-    beta: 'app=c4242bb1eb216374|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=fx-ratelimit-remaining,mdcc5=bs.campaign,mdcc6=bs.channel,mdcc7=bs.pageName,mdcc8=bs.pageURL,mdcc9=bs.pageType,mdcc10=bs.visitorID|lastModification=1780298395720|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js',
-    prod: 'app=a8e5edd77f861ace|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|vcx=1500|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|vcit=8000|cuc=t0rtn87t|srms=2,2,1,|mdl=mdcc11=20|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=bs.pageName,mdcc5=bs.pageType,mdcc6=bs.pageURL,mdcc7=bs.visitorID,mdcc8=bs.campaign,mdcc9=bs.channel,mdcc10=fx-ratelimit-remaining,mdcc11=bdocument.referrer,mdcc12=dutm_campaign,mdcc13=dutm_source,mdcc14=dutm_medium|lastModification=1780298395720|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260504112723.js'
+    int: 'app=3faf90e849295814|cors=1|owasp=1|featureHash=ICA15789NPQRTUVXfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.User.profile.cisId,mdcc3=bs.pageName,mdcc4=bFS.attrs.anonId,mdcc5=bFS.attrs.country,mdcc6=bFS.attrs.cisId|lastModification=1780948335238|mdp=mdcc4,mdcc5|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10337260526121002.js',
+    beta: 'app=c4242bb1eb216374|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=fx-ratelimit-remaining,mdcc5=bs.campaign,mdcc6=bs.channel,mdcc7=bs.pageName,mdcc8=bs.pageURL,mdcc9=bs.pageType,mdcc10=bs.visitorID|lastModification=1780948335238|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260526121002.js',
+    prod: 'app=a8e5edd77f861ace|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|vcx=1500|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|vcit=8000|cuc=t0rtn87t|srms=2,2,1,|mdl=mdcc11=20|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=bs.pageName,mdcc5=bs.pageType,mdcc6=bs.pageURL,mdcc7=bs.visitorID,mdcc8=bs.campaign,mdcc9=bs.channel,mdcc10=fx-ratelimit-remaining,mdcc11=bdocument.referrer,mdcc12=dutm_campaign,mdcc13=dutm_source,mdcc14=dutm_medium|lastModification=1780948335238|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260526121002.js'
   }
 
-  const selectedCdnUrls = useNewRUM ? cdnUrlsNew : cdnUrls;
-  const selectedCdnConfig = useNewRUM ? cdnConfigNew : {};
+  // New RUM JavaScript tag (combined code+config _complete.js) from the Dynatrace global CDN.
+  // Snow provides fresh values via locals.dynatrace.cdnCompleteUrls; fallback to publish-time values.
+  const cdnCompleteUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnCompleteUrls) || {
+    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/3faf90e849295814_complete.js',
+    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/c4242bb1eb216374_complete.js',
+    prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/a8e5edd77f861ace_complete.js'
+  }
 
-  // Pre-compute include paths to avoid EJS parsing issues with string concatenation
-  const inlinePathNew = './partials/dynatrace/_inline_' + env + '_new';
+  // Old-RUM inline bootstrap include path: a small sync stub that begins capture, then async-loads
+  // the full library. The new RUM has no equivalent small-bootstrap format, so this include is used
+  // for old RUM only. (The agent JS must NOT be run through EJS include() — see below.)
   const inlinePathOld = './partials/dynatrace/_inline_' + env;
-  const hasInlineScript = locals && locals.dynatrace && locals.dynatrace.inlineScript && locals.dynatrace.inlineScript[env];
 
+  // NOTE: the new RUM is loaded exclusively via script tags built from cdnUrlsNew / cdnConfigNew /
+  // cdnIntegrityNew / cdnCompleteUrlsNew. We deliberately do NOT include() the inline agent for the
+  // new RUM: EJS compiles included files as templates, and the new agent's minified JS contains the
+  // two-character EJS open-delimiter sequence (a less-than sign immediately followed by a percent
+  // sign) inside a character-class string, which EJS misreads as an unterminated scriptlet and
+  // fails with "Could not find matching close tag". Emitting a script tag sidesteps that entirely.
   if (dynatraceFlag.treatment === 'asyncCS-script') { %>
     <% if (useNewRUM) { %>
-      <% if (hasInlineScript) { %>
-        <%- locals.dynatrace.inlineScript[env] %>
-        <% console.log('[dynatrace.ejs] asyncCS-script: Using inlineScript from locals'); %>
-      <% } else { %>
-        <!-- Fallback: Load new RUM from CDN asynchronously -->
-        <% console.log('[dynatrace.ejs] asyncCS-script: Using fallback include for env=' + env); %>
-        <%- include(inlinePathNew) %>
-      <% } %>
+      <!-- New RUM: OneAgent JS tag + SRI, loaded async (non-blocking; blind window until the agent
+           downloads and executes — earliest user actions / XHRs may be missed) -->
+      <script type="text/javascript" src="<%= cdnUrlsNew[env] %>" data-dtconfig="<%= cdnConfigNew[env] %>" integrity="<%= cdnIntegrityNew[env] %>" crossorigin="anonymous" async></script>
     <% } else { %>
-      <!-- Load old RUM from Edge CDN asynchronously -->
+      <!-- Old RUM: load from Edge CDN asynchronously -->
       <script type="text/javascript" src="<%= edgeUrls[env] %>" crossorigin="anonymous" async></script>
     <% } %>
-    <!-- Report loading mechanism immediately -->
-    <script type="text/javascript">
-      if (typeof window !== 'undefined' && window.dtrum) {
-        window.dtrum.reportCustomMetric('rum_loading_mechanism', 0, 'asyncCS-script');
-      }
-    </script>
   <% } else if (dynatraceFlag.treatment === 'asyncCS-inline') { %>
     <% if (useNewRUM) { %>
-      <% if (hasInlineScript) { %>
-        <%- locals.dynatrace.inlineScript[env] %>
-        <% console.log('[dynatrace.ejs] asyncCS-inline: Using inlineScript from locals'); %>
-      <% } else { %>
-        <% console.log('[dynatrace.ejs] asyncCS-inline: Using fallback include for env=' + env); %>
-        <%- include(inlinePathNew) %>
-      <% } %>
-      <!-- Report loading mechanism immediately after inline script loads -->
+      <!-- New RUM: there is no small-bootstrap snippet format. The closest analog to the old sync
+           inline bootstrap is the OneAgent JS tag + SRI loaded SYNCHRONOUSLY: full early capture,
+           parse-blocks only on the first uncached load, then free on warm cache (the versioned URL is
+           cacheable up to one year). NOTE: this no longer inlines the agent — the treatment name is
+           retained for old-RUM compatibility; see DYNATRACE_RUM_UPDATE.md for the remap rationale. -->
+      <script type="text/javascript" src="<%= cdnUrlsNew[env] %>" data-dtconfig="<%= cdnConfigNew[env] %>" integrity="<%= cdnIntegrityNew[env] %>" crossorigin="anonymous"></script>
     <% } else { %>
-      <% console.log('[dynatrace.ejs] asyncCS-inline (old RUM): Using fallback include for env=' + env); %>
+      <!-- Old RUM: small inline bootstrap that begins capture then async-loads the full library -->
       <%- include(inlinePathOld) %>
     <% } %>
   <% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
     <% if (useNewRUM) { %>
-      <% if (hasInlineScript) { %>
-        <%- locals.dynatrace.inlineScript[env] %>
-        <% console.log('[dynatrace.ejs] global-cdn: Using inlineScript from locals'); %>
-      <% } else { %>
-        <!-- Fallback: Load new RUM from Dynatrace CDN (global, synchronous by default) -->
-        <% console.log('[dynatrace.ejs] global-cdn: Using fallback include for env=' + env); %>
-        <%- include(inlinePathNew) %>
-      <% } %>
+      <!-- New RUM: JavaScript tag (combined code+config _complete.js) from the Dynatrace global CDN,
+           loaded async (single request; the combined file is cached ~1 hour) -->
+      <script type="text/javascript" src="<%= cdnCompleteUrlsNew[env] %>" crossorigin="anonymous" async></script>
     <% } else { %>
-      <!-- Load old RUM from Dynatrace CDN -->
-      <script type="text/javascript" src="<%= selectedCdnUrls[env] %>" crossorigin="anonymous"></script>
+      <!-- Old RUM: combined _complete.js from the Dynatrace global CDN (synchronous) -->
+      <script type="text/javascript" src="<%= cdnUrls[env] %>" crossorigin="anonymous"></script>
     <% } %>
   <% } %>
   <script type="text/javascript">
     if (typeof window !== 'undefined' && window.dtrum) {
-      window.dtrum.sendSessionProperties({rum_loading_mechanism: "<%=dynatraceFlag?.treatment%>"});
+      window.dtrum.sendSessionProperties({rum_loading_mechanism: "<%= dynatraceFlag.treatment %>"});
     }
   </script>
 <% } %>

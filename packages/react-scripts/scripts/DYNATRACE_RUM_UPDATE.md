@@ -43,9 +43,11 @@ node packages/react-scripts/scripts/fetch-dynatrace-scripts.js
 ```
 
 The script will:
-1. ✅ **Automatically write inline scripts** to `_inline_*_new.ejs` files
-2. 📌 **Display CDN URLs** in copy-paste format
-3. 🔒 **Display integrity hashes** for SRI verification
+1. ✅ **Update the new-RUM fallback values** in `dynatrace.ejs` (`cdnUrlsNew`, `cdnIntegrityNew`, `cdnConfigNew`, `cdnCompleteUrlsNew`)
+2. ✅ **Write & publish** `dynatrace-rum-config.json` to S3 so Snow can supply fresh values via `locals.dynatrace.*` without a react-scripts redeploy
+3. 🔒 **Capture the SRI integrity hashes** and `data-dtconfig` for each environment
+
+> **The new RUM agent is never inlined.** The script no longer fetches `/inlineCode` or writes `_inline_*_new.ejs` files. Reason: EJS `include()` compiles the included file as a template, and the new agent's minified JS contains the two-character EJS open-delimiter sequence (a `<` immediately followed by a `%`) inside a string, which EJS misreads as an unterminated scriptlet ("Could not find matching close tag"). It also re-ships 300–460 KB on every page view. The new RUM loads exclusively via `<script>` tags. The old-RUM `_inline_*.ejs` bootstrap files are unaffected.
 
 ### Step 2: Update CDN URLs in dynatrace.ejs
 
@@ -76,39 +78,44 @@ const cdnIntegrityNew = '...' // Copy from script output
 
 ### Step 3: Test All Mechanisms
 
-The existing feature flag logic supports gradual rollout (see [dynatrace.ejs](./partials/dynatrace.ejs)):
+Two flags drive the experiment (see [dynatrace.ejs](./partials/dynatrace.ejs)):
 
-- **`frontier_snow_dynatraceRUM`**: Selects the loading mechanism (asyncCS-script, asyncCS-inline, or global-cdn)
+- **`frontier_snow_dynatraceRUM`**: Selects the loading mechanism (`asyncCS-script`, `asyncCS-inline`, or `global-cdn`)
 - **`frontier_snow_dynatraceNewRUM`**: Selects the RUM version (old or new)
 
-Test each mechanism:
+#### Treatment → snippet-format mapping
 
-```bash
-# For asyncCS-script (uses Edge CDN)
-# - Set frontier_snow_dynatraceRUM to "asyncCS-script"
-# - Verify script loads from edge.fscdn.org or Dynatrace CDN
+The three treatment names are **fixed** (apps still on old RUM depend on them), so for the new RUM we remap each treatment to a Dynatrace snippet format. This is intentional and documented here.
 
-# For asyncCS-inline (embedded inline)
-# - Set frontier_snow_dynatraceRUM to "asyncCS-inline"
-# - Verify script is embedded in HTML
+| Treatment | Old RUM (unchanged) | New RUM | Why |
+|---|---|---|---|
+| `asyncCS-script` | Edge CDN `<script async>` | **OneAgent JS tag + SRI, `async`** | Non-blocking; 1-year cached, integrity-verified. Measures the early-capture "blind window." |
+| `asyncCS-inline` | small inline bootstrap (`_inline_*.ejs`) | **OneAgent JS tag + SRI, `sync`** | New RUM has **no small-bootstrap format**; the sync SRI tag is the closest analog (full early capture; parse-blocks only on first uncached load, free on warm cache). **No longer inlines.** |
+| `global-cdn` | `_complete.js` (sync) | **JavaScript tag (`_complete.js`), `async`** | Combined code+config, single request, ~1-hour cache. The caching-strategy comparison point. |
 
-# For global-cdn (external from Dynatrace CDN)
-# - Set frontier_snow_dynatraceRUM to "global-cdn"
-# - Verify script loads from js-cdn.dynatrace.com
+`defer` is intentionally not tested: for a monitoring agent it strictly enlarges the un-instrumented early window for a negligible page-speed gain over `async`.
+
+What to verify per treatment (DevTools → Network / Elements):
+
+```text
+asyncCS-script (new) → <script src=".../sri/ruxitagent_…js" data-dtconfig integrity … async>
+asyncCS-inline (new) → same SRI tag but WITHOUT async (synchronous)
+global-cdn     (new) → <script src=".../{appId}_complete.js" async>   (no integrity/data-dtconfig; config is baked in)
 ```
+
+To gauge data loss between sync/async, compare RUM aggregates across treatments (user actions per session, captured XHR/fetch actions, JS error capture rate, and CWV) — or run a synthetic page that fires an early click + XHR + error and confirm each is captured under sync vs async.
 
 ### Step 4: Commit and Release
 
 ```bash
-# Stage all changes
+# Stage changes (dynatrace.ejs fallback values are auto-updated by the fetch script)
 git add packages/react-scripts/layout/views/partials/dynatrace.ejs
-git add packages/react-scripts/layout/views/partials/dynatrace/_inline_*_new.ejs
 
 # Commit with descriptive message
 git commit -m "Update Dynatrace RUM to latest version
 
-- Update inline scripts for int, beta, prod environments (via fetch-dynatrace-scripts.js)
-- Update CDN URLs with latest SRI integrity hashes
+- Update new-RUM fallback values (cdnUrls/cdnIntegrity/cdnConfig/cdnCompleteUrls) via fetch-dynatrace-scripts.js
+- Republish dynatrace-rum-config.json to S3
 - New RUM version includes enhanced data collection (owasp=1, uxrgce=1)"
 
 # Bump version in package.json (usually minor bump)
@@ -148,13 +155,13 @@ Key parts:
 ## Files Modified During Update
 
 ```
-packages/react-scripts/layout/views/partials/dynatrace.ejs
-packages/react-scripts/layout/views/partials/dynatrace/_inline_int_new.ejs
-packages/react-scripts/layout/views/partials/dynatrace/_inline_beta_new.ejs
-packages/react-scripts/layout/views/partials/dynatrace/_inline_prod_new.ejs
+packages/react-scripts/layout/views/partials/dynatrace.ejs   (fallback values auto-updated)
+packages/react-scripts/scripts/dynatrace-rum-config.json     (regenerated; also published to S3)
 packages/react-scripts/package.json (version bump)
 CHANGELOG-FRONTIER.md (add entry)
 ```
+
+> Note: the new RUM does **not** generate `_inline_*_new.ejs` files (the agent is loaded via `<script>` tags, never inlined). The old-RUM `_inline_*.ejs` bootstrap files remain and are not touched by this script.
 
 ## Troubleshooting
 

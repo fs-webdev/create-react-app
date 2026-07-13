@@ -52,7 +52,7 @@ function getKeychainSecret(service) {
       { stdio: ['pipe', 'pipe', 'pipe'] }
     ).toString().trim();
     return secret || null;
-  } catch {
+  } catch (error) {
     return null;
   }
 }
@@ -97,7 +97,7 @@ const DYNATRACE_ENVIRONMENT_URL = process.env.DYNATRACE_ENV_URL || "https://bjm3
 const DYNATRACE_API_TOKEN = process.env.DYNATRACE_API_TOKEN || getKeychainSecret(KEYCHAIN_SERVICE_DYNATRACE);
 
 // S3 CDN configuration (for publishing dynatrace-rum-config.json via AWS CLI)
-const S3_PUBLISH_BUCKET = process.env.S3_PUBLISH_BUCKET || "fs-static-prod/assets/dynatrace";
+const S3_PUBLISH_BUCKET = process.env.S3_PUBLISH_BUCKET || "fs-cdn2-origin/assets/dynatrace";
 const S3_PUBLISH_REGION = process.env.S3_PUBLISH_REGION || "us-east-1";
 
 // Entity IDs for your RUM applications in each environment
@@ -154,8 +154,9 @@ function extractEnvValues(results) {
     cdnConfig: Object.fromEntries(envs.map(env => [
       env, results[env].completeTag.match(/data-dtconfig="([^"]+)"/)?.[1] || ''
     ])),
-    inlineScript: Object.fromEntries(envs.map(env => [
-      env, results[env].completeTag.trim()
+    // Combined code+config file (the "JavaScript tag" _complete.js) used by the global-cdn treatment.
+    cdnCompleteUrls: Object.fromEntries(envs.map(env => [
+      env, results[env].simpleTag.match(/src="([^"]+)"/)?.[1] || ''
     ])),
   };
 }
@@ -165,26 +166,28 @@ function updateDynatraceEjs(results) {
   let content = fs.readFileSync(ejsPath, 'utf8');
   const values = extractEnvValues(results);
 
-  const urlLines = Object.entries(values.cdnUrls).map(([env, url]) =>
-    `    ${env}: '${url}'`).join(',\n');
-  content = content.replace(
-    /const cdnUrlsNew = locals\.dynatrace\?\.cdnUrlsNew \|\| \{[^}]+\}/s,
-    `const cdnUrlsNew = locals.dynatrace?.cdnUrls || {\n${urlLines}\n  }`
-  );
+  // Rewrite the hardcoded fallback object inside a
+  //   const <name> = (locals && locals.dynatrace && locals.dynatrace.<localsKey>) || { ... }
+  // block, preserving the locals-first progressive-enhancement guard.
+  const replaceFallback = (name, localsKey, map) => {
+    const lines = Object.entries(map).map(([env, v]) => `    ${env}: '${v}'`).join(',\n');
+    const re = new RegExp(
+      `const ${name} = \\(locals && locals\\.dynatrace && locals\\.dynatrace\\.${localsKey}\\) \\|\\| \\{[^}]+\\}`,
+      's'
+    );
+    if (!re.test(content)) {
+      console.warn(`   ⚠️  Could not find ${name} fallback block in dynatrace.ejs — skipped`);
+      return;
+    }
+    const replacement = `const ${name} = (locals && locals.dynatrace && locals.dynatrace.${localsKey}) || {\n${lines}\n  }`;
+    // Use a function replacement so '$' in values is not treated as a substitution token.
+    content = content.replace(re, () => replacement);
+  };
 
-  const integrityLines = Object.entries(values.cdnIntegrity).map(([env, hash]) =>
-    `    ${env}: '${hash}'`).join(',\n');
-  content = content.replace(
-    /const cdnIntegrityNew = locals\.dynatrace\?\.cdnIntegrityNew \|\| \{[^}]+\}/s,
-    `const cdnIntegrityNew = locals.dynatrace?.cdnIntegrity || {\n${integrityLines}\n  }`
-  );
-
-  const configLines = Object.entries(values.cdnConfig).map(([env, cfg]) =>
-    `    ${env}: '${cfg}'`).join(',\n');
-  content = content.replace(
-    /const cdnConfigNew = locals\.dynatrace\?\.cdnConfigNew \|\| \{[^}]+\}/s,
-    `const cdnConfigNew = locals.dynatrace?.cdnConfig || {\n${configLines}\n  }`
-  );
+  replaceFallback('cdnUrlsNew', 'cdnUrls', values.cdnUrls);
+  replaceFallback('cdnIntegrityNew', 'cdnIntegrity', values.cdnIntegrity);
+  replaceFallback('cdnConfigNew', 'cdnConfig', values.cdnConfig);
+  replaceFallback('cdnCompleteUrlsNew', 'cdnCompleteUrls', values.cdnCompleteUrls);
 
   fs.writeFileSync(ejsPath, content, 'utf8');
   console.log("   ✅ Updated dynatrace.ejs fallback values");
@@ -257,19 +260,16 @@ async function fetchScripts() {
         const tagPath = `${basePath}/api/v2/rum/oneAgentJavaScriptTagWithSri/${entityId}`;
         const tagResponse = await makeRequest(hostname, tagPath);
 
-        // Fetch inline code (actual JavaScript to embed)
-        const inlinePath = `${basePath}/api/v2/rum/inlineCode/${entityId}`;
-        const inlineResponse = await makeRequest(hostname, inlinePath);
-
+        // NOTE: we intentionally no longer fetch /inlineCode. The new RUM agent is loaded via
+        // <script> tags (SRI tag or _complete.js), never inlined: EJS include() compiles the agent
+        // JS as a template and chokes on the literal "<%" inside it. See dynatrace.ejs.
         results[env] = {
           simpleTag: simpleResponse.trim(),
           completeTag: tagResponse.trim(),
-          inlineCode: inlineResponse.trim(),
         };
 
         console.log(`   ✅ Simple tag fetched (${simpleResponse.length} chars)`);
         console.log(`   ✅ Complete tag fetched (${tagResponse.length} chars)`);
-        console.log(`   ✅ Inline code fetched (${inlineResponse.length} chars)`);
 
         // Extract CDN URL from both simple and complete tags
         const simpleSrcMatch = simpleResponse.match(/src="([^"]+)"/);
@@ -301,22 +301,6 @@ async function fetchScripts() {
       }
     }
 
-    // Write inline scripts to files
-    console.log("\n📝 Writing inline scripts to files...\n");
-
-    const inlineScriptDir = path.join(__dirname, '../layout/views/partials/dynatrace');
-
-    for (const [env, data] of Object.entries(results)) {
-      const inlineFilePath = path.join(inlineScriptDir, `_inline_${env}_new.ejs`);
-
-      try {
-        fs.writeFileSync(inlineFilePath, data.inlineCode, 'utf8');
-        console.log(`   ✅ Wrote ${path.basename(inlineFilePath)}`);
-      } catch (error) {
-        console.error(`   ❌ Failed to write ${env} inline script: ${error.message}`);
-      }
-    }
-
     // Update dynatrace.ejs fallback values and write CDN config JSON
     console.log("\n📝 Updating files...\n");
     updateDynatraceEjs(results);
@@ -328,11 +312,13 @@ async function fetchScripts() {
 
     console.log("\n✨ Done!");
     console.log("\nNext steps:");
-    console.log("1. ✅ _inline_*_new.ejs files written");
-    console.log("2. ✅ dynatrace.ejs fallback values updated");
-    console.log("3. ✅ dynatrace-rum-config.json published to S3");
-    console.log("4. Commit and deploy react-scripts to update the fallback values");
-    console.log("5. Test all three mechanisms (asyncCS-script, asyncCS-inline, global-cdn)");
+    console.log("1. ✅ dynatrace.ejs fallback values updated (cdnUrls/cdnIntegrity/cdnConfig/cdnCompleteUrls)");
+    console.log("2. ✅ dynatrace-rum-config.json published to S3");
+    console.log("3. Commit and deploy react-scripts to update the fallback values");
+    console.log("4. Test all three mechanisms for new RUM:");
+    console.log("     - asyncCS-script → OneAgent JS tag + SRI, async");
+    console.log("     - asyncCS-inline → OneAgent JS tag + SRI, sync (no longer inlines)");
+    console.log("     - global-cdn    → JavaScript tag (_complete.js), async");
 
     return results;
   } catch (error) {
