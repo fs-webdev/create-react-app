@@ -12,6 +12,12 @@
   - `fetch-dynatrace-scripts.js` no longer fetches `/inlineCode` or writes `_inline_*_new.ejs`; old-RUM `_inline_*.ejs` bootstrap files are unchanged
   - When the new flag is OFF: uses the existing RUM version and URLs (backward compatible)
 
+## 8.16.1
+
+- Convert layout.ejs includes from the removed EJS preprocessor syntax (`<% include x %>`) to the function form (`<%- include('x') %>`) ahead of the company-wide EJS 3 upgrade
+  - The function form renders identically on the current EJS 2 stack, so this is backward compatible and ships before @fs/snow adopts @fs/ejs-mate 3.x
+  - EJS 3 treats the old preprocessor syntax as a SyntaxError, so apps must pick up this layout before the snow-side upgrade
+
 ## 8.16.0
 
 - Enable Jest CLI argument passing through test wrapper scripts (fr-test and conditional-test)

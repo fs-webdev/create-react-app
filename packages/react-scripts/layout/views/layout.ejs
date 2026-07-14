@@ -39,12 +39,12 @@
     <% }) %>
 
     <% if (process.env.NODE_ENV === 'production') { %>
-      <% include partials/dynatrace %>
+      <%- include('partials/dynatrace') %>
     <% } %>
 
     <% if (getFeatureFlag('frontier_snow_unsupportedBrowser').isOn) { %>
       <script>
-        <% include ../modernizr.js %>
+        <%- include('../modernizr.js') %>
       </script>
     <% } %>
 
@@ -61,9 +61,9 @@
         SERVER_DATA.isLoggedIn = <%= isLoggedIn %>
       <% } %>
       SERVER_DATA.flagAttributes = <%- typeof flagAttributes !== 'undefined' ? JSON.stringify(flagAttributes) : JSON.stringify({}) %>;
-      <% include partials/experiments %>
-      <% include partials/sentry %>
-      <% include partials/clientAppConfig %>
+      <%- include('partials/experiments') %>
+      <%- include('partials/sentry') %>
+      <%- include('partials/clientAppConfig') %>
       if (window.dtrum) {
         window.dtrum.enableManualPageDetection()
         if (!window.dtinfo) window.dtinfo = {}
@@ -73,18 +73,18 @@
   </head>
   <body>
     <% if (getFeatureFlag('frontier_snow_unsupportedBrowser').isOn) { %>
-      <% include partials/unsupportedBrowserHeader %>
+      <%- include('partials/unsupportedBrowserHeader') %>
     <% } %>
     <%- body %>
 
     <% if (getFeatureFlag('frontier_snow_unsupportedBrowser').isOn) { %>
       <script>
-        <% include partials/featureDetection %>
+        <%- include('partials/featureDetection') %>
       </script>
     <% } %>
 
     <% if (getFeatureFlag('frontier_snow_browserWarnings').isOn) { %>
-      <% include partials/browserWarnings %>
+      <%- include('partials/browserWarnings') %>
     <% } %>
   </body>
 </html>
