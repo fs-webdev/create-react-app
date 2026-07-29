@@ -24,21 +24,21 @@ if (typeof getFeatureFlag !== 'undefined') {
   // New RUM 1.329+ — Snow provides fresh values via locals.dynatrace (from CDN config file);
   // fallback to values current at react-scripts publish time.
   const cdnUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnUrls) || {
-    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10337260526121002.js',
-    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260526121002.js',
-    prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260526121002.js'
+    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10341260622154106.js',
+    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10341260622154106.js',
+    prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10341260622154106.js'
   }
 
   const cdnIntegrityNew = (locals && locals.dynatrace && locals.dynatrace.cdnIntegrity) || {
-    int: 'sha256-E9xfiBmPogHrbv/6I2PQj3vHKrnaNHm6m4qQYSbapMc=',
-    beta: 'sha256-W1Z7sTNT6A8JAPs/xxCDc5hRtx1gY5aKfuYP48xO/Rc=',
-    prod: 'sha256-W1Z7sTNT6A8JAPs/xxCDc5hRtx1gY5aKfuYP48xO/Rc='
+    int: 'sha256-xCOvz0J22cpI/MIdcbEaVWANEPMHmZAKpeD8zTuMY/s=',
+    beta: 'sha256-eGB6PLc8ndZISmjwbbi4xZhE9nbarKf48bRKxVdha+8=',
+    prod: 'sha256-eGB6PLc8ndZISmjwbbi4xZhE9nbarKf48bRKxVdha+8='
   }
 
   const cdnConfigNew = (locals && locals.dynatrace && locals.dynatrace.cdnConfig) || {
-    int: 'app=3faf90e849295814|cors=1|owasp=1|featureHash=ICA15789NPQRTUVXfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.User.profile.cisId,mdcc3=bs.pageName,mdcc4=bFS.attrs.anonId,mdcc5=bFS.attrs.country,mdcc6=bFS.attrs.cisId|lastModification=1780948335238|mdp=mdcc4,mdcc5|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10337260526121002.js',
-    beta: 'app=c4242bb1eb216374|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=fx-ratelimit-remaining,mdcc5=bs.campaign,mdcc6=bs.channel,mdcc7=bs.pageName,mdcc8=bs.pageURL,mdcc9=bs.pageType,mdcc10=bs.visitorID|lastModification=1780948335238|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260526121002.js',
-    prod: 'app=a8e5edd77f861ace|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|vcx=1500|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|vcit=8000|cuc=t0rtn87t|srms=2,2,1,|mdl=mdcc11=20|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=bs.pageName,mdcc5=bs.pageType,mdcc6=bs.pageURL,mdcc7=bs.visitorID,mdcc8=bs.campaign,mdcc9=bs.channel,mdcc10=fx-ratelimit-remaining,mdcc11=bdocument.referrer,mdcc12=dutm_campaign,mdcc13=dutm_source,mdcc14=dutm_medium|lastModification=1780948335238|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10337260526121002.js'
+    int: 'app=3faf90e849295814|cors=1|owasp=1|featureHash=ICA15789NPQRTUVXfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.User.profile.cisId,mdcc3=bs.pageName,mdcc4=bFS.attrs.anonId,mdcc5=bFS.attrs.country,mdcc6=bFS.attrs.cisId|lastModification=1785320826721|mdp=mdcc4,mdcc5|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10341260622154106.js',
+    beta: 'app=c4242bb1eb216374|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=fx-ratelimit-remaining,mdcc5=bs.campaign,mdcc6=bs.channel,mdcc7=bs.pageName,mdcc8=bs.pageURL,mdcc9=bs.pageType,mdcc10=bs.visitorID|lastModification=1785320826721|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10341260622154106.js',
+    prod: 'app=a8e5edd77f861ace|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|vcx=1500|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|vcit=8000|cuc=t0rtn87t|srms=2,2,1,|mdl=mdcc11=20|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=bs.pageName,mdcc5=bs.pageType,mdcc6=bs.pageURL,mdcc7=bs.visitorID,mdcc8=bs.campaign,mdcc9=bs.channel,mdcc10=fx-ratelimit-remaining,mdcc11=bdocument.referrer,mdcc12=dutm_campaign,mdcc13=dutm_source,mdcc14=dutm_medium|lastModification=1785320826721|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10341260622154106.js'
   }
 
   // New RUM JavaScript tag (combined code+config _complete.js) from the Dynatrace global CDN.
