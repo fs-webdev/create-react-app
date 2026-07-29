@@ -6,7 +6,6 @@ if (typeof getFeatureFlag !== 'undefined') {
   const dynatraceNewFlag = getFeatureFlag('frontier_snow_dynatraceNewRUM', {appName: process.env.APP_NAME});
   const env = envType();
   const useNewRUM = dynatraceNewFlag.isOn;
-  console.log('[dynatrace.ejs] Loaded - env:', env, 'useNewRUM:', useNewRUM, 'treatment:', dynatraceFlag.treatment);
 
   // Old RUM version URLs
   const cdnUrls = {
