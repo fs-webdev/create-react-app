@@ -20,7 +20,7 @@
  *
  * Setup (one-time):
  *   1. Store Dynatrace API token in keychain:
- *      security add-generic-password -a dynatrace-rum-fetch -s dynatrace-api-token -w
+ *      security add-generic-password -a dynatrace-rum-fetch -s dynatrace-rum-fetch -w
  *
  *   2. Configure AWS CLI (uses standard AWS credential chain):
  *      aws configure          # or set AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY env vars
@@ -42,7 +42,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const KEYCHAIN_ACCOUNT = 'dynatrace-rum-fetch';
-const KEYCHAIN_SERVICE_DYNATRACE = 'dynatrace-api-token';
+const KEYCHAIN_SERVICE_DYNATRACE = 'dynatrace-rum-fetch';
 const KEYCHAIN_SERVICE_S3 = 's3-publish-key';
 
 function getKeychainSecret(service) {
@@ -99,6 +99,10 @@ const DYNATRACE_API_TOKEN = process.env.DYNATRACE_API_TOKEN || getKeychainSecret
 // S3 CDN configuration (for publishing dynatrace-rum-config.json via AWS CLI)
 const S3_PUBLISH_BUCKET = process.env.S3_PUBLISH_BUCKET || "fs-cdn2-origin/assets/dynatrace";
 const S3_PUBLISH_REGION = process.env.S3_PUBLISH_REGION || "us-east-1";
+// AWS auth uses the standard credential chain. The `aws` child processes below inherit this
+// process's env, so select a profile the normal AWS way — no script-specific env var needed:
+//   aws sso login --profile frontier-admin
+//   export AWS_PROFILE=frontier-admin     (or run inline: AWS_PROFILE=frontier-admin node ...)
 
 // Entity IDs for your RUM applications in each environment
 // Get from Dynatrace UI: Applications → select app → Settings → note the entity ID
@@ -161,6 +165,16 @@ function extractEnvValues(results) {
   };
 }
 
+// Parse the Dynatrace agent version — the trailing number in ruxitagent_<hash>_<version>.js —
+// from each environment's tag, e.g. ...ruxitagent_ICA7NQVfghqrux_10341260622154106.js → 10341260622154106.
+function extractAgentVersions(results) {
+  return Object.fromEntries(Object.keys(results).map(env => {
+    const src = results[env].completeTag.match(/src="([^"]+)"/)?.[1] || '';
+    const version = src.match(/ruxitagent_[A-Za-z0-9]+_(\d+)\.js/)?.[1] || 'unknown';
+    return [env, version];
+  }));
+}
+
 function updateDynatraceEjs(results) {
   const ejsPath = path.join(__dirname, '../layout/views/partials/dynatrace.ejs');
   let content = fs.readFileSync(ejsPath, 'utf8');
@@ -205,13 +219,60 @@ function writeCdnConfigJson(results) {
   return config;
 }
 
+function printAwsSetupInstructions() {
+  const active = process.env.AWS_PROFILE || "";
+  console.error(`
+AWS credentials are missing or expired${active ? ` for profile "${active}"` : " (no profile set — using the default credential chain)"}.
+
+This script publishes dynatrace-rum-config.json to s3://${S3_PUBLISH_BUCKET} and needs S3 write access.
+
+If your org uses AWS SSO (FamilySearch does), run:
+  export AWS_PROFILE=frontier-admin      # so this script's aws calls use that profile
+  aws sso login                          # refresh the SSO session (opens a browser)
+  # ...then re-run this script
+
+Or pin the profile for a single run without exporting it:
+  AWS_PROFILE=frontier-admin node packages/react-scripts/scripts/fetch-dynatrace-scripts.js
+
+Verify your identity any time:
+  aws sts get-caller-identity${active ? ` --profile ${active}` : " --profile frontier-admin"}
+
+(For static keys instead of SSO: run 'aws configure', or set AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY.)
+`);
+}
+
+// Preflight: confirm AWS credentials resolve before doing any Dynatrace work, so we fail
+// fast with actionable guidance instead of after fetching everything (publish is the last step).
+function checkAwsCredentials() {
+  if (!process.env.AWS_PROFILE) {
+    console.warn(
+      "   ⚠️  AWS_PROFILE is not set — falling back to the default credential chain.\n" +
+      "       In this setup the default profile has no credentials, so the S3 publish will\n" +
+      "       likely fail. Set it first:  export AWS_PROFILE=frontier-admin\n" +
+      "       (after: aws sso login --profile frontier-admin)"
+    );
+  }
+  try {
+    const out = execSync(`aws sts get-caller-identity --output json`, {
+      stdio: ['pipe', 'pipe', 'pipe'],
+    }).toString();
+    const id = JSON.parse(out);
+    const profileNote = process.env.AWS_PROFILE || "";
+    console.log(`   ✅ AWS credentials OK — account ${id.Account}${profileNote ? `, profile ${profileNote}` : ""}`);
+    return true;
+  } catch (error) {
+    printAwsSetupInstructions();
+    return false;
+  }
+}
+
 async function publishToS3(config) {
   try {
     const configJson = JSON.stringify(config);
     const tempFile = path.join(__dirname, '.dynatrace-rum-config-temp.json');
     fs.writeFileSync(tempFile, configJson, 'utf8');
 
-    // Use AWS CLI for S3 upload (leverages configured AWS credentials)
+    // Use AWS CLI for S3 upload (inherits this process's env → honors AWS_PROFILE / default chain)
     const awsCmd = `aws s3 cp "${tempFile}" s3://${S3_PUBLISH_BUCKET}/dynatrace-rum-config.json --region ${S3_PUBLISH_REGION} --metadata "generated=$(date +%s)" --cache-control "max-age=300" --acl public-read`;
 
     execSync(awsCmd, { stdio: 'inherit' });
@@ -220,8 +281,7 @@ async function publishToS3(config) {
     console.log(`   ✅ Published dynatrace-rum-config.json to S3 (s3://${S3_PUBLISH_BUCKET}/dynatrace-rum-config.json)`);
   } catch (error) {
     console.error(`   ❌ Failed to publish to S3: ${error.message}`);
-    console.error(`      Ensure AWS CLI is installed and configured with appropriate credentials:`);
-    console.error(`      aws configure`);
+    printAwsSetupInstructions();
     throw error;
   }
 }
@@ -239,6 +299,13 @@ async function fetchScripts() {
   if (missingIds.length > 0) {
     console.error(`ERROR: Missing entity IDs for: ${missingIds.join(", ")}`);
     console.error("Set environment variables: INT_ENTITY_ID, BETA_ENTITY_ID, PROD_ENTITY_ID");
+    process.exit(1);
+  }
+
+  // Preflight AWS creds up front — publishing to S3 is the last step, and the Dynatrace
+  // fetch is wasted work if we can't publish. Fail fast with setup guidance instead.
+  console.log("Checking AWS credentials...");
+  if (!checkAwsCredentials()) {
     process.exit(1);
   }
 
@@ -309,6 +376,18 @@ async function fetchScripts() {
     // Publish to S3
     console.log("\n📤 Publishing to S3...\n");
     await publishToS3(cdnConfig);
+
+    // Report the agent version that was actually downloaded (from the tag URLs).
+    const agentVersions = extractAgentVersions(results);
+    const uniqueVersions = [...new Set(Object.values(agentVersions))];
+    console.log("\n📦 Downloaded Dynatrace RUM agent version:");
+    if (uniqueVersions.length === 1) {
+      console.log(`     ${uniqueVersions[0]}  (int, beta, prod)`);
+    } else {
+      for (const [env, v] of Object.entries(agentVersions)) {
+        console.log(`     ${env.padEnd(5)} ${v}`);
+      }
+    }
 
     console.log("\n✨ Done!");
     console.log("\nNext steps:");
