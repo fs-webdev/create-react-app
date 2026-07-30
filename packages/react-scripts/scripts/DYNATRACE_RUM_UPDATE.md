@@ -49,32 +49,18 @@ The script will:
 
 > **The new RUM agent is never inlined.** The script no longer fetches `/inlineCode` or writes `_inline_*_new.ejs` files. Reason: EJS `include()` compiles the included file as a template, and the new agent's minified JS contains the two-character EJS open-delimiter sequence (a `<` immediately followed by a `%`) inside a string, which EJS misreads as an unterminated scriptlet ("Could not find matching close tag"). It also re-ships 300–460 KB on every page view. The new RUM loads exclusively via `<script>` tags. The old-RUM `_inline_*.ejs` bootstrap files are unaffected.
 
-### Step 2: Update CDN URLs in dynatrace.ejs
+### Step 2: Verify the updated values in dynatrace.ejs
 
-The script output will display CDN URLs in this format:
-
-```
-CDN URLs for dynatrace.ejs (cdnUrlsNew object):
-
-  int: 'https://js-cdn.dynatrace.com/...',
-  beta: 'https://js-cdn.dynatrace.com/...',
-  prod: 'https://js-cdn.dynatrace.com/...',
-
-Integrity hash for all environments:
-  cdnIntegrityNew = 'sha256-...'
-```
-
-Update these values in `packages/react-scripts/layout/views/partials/dynatrace.ejs`:
+The script updates `dynatrace.ejs` **automatically** (see Step 1) — there is nothing to copy by hand. It rewrites four per-environment fallback objects, and the values differ per environment: `int` uses a different feature hash than `beta`/`prod`, so its integrity hash and `data-dtconfig` differ too (there is **no** single integrity hash shared across environments).
 
 ```javascript
-const cdnUrlsNew = {
-  int: '...',    // Copy from script output
-  beta: '...',   // Copy from script output
-  prod: '...'    // Copy from script output
-}
-
-const cdnIntegrityNew = '...' // Copy from script output
+const cdnUrlsNew         = (locals && locals.dynatrace && locals.dynatrace.cdnUrls)         || { int: '…', beta: '…', prod: '…' }
+const cdnIntegrityNew    = (locals && locals.dynatrace && locals.dynatrace.cdnIntegrity)    || { int: 'sha256-…', beta: 'sha256-…', prod: 'sha256-…' }
+const cdnConfigNew       = (locals && locals.dynatrace && locals.dynatrace.cdnConfig)       || { int: '…', beta: '…', prod: '…' }
+const cdnCompleteUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnCompleteUrls) || { int: '…', beta: '…', prod: '…' }
 ```
+
+To confirm, run `git diff` on `dynatrace.ejs` and check that all three environments show the new agent version. The script also prints the downloaded agent version and each environment's CDN URL / integrity / config to stdout for reference.
 
 ### Step 3: Test All Mechanisms
 
