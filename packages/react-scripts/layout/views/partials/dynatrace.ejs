@@ -91,8 +91,20 @@ if (typeof getFeatureFlag !== 'undefined') {
     <% } %>
   <% } %>
   <script type="text/javascript">
-    if (typeof window !== 'undefined' && window.dtrum) {
-      window.dtrum.sendSessionProperties({rum_loading_mechanism: "<%= dynatraceFlag.treatment %>"});
-    }
+    // Report the RUM loading mechanism once the agent is available. For the async treatments
+    // window.dtrum isn't defined yet when this inline script runs, so poll briefly rather than
+    // firing once and silently dropping the signal (which lost it for asyncCS-script/global-cdn).
+    (function () {
+      if (typeof window === 'undefined') return;
+      var treatment = "<%= dynatraceFlag.treatment %>";
+      var attempts = 0;
+      (function report() {
+        if (window.dtrum && typeof window.dtrum.sendSessionProperties === 'function') {
+          window.dtrum.sendSessionProperties({rum_loading_mechanism: treatment});
+        } else if (++attempts <= 50) {
+          setTimeout(report, 200); // up to ~10s for the async agent to load
+        }
+      })();
+    })();
   </script>
 <% } %>

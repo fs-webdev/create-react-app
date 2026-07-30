@@ -267,22 +267,23 @@ function checkAwsCredentials() {
 }
 
 async function publishToS3(config) {
+  const tempFile = path.join(__dirname, '.dynatrace-rum-config-temp.json');
   try {
-    const configJson = JSON.stringify(config);
-    const tempFile = path.join(__dirname, '.dynatrace-rum-config-temp.json');
-    fs.writeFileSync(tempFile, configJson, 'utf8');
+    fs.writeFileSync(tempFile, JSON.stringify(config), 'utf8');
 
     // Use AWS CLI for S3 upload (inherits this process's env → honors AWS_PROFILE / default chain)
     const awsCmd = `aws s3 cp "${tempFile}" s3://${S3_PUBLISH_BUCKET}/dynatrace-rum-config.json --region ${S3_PUBLISH_REGION} --metadata "generated=$(date +%s)" --cache-control "max-age=300" --acl public-read`;
 
     execSync(awsCmd, { stdio: 'inherit' });
-    fs.unlinkSync(tempFile);
 
     console.log(`   ✅ Published dynatrace-rum-config.json to S3 (s3://${S3_PUBLISH_BUCKET}/dynatrace-rum-config.json)`);
   } catch (error) {
     console.error(`   ❌ Failed to publish to S3: ${error.message}`);
     printAwsSetupInstructions();
     throw error;
+  } finally {
+    // Always remove the temp file, even if the upload failed.
+    try { fs.unlinkSync(tempFile); } catch (_) { /* already gone */ }
   }
 }
 
