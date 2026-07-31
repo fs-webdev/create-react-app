@@ -1,0 +1,36 @@
+# Weekly PR that merges new Lingoport translation commits into frontierMaster.
+# Delegates to the shared fs-webdev/lingoport-merge-action, which
+# squashes unmerged `lingoport` branch changes into a single commit and opens
+# a PR (skipping cleanly if one is already open, or if there's nothing new).
+# See https://github.com/fs-webdev/lingoport-merge-action for full behavior,
+# inputs/outputs, and limitations.
+#
+# Auth: uses the built-in GITHUB_TOKEN. Limitation: PRs created with
+# GITHUB_TOKEN do not auto-trigger CI workflows; run the checks manually or
+# close and reopen the PR.
+
+name: Merge Lingoport Translations
+on:
+  schedule:
+    - cron: '0 14 * * 3' # Wednesdays at 2 PM UTC (8 AM MDT / 7 AM MST). See https://crontab.guru/ for cron syntax help.
+  workflow_dispatch: # Manual trigger
+
+# Prevent overlapping runs (e.g. a manual dispatch during the scheduled run)
+# from racing past the existing-PR check and double-creating the PR
+concurrency:
+  group: merge-lingoport-translations
+  cancel-in-progress: false
+
+jobs:
+  create-translation-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the work branch
+      pull-requests: write # open the PR
+    steps:
+      - uses: fs-webdev/lingoport-merge-action@v1
+        with:
+          # The action defaults to the repository default branch, which is
+          # already frontierMaster here. Pinned explicitly so the PR keeps
+          # targeting frontierMaster even if the default ever changes.
+          base-branch: frontierMaster
