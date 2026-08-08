@@ -1,16 +1,14 @@
 ## 8.17.0
 
-- Upgrade Dynatrace RUM agent to version 1.329+ and enable new RUM experience
-  - Added feature flag `frontier_snow_dynatraceNewRUM` to control RUM version selection (gradual rollout); the existing `frontier_snow_dynatraceRUM` flag still selects the loading mechanism
-  - New RUM is loaded exclusively via `<script>` tags (never inlined). This fixes a 500 error (`Could not find matching close tag for "<%"`) caused by EJS `include()` compiling the agent JS as a template — the new agent's minified code contains the `<%` sequence — and avoids re-shipping 300–460 KB on every page view
-  - Mapped each mechanism to a Dynatrace snippet format for the new RUM (treatment names kept for old-RUM compatibility):
-    - `asyncCS-script` → OneAgent JavaScript tag + SRI, loaded `async`
-    - `asyncCS-inline` → OneAgent JavaScript tag + SRI, loaded `sync` (closest analog to the old sync inline bootstrap; the new RUM has no small-bootstrap format, so this no longer inlines)
-    - `global-cdn` → JavaScript tag (`_complete.js`), loaded `async`
-  - SRI (Subresource Integrity) integrity hashes and `data-dtconfig` are emitted on the OneAgent tags; new RUM includes enhanced data collection (owasp=1, uxrgce=1)
-  - Snow can supply fresh values at runtime via `locals.dynatrace.*` (`cdnUrls`/`cdnIntegrity`/`cdnConfig`/`cdnCompleteUrls`), published to S3 as `dynatrace-rum-config.json`; publish-time fallbacks are baked into `dynatrace.ejs`
-  - `fetch-dynatrace-scripts.js` no longer fetches `/inlineCode` or writes `_inline_*_new.ejs`; old-RUM `_inline_*.ejs` bootstrap files are unchanged
-  - When the new flag is OFF: uses the existing RUM version and URLs (backward compatible)
+- Migrate to the Dynatrace New RUM Experience (RUM on Grail) and simplify agent loading to a single mechanism
+  - **Default:** combined `_complete.js` from the Dynatrace global CDN, loaded `async`. It is the only mechanism that tracks tenant configuration without a react-scripts release — two of the previous three treatments had been serving a RUM agent artifact dated 2022-11-04 to production
+  - **Removed the `frontier_snow_dynatraceNewRUM` flag.** It never controlled New RUM: both its branches emitted the same URL and it only toggled `async`. New RUM enablement is the tenant's `enabledOnGrail` setting, toggled per application in the Dynatrace UI with no deploy
+  - `frontier_snow_dynatraceRUM` reduced to three states: `off` (kill switch), `asyncCS-inline` (versioned OneAgent tag + SRI, loaded `sync`), and a **fail-open default** for everything else. Retired treatment names, a renamed flag, and a Split outage returning `control` all still load RUM — failing closed would create a silent monitoring gap
+  - The retained SRI arm covers both fallback cases at once: immutably cached for a year (if Dynatrace never adds a cache validator to `_complete.js`) and synchronous (no blind window if `async` proves to lose early interactions)
+  - **Removed all old-RUM code paths**: `edgeUrls`, the old `cdnUrls`, and the three `_inline_*.ejs` bootstrap files — about 105 KB out of the published package
+  - `dtWhenReady(which, fn)` helper added for both RUM APIs; `enableManualPageDetection` and `window.dtinfo.appName` in `layout.ejs` no longer depend on the agent having loaded synchronously, which silently disabled them under async loading
+  - Snow can supply fresh values at runtime via `locals.dynatrace.*`, published to S3 as `dynatrace-rum-config.json`; publish-time fallbacks remain in `dynatrace.ejs` as a last resort
+  - **Maintainer tooling and docs moved to `packages/react-scripts/tools/dynatrace/`** and excluded from the published package. `scripts/` is now only scripts consumers run. Published package: 119 files / 392 KB → 104 files / 247 KB
 
 ## 8.16.1
 

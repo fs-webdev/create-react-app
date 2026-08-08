@@ -6,7 +6,7 @@ This guide explains how to update the Dynatrace RUM agent to a new version using
 
 ```bash
 export DYNATRACE_API_TOKEN="your-api-token"
-node packages/react-scripts/scripts/fetch-dynatrace-scripts.js
+node packages/react-scripts/tools/dynatrace/fetch-dynatrace-scripts.js
 ```
 
 The script will fetch the latest RUM scripts and CDN URLs for all three environments (int, beta, prod).
@@ -39,7 +39,7 @@ To find entity IDs yourself:
 
 ```bash
 export DYNATRACE_API_TOKEN="your-token-here"
-node packages/react-scripts/scripts/fetch-dynatrace-scripts.js
+node packages/react-scripts/tools/dynatrace/fetch-dynatrace-scripts.js
 ```
 
 The script will:
@@ -47,7 +47,7 @@ The script will:
 2. ✅ **Write & publish** `dynatrace-rum-config.json` to S3 so Snow can supply fresh values via `locals.dynatrace.*` without a react-scripts redeploy
 3. 🔒 **Capture the SRI integrity hashes** and `data-dtconfig` for each environment
 
-> **The new RUM agent is never inlined.** The script no longer fetches `/inlineCode` or writes `_inline_*_new.ejs` files. Reason: EJS `include()` compiles the included file as a template, and the new agent's minified JS contains the two-character EJS open-delimiter sequence (a `<` immediately followed by a `%`) inside a string, which EJS misreads as an unterminated scriptlet ("Could not find matching close tag"). It also re-ships 300–460 KB on every page view. The new RUM loads exclusively via `<script>` tags. The old-RUM `_inline_*.ejs` bootstrap files are unaffected.
+> **The agent is never inlined.** The script does not fetch `/inlineCode` or write `_inline_*.ejs` files — those were deleted along with the old-RUM code paths. Reason: EJS `include()` compiles the included file as a template, and the minified agent contains the two-character EJS open-delimiter sequence (a `<` immediately followed by a `%`) inside a string, which EJS misreads as an unterminated scriptlet ("Could not find matching close tag"). It also re-ships 300–460 KB on every page view. The agent loads exclusively via `<script>` tags.
 
 ### Step 2: Verify the updated values in dynatrace.ejs
 
@@ -62,34 +62,35 @@ const cdnCompleteUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnCo
 
 To confirm, run `git diff` on `dynatrace.ejs` and check that all three environments show the new agent version. The script also prints the downloaded agent version and each environment's CDN URL / integrity / config to stdout for reference.
 
-### Step 3: Test All Mechanisms
+### Step 3: Verify what renders
 
-Two flags drive the experiment (see [dynatrace.ejs](./partials/dynatrace.ejs)):
+One flag drives everything: **`frontier_snow_dynatraceRUM`** (see [dynatrace.ejs](../../layout/views/partials/dynatrace.ejs)). It has three meaningful states. Decision rationale is in [DYNATRACE_RUM_MECHANISMS.md](./DYNATRACE_RUM_MECHANISMS.md).
 
-- **`frontier_snow_dynatraceRUM`**: Selects the loading mechanism (`asyncCS-script`, `asyncCS-inline`, or `global-cdn`)
-- **`frontier_snow_dynatraceNewRUM`**: Selects the RUM version (old or new)
+| Treatment | Renders | Purpose |
+|---|---|---|
+| `off` | nothing | Kill switch. Defined in int, beta and prod |
+| `asyncCS-inline` | versioned OneAgent JS tag + SRI, **sync** | Fallback arm. Immutably cached for a year, and no blind window |
+| anything else | `_complete.js` from the global CDN, **async** | Default |
 
-#### Treatment → snippet-format mapping
+The default is the **fallthrough**, not an explicit `global-cdn` match. A retired treatment name, a renamed flag, or a Split outage returning `control` all still load RUM. Failing closed would create a silent monitoring gap — the one failure mode invisible in the data itself. Do not "tidy" this into an equality check.
 
-The three treatment names are **fixed** (apps still on old RUM depend on them), so for the new RUM we remap each treatment to a Dynatrace snippet format. This is intentional and documented here.
+The treatment name `asyncCS-inline` is historical and describes neither its load mode nor its format; it is retained to avoid a coordinated Split-plus-deploy rename.
 
-| Treatment | Old RUM (unchanged) | New RUM | Why |
-|---|---|---|---|
-| `asyncCS-script` | Edge CDN `<script async>` | **OneAgent JS tag + SRI, `async`** | Non-blocking; 1-year cached, integrity-verified. Measures the early-capture "blind window." |
-| `asyncCS-inline` | small inline bootstrap (`_inline_*.ejs`) | **OneAgent JS tag + SRI, `sync`** | New RUM has **no small-bootstrap format**; the sync SRI tag is the closest analog (full early capture; parse-blocks only on first uncached load, free on warm cache). **No longer inlines.** |
-| `global-cdn` | `_complete.js` (sync) | **JavaScript tag (`_complete.js`), `async`** | Combined code+config, single request, ~1-hour cache. The caching-strategy comparison point. |
-
-`defer` is intentionally not tested: for a monitoring agent it strictly enlarges the un-instrumented early window for a negligible page-speed gain over `async`.
-
-What to verify per treatment (DevTools → Network / Elements):
+What to verify (DevTools → Network / Elements):
 
 ```text
-asyncCS-script (new) → <script src=".../sri/ruxitagent_…js" data-dtconfig integrity … async>
-asyncCS-inline (new) → same SRI tag but WITHOUT async (synchronous)
-global-cdn     (new) → <script src=".../{appId}_complete.js" async>   (no integrity/data-dtconfig; config is baked in)
+off             → no Dynatrace script tag at all
+asyncCS-inline  → <script src=".../sri/ruxitagent_…js" data-dtconfig integrity …>   (no async)
+default         → <script src=".../{appId}_complete.js" async>   (no integrity/data-dtconfig; config baked in)
 ```
 
-To gauge data loss between sync/async, compare RUM aggregates across treatments (user actions per session, captured XHR/fetch actions, JS error capture rate, and CWV) — or run a synthetic page that fires an early click + XHR + error and confirm each is captured under sync vs async.
+`defer` is intentionally unused: for a monitoring agent it strictly enlarges the un-instrumented early window for a negligible page-speed gain over `async`.
+
+**Whether the New RUM Experience is active is not a code concern.** It is the tenant's `enabledOnGrail` setting, toggled per application in the Dynatrace UI with no deploy:
+
+```bash
+dtctl get settings --schema builtin:rum.web.enablement --scope APPLICATION-<id>
+```
 
 ### Step 4: Commit and Release
 
@@ -142,12 +143,12 @@ Key parts:
 
 ```
 packages/react-scripts/layout/views/partials/dynatrace.ejs   (fallback values auto-updated)
-packages/react-scripts/scripts/dynatrace-rum-config.json     (regenerated; also published to S3)
+packages/react-scripts/tools/dynatrace/dynatrace-rum-config.json     (regenerated; also published to S3)
 packages/react-scripts/package.json (version bump)
 CHANGELOG-FRONTIER.md (add entry)
 ```
 
-> Note: the new RUM does **not** generate `_inline_*_new.ejs` files (the agent is loaded via `<script>` tags, never inlined). The old-RUM `_inline_*.ejs` bootstrap files remain and are not touched by this script.
+> Note: the script never generates inline agent files. The old-RUM `_inline_*.ejs` bootstrap files were deleted when the old-RUM code paths were removed.
 
 ## Troubleshooting
 
@@ -166,12 +167,16 @@ CHANGELOG-FRONTIER.md (add entry)
 ## Related Documentation
 
 - [Dynatrace RUM API Documentation](https://docs.dynatrace.com/docs/dynatrace-api/environment-api/rum/rum-manual-insertion-tags)
-- [dynatrace.ejs](./partials/dynatrace.ejs) - Main RUM configuration file
+- [dynatrace.ejs](../../layout/views/partials/dynatrace.ejs) - Main RUM configuration file
 - [fetch-dynatrace-scripts.js](./fetch-dynatrace-scripts.js) - The fetch script itself
 
 ## Version History
 
-- **8.17.0**: First release with dual-flag support (old vs new RUM version)
-  - Introduced `frontier_snow_dynatraceNewRUM` feature flag for gradual rollout
-  - Updated to RUM 1.329+ with enhanced data collection (owasp=1, uxrgce=1)
-  - Added SRI integrity hash support
+- **8.17.0**: New RUM Experience baseline; single-flag loading
+  - Removed the `frontier_snow_dynatraceNewRUM` flag — New RUM enablement is the tenant's
+    `enabledOnGrail` setting, not a code concern
+  - Removed all old-RUM code paths: `edgeUrls`, the old `cdnUrls`, and the three
+    `_inline_*.ejs` bootstrap files (~105 KB out of the published package)
+  - `frontier_snow_dynatraceRUM` reduced to three states: `off`, `asyncCS-inline`
+    (SRI, sync), and a fail-open default of `_complete.js` loaded `async`
+  - Maintainer tooling and docs moved to `tools/dynatrace/`, excluded from the published package

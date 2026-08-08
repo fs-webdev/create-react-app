@@ -1,0 +1,15 @@
+{"env":"beta","run":0,"ok":true,"durationMs":23313,"total":24615,"classic":5876,"grail":18739,"other":0,"nClassic":1,"nGrail":3,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":1,"ok":true,"durationMs":22670,"total":49436,"classic":20603,"grail":28833,"other":0,"nClassic":2,"nGrail":5,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":2,"ok":true,"durationMs":23063,"total":20509,"classic":3823,"grail":16686,"other":0,"nClassic":1,"nGrail":2,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":3,"ok":true,"durationMs":22786,"total":37264,"classic":10242,"grail":27022,"other":0,"nClassic":1,"nGrail":4,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":4,"ok":true,"durationMs":22911,"total":37209,"classic":10265,"grail":26944,"other":0,"nClassic":1,"nGrail":4,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":5,"ok":true,"durationMs":23260,"total":50730,"classic":22217,"grail":28513,"other":0,"nClassic":2,"nGrail":4,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":6,"ok":true,"durationMs":22870,"total":25521,"classic":3831,"grail":21690,"other":0,"nClassic":1,"nGrail":3,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":7,"ok":true,"durationMs":22870,"total":38396,"classic":10533,"grail":27863,"other":0,"nClassic":1,"nGrail":4,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":8,"ok":true,"durationMs":23351,"total":24782,"classic":6300,"grail":18482,"other":0,"nClassic":1,"nGrail":3,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":9,"ok":true,"durationMs":22805,"total":24759,"classic":6027,"grail":18732,"other":0,"nClassic":1,"nGrail":3,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":10,"ok":true,"durationMs":23338,"total":17407,"classic":3832,"grail":13575,"other":0,"nClassic":1,"nGrail":2,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":11,"ok":true,"durationMs":23396,"total":14885,"classic":1106,"grail":13779,"other":0,"nClassic":1,"nGrail":2,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":12,"ok":true,"durationMs":23323,"total":37888,"classic":10507,"grail":27381,"other":0,"nClassic":1,"nGrail":4,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":13,"ok":true,"durationMs":22846,"total":37733,"classic":10238,"grail":27495,"other":0,"nClassic":1,"nGrail":4,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
+{"env":"beta","run":14,"ok":true,"durationMs":23360,"total":37606,"classic":10508,"grail":27098,"other":0,"nClassic":1,"nGrail":4,"nOther":0,"agentGet":1,"srMarkers":0,"nosrMarkers":0}
