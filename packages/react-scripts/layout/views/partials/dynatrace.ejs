@@ -2,42 +2,51 @@
 /* SETS up dynatrace for the various environments */
 
 if (typeof getFeatureFlag !== 'undefined') {
+  /* One flag, three states — see tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md for the full rationale.
+   *
+   *   'off'             no agent at all (kill switch)
+   *   'asyncCS-inline'  versioned OneAgent JS tag + SRI, loaded SYNCHRONOUSLY
+   *   anything else     combined _complete.js from the Dynatrace global CDN, loaded ASYNC
+   *
+   * The default is deliberately the fallthrough rather than an explicit 'global-cdn' match: a
+   * retired treatment name, a renamed flag, or a Split outage returning 'control' must still load
+   * RUM. Failing closed would produce a silent monitoring gap, which is the one failure mode we
+   * cannot detect from the data itself.
+   *
+   * The SRI arm is the hedge for BOTH documented revisit triggers: it is versioned and immutably
+   * cached (so it survives Dynatrace never adding an ETag to _complete.js), and it is synchronous
+   * (so it has no blind window if async proves to lose early interactions or errors). Because its
+   * URL is cacheable for a year, the sync parse-block is paid only on the first uncached load.
+   *
+   * Whether the New RUM Experience is active is NOT a code concern — it is the tenant's
+   * `enabledOnGrail` setting, toggled per application in the Dynatrace UI with no deploy.
+   * The old frontier_snow_dynatraceNewRUM flag never controlled it; it only toggled `async`.
+   */
   const dynatraceFlag = getFeatureFlag('frontier_snow_dynatraceRUM', {appName: process.env.APP_NAME});
-  const dynatraceNewFlag = getFeatureFlag('frontier_snow_dynatraceNewRUM', {appName: process.env.APP_NAME});
   const env = envType();
-  const useNewRUM = dynatraceNewFlag.isOn;
+  const treatment = dynatraceFlag.treatment;
+  const rumDisabled = treatment === 'off';
+  const useSriSync = treatment === 'asyncCS-inline';
 
-  // Old RUM version URLs
-  const cdnUrls = {
-    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/3faf90e849295814_complete.js',
-    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/c4242bb1eb216374_complete.js',
-    prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/a8e5edd77f861ace_complete.js'
-  }
-
-  const edgeUrls = {
-    int: 'https://edge.fscdn.org/assets/components/hf/assets/js/monitoring/dynatrace-20221104-int.min-9aebd229f83ef7c845ae898f451bb617.js',
-    beta: 'https://edge.fscdn.org/assets/components/hf/assets/js/monitoring/dynatrace-20221104-beta.min-e859eab722487cc71d4f659447d7ed6d.js',
-    prod: 'https://edge.fscdn.org/assets/components/hf/assets/js/monitoring/dynatrace-20221104-prod.min-44bb9345beec8a984c2fca40385b4f41.js'
-  }
-
-  // New RUM 1.329+ — Snow provides fresh values via locals.dynatrace (from CDN config file);
+  // Snow provides fresh values via locals.dynatrace (published to S3 by
+  // tools/dynatrace/fetch-dynatrace-scripts.js); fallback to values current at publish time.
   // fallback to values current at react-scripts publish time.
   const cdnUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnUrls) || {
-    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10341260622154106.js',
-    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10341260622154106.js',
+    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10343260715123811.js',
+    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPRTUVXfghqrux_10343260715123811.js',
     prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10341260622154106.js'
   }
 
   const cdnIntegrityNew = (locals && locals.dynatrace && locals.dynatrace.cdnIntegrity) || {
-    int: 'sha256-xCOvz0J22cpI/MIdcbEaVWANEPMHmZAKpeD8zTuMY/s=',
-    beta: 'sha256-eGB6PLc8ndZISmjwbbi4xZhE9nbarKf48bRKxVdha+8=',
+    int: 'sha256-8SY/pAJr28AjGTRbzyKLcD4kPiJQIJaT2EfcY59FoWE=',
+    beta: 'sha256-PeyllVOccLjCaea3jYyf0w5YCMFa54GWyc4B3eRQn4g=',
     prod: 'sha256-eGB6PLc8ndZISmjwbbi4xZhE9nbarKf48bRKxVdha+8='
   }
 
   const cdnConfigNew = (locals && locals.dynatrace && locals.dynatrace.cdnConfig) || {
-    int: 'app=3faf90e849295814|cors=1|owasp=1|featureHash=ICA15789NPQRTUVXfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.User.profile.cisId,mdcc3=bs.pageName,mdcc4=bFS.attrs.anonId,mdcc5=bFS.attrs.country,mdcc6=bFS.attrs.cisId|lastModification=1785320826721|mdp=mdcc4,mdcc5|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPQRTUVXfghqrux_10341260622154106.js',
-    beta: 'app=c4242bb1eb216374|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=fx-ratelimit-remaining,mdcc5=bs.campaign,mdcc6=bs.channel,mdcc7=bs.pageName,mdcc8=bs.pageURL,mdcc9=bs.pageType,mdcc10=bs.visitorID|lastModification=1785320826721|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10341260622154106.js',
-    prod: 'app=a8e5edd77f861ace|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|vcx=1500|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|vcit=8000|cuc=t0rtn87t|srms=2,2,1,|mdl=mdcc11=20|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=bs.pageName,mdcc5=bs.pageType,mdcc6=bs.pageURL,mdcc7=bs.visitorID,mdcc8=bs.campaign,mdcc9=bs.channel,mdcc10=fx-ratelimit-remaining,mdcc11=bdocument.referrer,mdcc12=dutm_campaign,mdcc13=dutm_source,mdcc14=dutm_medium|lastModification=1785320826721|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10341260622154106.js'
+    int: 'app=3faf90e849295814|cors=1|owasp=1|featureHash=ICA15789MNPQRTUVXfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;0%2F%5Bcontenteditable%5D%3Anot%28%5Bcontenteditable%3D%22false%22%5D%29;0%2F%5Brole%3D%22textbox%22%5D%2C%5Brole%3D%22checkbox%22%5D%2C%5Brole%3D%22radio%22%5D%2C%5Brole%3D%22option%22%5D%2C%5Brole%3D%22combobox%22%5D%2C%5Brole%3D%22slider%22%5D%2C%5Brole%3D%22searchbox%22%5D%2C%5Brole%3D%22switch%22%5D%2C%5Brole%3D%22spinbutton%22%5D;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.User.profile.cisId,mdcc3=bs.pageName,mdcc4=bFS.attrs.anonId,mdcc5=bFS.attrs.country,mdcc6=bFS.attrs.cisId|lastModification=1786000244457|mdp=mdcc4,mdcc5|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10343260715123811.js',
+    beta: 'app=c4242bb1eb216374|cors=1|owasp=1|featureHash=ICA15789NPRTUVXfghqrux|srsr=5000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=fx-ratelimit-remaining,mdcc5=bs.campaign,mdcc6=bs.channel,mdcc7=bs.pageName,mdcc8=bs.pageURL,mdcc9=bs.pageType,mdcc10=bs.visitorID|lastModification=1786000244457|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789NPRTUVXfghqrux_10343260715123811.js',
+    prod: 'app=a8e5edd77f861ace|cors=1|owasp=1|featureHash=ICA7NQVfghqrux|msl=153600|srsr=10000|vcx=1500|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|vcit=8000|cuc=t0rtn87t|srms=2,2,1,|mdl=mdcc11=20|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=bs.pageName,mdcc5=bs.pageType,mdcc6=bs.pageURL,mdcc7=bs.visitorID,mdcc8=bs.campaign,mdcc9=bs.channel,mdcc10=fx-ratelimit-remaining,mdcc11=bdocument.referrer,mdcc12=dutm_campaign,mdcc13=dutm_source,mdcc14=dutm_medium|lastModification=1786000244457|tp=500,50,0|srbbv=2|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA7NQVfghqrux_10341260622154106.js'
   }
 
   // New RUM JavaScript tag (combined code+config _complete.js) from the Dynatrace global CDN.
@@ -48,63 +57,66 @@ if (typeof getFeatureFlag !== 'undefined') {
     prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/a8e5edd77f861ace_complete.js'
   }
 
-  // Old-RUM inline bootstrap include path: a small sync stub that begins capture, then async-loads
-  // the full library. The new RUM has no equivalent small-bootstrap format, so this include is used
-  // for old RUM only. (The agent JS must NOT be run through EJS include() — see below.)
-  const inlinePathOld = './partials/dynatrace/_inline_' + env;
-
-  // NOTE: the new RUM is loaded exclusively via script tags built from cdnUrlsNew / cdnConfigNew /
-  // cdnIntegrityNew / cdnCompleteUrlsNew. We deliberately do NOT include() the inline agent for the
-  // new RUM: EJS compiles included files as templates, and the new agent's minified JS contains the
-  // two-character EJS open-delimiter sequence (a less-than sign immediately followed by a percent
+  // The agent is never inlined: EJS compiles included files as templates, and the minified agent
+  // contains the EJS open-delimiter sequence (a less-than sign immediately followed by a percent
   // sign) inside a character-class string, which EJS misreads as an unterminated scriptlet and
-  // fails with "Could not find matching close tag". Emitting a script tag sidesteps that entirely.
-  if (dynatraceFlag.treatment === 'asyncCS-script') { %>
-    <% if (useNewRUM) { %>
-      <!-- New RUM: OneAgent JS tag + SRI, loaded async (non-blocking; blind window until the agent
-           downloads and executes — earliest user actions / XHRs may be missed) -->
-      <script type="text/javascript" src="<%= cdnUrlsNew[env] %>" data-dtconfig="<%= cdnConfigNew[env] %>" integrity="<%= cdnIntegrityNew[env] %>" crossorigin="anonymous" async></script>
-    <% } else { %>
-      <!-- Old RUM: load from Edge CDN asynchronously -->
-      <script type="text/javascript" src="<%= edgeUrls[env] %>" crossorigin="anonymous" async></script>
-    <% } %>
-  <% } else if (dynatraceFlag.treatment === 'asyncCS-inline') { %>
-    <% if (useNewRUM) { %>
-      <!-- New RUM: there is no small-bootstrap snippet format. The closest analog to the old sync
-           inline bootstrap is the OneAgent JS tag + SRI loaded SYNCHRONOUSLY: full early capture,
-           parse-blocks only on the first uncached load, then free on warm cache (the versioned URL is
-           cacheable up to one year). NOTE: this no longer inlines the agent — the treatment name is
-           retained for old-RUM compatibility; see DYNATRACE_RUM_UPDATE.md for the remap rationale. -->
+  // fails with "Could not find matching close tag". It would also re-ship 300-460 KB per response.
+  if (!rumDisabled) {
+    if (useSriSync) { %>
+      <!-- Versioned OneAgent JS tag + SRI, loaded SYNCHRONOUSLY. No blind window, and the versioned
+           URL is immutable for a year, so the parse-block is paid only on the first uncached load.
+           Values come from locals.dynatrace when Snow supplies them; the fallbacks below are a
+           last resort and go stale — refresh with tools/dynatrace/fetch-dynatrace-scripts.js. -->
       <script type="text/javascript" src="<%= cdnUrlsNew[env] %>" data-dtconfig="<%= cdnConfigNew[env] %>" integrity="<%= cdnIntegrityNew[env] %>" crossorigin="anonymous"></script>
     <% } else { %>
-      <!-- Old RUM: small inline bootstrap that begins capture then async-loads the full library -->
-      <%- include(inlinePathOld) %>
-    <% } %>
-  <% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
-    <% if (useNewRUM) { %>
-      <!-- New RUM: JavaScript tag (combined code+config _complete.js) from the Dynatrace global CDN,
-           loaded async (single request; the combined file is cached ~1 hour) -->
+      <!-- Default: combined code+config _complete.js from the Dynatrace global CDN, loaded async.
+           Single request, tracks tenant configuration automatically, and never blocks rendering.
+           Trade-off: no SRI, and no cache validator, so browsers re-download it every 24 hours. -->
       <script type="text/javascript" src="<%= cdnCompleteUrlsNew[env] %>" crossorigin="anonymous" async></script>
-    <% } else { %>
-      <!-- Old RUM: combined _complete.js from the Dynatrace global CDN (synchronous) -->
-      <script type="text/javascript" src="<%= cdnUrls[env] %>" crossorigin="anonymous"></script>
-    <% } %>
-  <% } %>
+    <% }
+  } %>
   <script type="text/javascript">
-    // Report the RUM loading mechanism once the agent is available. For the async treatments
-    // window.dtrum isn't defined yet when this inline script runs, so poll briefly rather than
-    // firing once and silently dropping the signal (which lost it for asyncCS-script/global-cdn).
+    // RUM API readiness helper, exposed as window.dtWhenReady(which, fn).
+    //
+    // Two facts drive this shape:
+    //  1. With async loading neither window.dtrum nor window.dynatrace exists when this inline
+    //     script runs, and the on-page API has no vendor-provided ready callback (only the
+    //     @dynatrace/rum-javascript-sdk npm package waits for availability, and that can't be
+    //     imported from a server-rendered inline script). So we poll.
+    //  2. The New RUM Experience runs *alongside* RUM Classic and Classic cannot be disabled, so
+    //     both globals can be present at once. We feature-detect each independently and let
+    //     callers register per API rather than branching on which experience is enabled.
     (function () {
       if (typeof window === 'undefined') return;
-      var treatment = "<%= dynatraceFlag.treatment %>";
+      var queue = {classic: [], grail: []};
+      var fired = {classic: false, grail: false};
       var attempts = 0;
-      (function report() {
-        if (window.dtrum && typeof window.dtrum.sendSessionProperties === 'function') {
-          window.dtrum.sendSessionProperties({rum_loading_mechanism: treatment});
-        } else if (++attempts <= 50) {
-          setTimeout(report, 200); // up to ~10s for the async agent to load
-        }
-      })();
+
+      window.dtWhenReady = function (which, fn) {
+        if (fired[which]) { try { fn(); } catch (e) {} return; }
+        if (queue[which]) queue[which].push(fn);
+      };
+
+      function flush(which) {
+        if (fired[which]) return;
+        fired[which] = true;
+        var fns = queue[which];
+        queue[which] = [];
+        for (var i = 0; i < fns.length; i++) { try { fns[i](); } catch (e) {} }
+      }
+
+      function poll() {
+        if (window.dtrum) flush('classic');
+        if (window.dynatrace && typeof window.dynatrace.sendSessionPropertyEvent === 'function') flush('grail');
+        return fired.classic && fired.grail;
+      }
+
+      poll(); // synchronous treatments have already loaded by now
+      if (!(fired.classic && fired.grail)) {
+        var iv = setInterval(function () {
+          if (poll() || ++attempts > 50) clearInterval(iv); // up to ~10s for an async agent
+        }, 200);
+      }
     })();
   </script>
 <% } %>
