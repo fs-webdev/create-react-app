@@ -176,7 +176,7 @@ function extractAgentVersions(results) {
 }
 
 function updateDynatraceEjs(results) {
-  const ejsPath = path.join(__dirname, '../layout/views/partials/dynatrace.ejs');
+  const ejsPath = path.join(__dirname, '../../layout/views/partials/dynatrace.ejs');
   let content = fs.readFileSync(ejsPath, 'utf8');
   const values = extractEnvValues(results);
 
@@ -232,7 +232,7 @@ If your org uses AWS SSO (FamilySearch does), run:
   # ...then re-run this script
 
 Or pin the profile for a single run without exporting it:
-  AWS_PROFILE=frontier-admin node packages/react-scripts/scripts/fetch-dynatrace-scripts.js
+  AWS_PROFILE=frontier-admin node packages/react-scripts/tools/dynatrace/fetch-dynatrace-scripts.js
 
 Verify your identity any time:
   aws sts get-caller-identity${active ? ` --profile ${active}` : " --profile frontier-admin"}

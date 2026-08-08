@@ -1,0 +1,15 @@
+{
+  "name": "dynatrace-beacon-harness",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Measures Dynatrace RUM beacon upload volume per session against deployed environments. Standalone: not part of the react-scripts build or the yarn workspace (workspaces glob is packages/*, direct children only).",
+  "type": "module",
+  "scripts": {
+    "measure": "node measure-beacons.mjs",
+    "analyze": "node analyze.mjs",
+    "probe": "node probe-channels.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.0"
+  }
+}
