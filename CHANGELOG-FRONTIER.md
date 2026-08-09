@@ -1,3 +1,15 @@
+## 8.17.0
+
+- Migrate to the Dynatrace New RUM Experience (RUM on Grail) and simplify agent loading to a single mechanism
+  - **Default:** combined `_complete.js` from the Dynatrace global CDN, loaded `async`. It is the only mechanism that tracks tenant configuration without a react-scripts release — two of the previous three treatments had been serving a RUM agent artifact dated 2022-11-04 to production
+  - **Removed the `frontier_snow_dynatraceNewRUM` flag.** It never controlled New RUM: both its branches emitted the same URL and it only toggled `async`. New RUM enablement is the tenant's `enabledOnGrail` setting, toggled per application in the Dynatrace UI with no deploy
+  - `frontier_snow_dynatraceRUM` reduced to three states: `off` (kill switch), `asyncCS-inline` (versioned OneAgent tag + SRI, loaded `sync`), and a **fail-open default** for everything else. Retired treatment names, a renamed flag, and a Split outage returning `control` all still load RUM — failing closed would create a silent monitoring gap
+  - The retained SRI arm covers both fallback cases at once: immutably cached for a year (if Dynatrace never adds a cache validator to `_complete.js`) and synchronous (no blind window if `async` proves to lose early interactions)
+  - **Removed all old-RUM code paths**: `edgeUrls`, the old `cdnUrls`, and the three `_inline_*.ejs` bootstrap files — about 105 KB out of the published package
+  - `dtWhenReady(which, fn)` helper added for both RUM APIs; `enableManualPageDetection` and `window.dtinfo.appName` in `layout.ejs` no longer depend on the agent having loaded synchronously, which silently disabled them under async loading
+  - Snow can supply fresh values at runtime via `locals.dynatrace.*`, published to S3 as `dynatrace-rum-config.json`; publish-time fallbacks remain in `dynatrace.ejs` as a last resort
+  - **Maintainer tooling and docs moved to `packages/react-scripts/tools/dynatrace/`** and excluded from the published package. `scripts/` is now only scripts consumers run. Published package: 119 files / 392 KB → 104 files / 247 KB
+
 ## 8.16.1
 
 - Convert layout.ejs includes from the removed EJS preprocessor syntax (`<% include x %>`) to the function form (`<%- include('x') %>`) ahead of the company-wide EJS 3 upgrade

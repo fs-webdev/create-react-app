@@ -1,0 +1,15 @@
+{"env":"prod","run":0,"ok":true,"durationMs":22775,"total":15192,"classic":15192,"grail":0,"other":0,"nClassic":4,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":3,"nosrMarkers":3}
+{"env":"prod","run":1,"ok":true,"durationMs":23454,"total":27836,"classic":27836,"grail":0,"other":0,"nClassic":4,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":3,"nosrMarkers":3}
+{"env":"prod","run":2,"ok":true,"durationMs":22680,"total":927,"classic":927,"grail":0,"other":0,"nClassic":1,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":2,"nosrMarkers":2}
+{"env":"prod","run":3,"ok":true,"durationMs":22791,"total":927,"classic":927,"grail":0,"other":0,"nClassic":1,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":2,"nosrMarkers":2}
+{"env":"prod","run":4,"ok":true,"durationMs":22841,"total":927,"classic":927,"grail":0,"other":0,"nClassic":1,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":2,"nosrMarkers":2}
+{"env":"prod","run":5,"ok":true,"durationMs":22932,"total":927,"classic":927,"grail":0,"other":0,"nClassic":1,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":2,"nosrMarkers":2}
+{"env":"prod","run":6,"ok":true,"durationMs":22756,"total":887,"classic":887,"grail":0,"other":0,"nClassic":1,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":2,"nosrMarkers":2}
+{"env":"prod","run":7,"ok":true,"durationMs":22883,"total":26318,"classic":26318,"grail":0,"other":0,"nClassic":4,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":3,"nosrMarkers":3}
+{"env":"prod","run":8,"ok":true,"durationMs":23037,"total":927,"classic":927,"grail":0,"other":0,"nClassic":1,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":2,"nosrMarkers":2}
+{"env":"prod","run":9,"ok":true,"durationMs":22764,"total":28086,"classic":28086,"grail":0,"other":0,"nClassic":6,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":3,"nosrMarkers":3}
+{"env":"prod","run":10,"ok":true,"durationMs":23112,"total":66051,"classic":66051,"grail":0,"other":0,"nClassic":25,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":2,"nosrMarkers":2}
+{"env":"prod","run":11,"ok":true,"durationMs":22841,"total":26297,"classic":26297,"grail":0,"other":0,"nClassic":4,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":3,"nosrMarkers":3}
+{"env":"prod","run":12,"ok":true,"durationMs":23344,"total":928,"classic":928,"grail":0,"other":0,"nClassic":1,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":2,"nosrMarkers":2}
+{"env":"prod","run":13,"ok":true,"durationMs":22903,"total":25828,"classic":25828,"grail":0,"other":0,"nClassic":4,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":3,"nosrMarkers":3}
+{"env":"prod","run":14,"ok":true,"durationMs":22759,"total":927,"classic":927,"grail":0,"other":0,"nClassic":1,"nGrail":0,"nOther":0,"agentGet":2,"srMarkers":2,"nosrMarkers":2}

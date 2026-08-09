@@ -64,10 +64,25 @@
       <%- include('partials/experiments') %>
       <%- include('partials/sentry') %>
       <%- include('partials/clientAppConfig') %>
-      if (window.dtrum) {
+      // window.dtinfo is a plain global read by Dynatrace metadata capture rules, so set it
+      // unconditionally and as early as possible. Both RUM Classic and the New RUM Experience can
+      // read it via their own (separately configured) capture rules; gating it on the agent being
+      // loaded meant the async treatments never set it at all.
+      if (!window.dtinfo) window.dtinfo = {}
+      window.dtinfo.appName = SERVER_DATA.appName
+
+      // enableManualPageDetection is a RUM Classic API with no New RUM equivalent — New RUM models
+      // navigations / page summaries / view summaries instead. Defer it until dtrum exists rather
+      // than firing once: under async loading the old `if (window.dtrum)` guard was always false,
+      // so Classic silently fell back to automatic page detection on those treatments.
+      if (window.dtWhenReady) {
+        window.dtWhenReady('classic', function () {
+          if (typeof window.dtrum.enableManualPageDetection === 'function') {
+            window.dtrum.enableManualPageDetection()
+          }
+        })
+      } else if (window.dtrum) {
         window.dtrum.enableManualPageDetection()
-        if (!window.dtinfo) window.dtinfo = {}
-        window.dtinfo.appName = SERVER_DATA.appName
       }
     </script>
   </head>
