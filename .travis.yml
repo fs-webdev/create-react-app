@@ -3,11 +3,11 @@ language: node_js
 node_js:
   - '24'
 before_install:
-  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> ~/.npmrc
-  - echo "@fs:registry=https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/" >> ~/.npmrc
+  - echo "//familysearch.jfrog.io/artifactory/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> ~/.npmrc
+  - echo "registry=https://familysearch.jfrog.io/artifactory/api/npm/fs-npm-prod-virtual/" >> ~/.npmrc
     # because this is a weird monorepo and we cd into and out of directories, this is what worked for travis to publish
-  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> packages/react-scripts/.npmrc
-  - echo "@fs:registry=https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/" >> packages/react-scripts/.npmrc
+  - echo "//familysearch.jfrog.io/artifactory/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> packages/react-scripts/.npmrc
+  - echo "registry=https://familysearch.jfrog.io/artifactory/api/npm/fs-npm-prod-virtual/" >> packages/react-scripts/.npmrc
 install:
   - npm install
   - cd packages/react-scripts
@@ -22,8 +22,8 @@ script:
   - cd ${HOME}/tmp/fresh-cra-template
 
   # this is necessary so we can do some additional npm installs in the freshCraTemplateUpdate.sh script
-  - echo "//familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> ${HOME}/tmp/fresh-cra-template/.npmrc
-  - echo "@fs:registry=https://familysearch.jfrog.io/familysearch/api/npm/fs-npm-prod-virtual/" >> ${HOME}/tmp/fresh-cra-template/.npmrc
+  - echo "//familysearch.jfrog.io/artifactory/api/npm/fs-npm-prod-virtual/:_authToken=${NPM_PUBLISH_TOKEN}" >> ${HOME}/tmp/fresh-cra-template/.npmrc
+  - echo "registry=https://familysearch.jfrog.io/artifactory/api/npm/fs-npm-prod-virtual/" >> ${HOME}/tmp/fresh-cra-template/.npmrc
 
   - CI=true npm test
 
