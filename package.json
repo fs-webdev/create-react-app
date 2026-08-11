@@ -1,8 +1,7 @@
 {
   "private": true,
   "workspaces": [
-    "packages/*",
-    "docusaurus/website"
+    "packages/*"
   ],
   "scripts": {
     "build": "cd packages/react-scripts && node bin/react-scripts.js build",
@@ -44,6 +43,21 @@
     "tempy": "^1.0.1",
     "wait-for-localhost": "^3.3.0",
     "web-vitals": "^2.1.2"
+  },
+  "overrides": {
+    "request": {
+      "form-data": "^2.5.4",
+      "tough-cookie": "^4.1.4"
+    },
+    "git-up": {
+      "parse-url": "^8.1.0"
+    },
+    "svg-term-cli": {
+      "plist": "^3.1.0"
+    },
+    "term-schemes": {
+      "plist": "^3.1.0"
+    }
   },
   "husky": {
     "hooks": {

@@ -1,3 +1,9 @@
+## 8.16.2
+
+- Bump `resolve-url-loader` from `^4.0.0` to `^5.0.0` to drop the transitive `postcss@7.0.39`, which Artifactory's security policy now blocks (403 Forbidden), breaking `npm install` on every consuming app's build
+  - `postcss@7.0.39` is the last 7.x release and the relevant ReDoS advisory was only patched in postcss 8.4.31+, so there is no allowed 7.x fallback; `resolve-url-loader` v5 uses postcss 8, removing postcss 7 entirely
+  - The webpack config passes only `sourceMap` and `root` to the loader, both still supported in v5 (v5 dropped only the deprecated `engine`/`keepQuery`/`absolute`/`attempts` options); v5 also drops Node < 12 support, which is a non-issue for current apps
+
 ## 8.16.1
 
 - Convert layout.ejs includes from the removed EJS preprocessor syntax (`<% include x %>`) to the function form (`<%- include('x') %>`) ahead of the company-wide EJS 3 upgrade
