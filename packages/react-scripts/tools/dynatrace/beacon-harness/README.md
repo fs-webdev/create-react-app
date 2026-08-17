@@ -41,6 +41,29 @@ Each run takes `dwell + ~3s`, so 40 runs at 20s is about 16 minutes. Run it in t
 180 bytes of its body. Use it if the wire format changes and the channel classification in
 `measure-beacons.mjs` stops matching.
 
+### chunk-failure.mjs — does a chunk-load failure reach RUM?
+
+Blocks chunk requests with `page.route()` and looks for the resulting failure in the beacons.
+Answers the `chunk-load` case from [../RUM_ERROR_PROBE_SPEC.md](../RUM_ERROR_PROBE_SPEC.md)
+without deploying a probe to frontier-app-react.
+
+```bash
+node chunk-failure.mjs cache-check int     # run this first, see below
+node chunk-failure.mjs one:12 int 5        # block ONE chunk — the real failure mode
+node chunk-failure.mjs lazy   int 5        # block all chunks — app never boots
+node chunk-failure.mjs early  int 5        # block main.js — races the agent
+```
+
+Result: `ChunkLoadError` reaches Grail complete with stack, but via **`error.source: console`**,
+not `window.onerror`. Details and the two ways this test can silently lie to you (retry query
+strings, blocking every chunk) are in the spec.
+
+**Run `cache-check` before trusting any timing.** `page.route()` disables Chromium's HTTP cache,
+and measurement confirms **a narrow pattern does not avoid this** — the agent's warm-load
+`transferSize` was 175,256 with a route registered versus 0 without. The agent therefore
+downloads cold on every intercepted run and agent-ready shifts later, so capture rates from this
+harness are a conservative bound and its timings are not comparable to `blind-window.mjs`.
+
 ## What it measures
 
 The agent multiplexes two channels onto `bf99293tkn.bf.dynatrace.com/bf`:

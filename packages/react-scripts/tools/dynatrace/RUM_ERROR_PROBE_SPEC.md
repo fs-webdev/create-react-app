@@ -73,7 +73,7 @@ Suggested sweep for `at`: `0, 100, 250, 400, 550, 700, 1000` — brackets the me
 | `reject` | `Promise.reject(new Error(marker))`, unhandled | `unhandledrejection` listener | Likely same as `throw` — separate listener, same install timing |
 | `console` | `console.error(marker)` | console patching | Likely same. **Confirmed capturable** — `error.source: "console"` accounts for 30 of 31 beta errors |
 | `module-eval` | `throw` at the top of the main bundle, before React | `window.onerror` | **Unknown** — bundle vs agent race |
-| `chunk-load` | `import()` a deliberately-missing chunk | `onerror` **and** Resource Timing | **Unknown, most interesting** — may be recovered retroactively like XHR |
+| `chunk-load` | `import()` a deliberately-missing chunk | **console** and Resource Timing | **ANSWERED** — see below; no longer needs a FAR probe |
 | `resource-404` | inject `<img src="/rum-probe/missing.png">` | element `error` event + Resource Timing | Likely recovered |
 | `xhr-500` | `fetch()` a route returning 500 | monkey-patch + Resource Timing | Recovered — already confirmed |
 | `react-render` | throw during initial component render | `window.onerror` | Always captured — **control case**, proves the probe works |
@@ -186,6 +186,76 @@ is fine for this purpose and actively good for keeping beta clean.
 | When is the agent ready? | median 689 ms, range 472–808 ms (fast connection) | same |
 | Does the error handler install before `window.dtrum` appears? | Yes — errors captured at 550 ms while `dtrum` appeared at ~689 ms | same |
 | Is `console.error` captured? | Yes, as `error.source: "console"` | live beta data |
+| Are chunk-load failures captured? | Yes — as `exception.type: ChunkLoadError` via **`error.source: console`** | `chunk-failure.mjs`, n=5 |
+| Does the failed chunk URL reach RUM? | Yes, 5/5, recovered from Resource Timing | same |
 
-The new information this probe adds is: **chunk-load and resource failures**, **module-eval
-timing**, and whether any of it changes on a real device or from another region.
+The new information this probe adds is: **module-eval timing**, real-device and cross-region
+behaviour, and error shapes the harness cannot synthesise. The `chunk-load` case below is done.
+
+---
+
+## Answered: `chunk-load`
+
+[beacon-harness/chunk-failure.mjs](./beacon-harness/chunk-failure.mjs) answers this against int
+without any change to frontier-app-react — Playwright aborts the request and the app produces a
+genuine failure. Measured n=5, agent live at throw time in 5/5:
+
+| Signal | Result |
+| --- | --- |
+| `exception.type: ChunkLoadError` in beacon | **5/5** |
+| Failed chunk URL in beacon | 5/5 (Resource Timing) |
+| `error.source` | **`console`**, not `exception` |
+
+The event is complete — message, type, and a real stack trace:
+
+```json
+"exception.message": "Loading chunk 6285 failed after 5 retries.\n(static/js/6285.6f792c54f5f8f880.chunk.js)",
+"exception.type": "ChunkLoadError",
+"error.source": "console",
+"exception.stack_trace": "ChunkLoadError\n at o.f.j (…/main.833f3be69ff336a0.js:1:190173)…"
+```
+
+**It arrives via console patching**, which matters more than it sounds — see
+[EARLY_ERROR_BUFFER.md](./EARLY_ERROR_BUFFER.md#chunk-load-failures-are-not-covered).
+A `window`-level `error`/`unhandledrejection` listener never sees it: `RetryChunkLoadPlugin`
+catches the rejection itself and reports the exhausted retry through `console.error`.
+
+Timing on int: the chunk is requested ~850–1200 ms and the error lands ~1150 ms, i.e. **after**
+the agent (~500–930 ms). Real chunk failures therefore sit outside the blind window in normal
+conditions, though the two ranges overlap enough that a slow connection could invert it.
+
+The URL recovery is genuine and separable from the error text — the beacon carries standalone
+resource entries, one per attempt including all five retries:
+
+```json
+"performance.initiator_type":"script","characteristics.has_request":true,
+"url.full":"https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js"
+```
+
+### Unresolved: blocking `main.js` produces nothing at all
+
+Mode `early` blocks the main bundle instead of a lazy chunk. Result (n=4): **no error, no failed
+URL, nothing** — including in the 2 of 4 runs where the agent was already live when the request
+failed. That is not what the chunk result predicts.
+
+Not yet explained, and the sample is too small to lean on. Candidates: the session was a
+`costAndTrafficControl` stub (~1 in 3 are monitored, so 0/4 is unremarkable); or a page whose
+bundle never loads generates too little activity for the agent to flush a full beacon — it sent
+only 2. Worth an n=15 run before drawing anything from it. **If it holds, it matters**: it would
+mean the hardest failure to detect is the one where the app does not start at all.
+
+### Two mistakes worth not repeating
+
+**Match the retry query string.** `RetryChunkLoadPlugin` is configured with `maxRetries: 5` and a
+`?cache-bust=<ts>` query ([config/webpack.config.js:827](../../config/webpack.config.js#L827)),
+so a Playwright pattern ending at `.chunk.js` blocks the first attempt and lets all five retries
+through. They succeed, the app recovers, and the run reads as "no error was ever produced". The
+pattern must end `*.chunk.js*` and the per-chunk lock must compare query-stripped URLs.
+
+Also worth knowing on its own: the five retries fire **within ~23 ms** of the first failure
+(`retryDelay` defaults to 0), so they do nothing for a CDN outage or a genuinely slow network —
+the case the plugin was added for. Raising `retryDelay` is a separate, real finding.
+
+**Do not block every chunk.** Blocking all 19 stops the app booting, so no `import()` rejection
+handler ever runs: measured 19 resource errors, **zero** `ChunkLoadError`, zero retries. Only a
+single-chunk block reproduces the real failure.
