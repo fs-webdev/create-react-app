@@ -1,0 +1,134 @@
+[
+  {
+    "env": "int",
+    "mode": "early",
+    "run": 0,
+    "files": [
+      "main.833f3be69ff336a0.js"
+    ],
+    "blocked": [
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/main.833f3be69ff336a0.js",
+        "atMs": 550
+      }
+    ],
+    "agentSeenMs": 801,
+    "probe": {
+      "errors": [
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/main.833f3be69ff336a0.js",
+          "tag": "SCRIPT",
+          "firedMs": 767,
+          "agentPresent": false
+        }
+      ],
+      "agentReadyMs": 824
+    },
+    "beacons": 2,
+    "inBeacon": {
+      "chunkError": false,
+      "byFilename": false,
+      "probeError": false
+    }
+  },
+  {
+    "env": "int",
+    "mode": "early",
+    "run": 1,
+    "files": [
+      "main.833f3be69ff336a0.js"
+    ],
+    "blocked": [
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/main.833f3be69ff336a0.js",
+        "atMs": 414
+      }
+    ],
+    "agentSeenMs": 542,
+    "probe": {
+      "errors": [
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/main.833f3be69ff336a0.js",
+          "tag": "SCRIPT",
+          "firedMs": 591,
+          "agentPresent": true
+        }
+      ],
+      "agentReadyMs": 566
+    },
+    "beacons": 2,
+    "inBeacon": {
+      "chunkError": false,
+      "byFilename": false,
+      "probeError": false
+    }
+  },
+  {
+    "env": "int",
+    "mode": "early",
+    "run": 2,
+    "files": [
+      "main.833f3be69ff336a0.js"
+    ],
+    "blocked": [
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/main.833f3be69ff336a0.js",
+        "atMs": 476
+      }
+    ],
+    "agentSeenMs": 545,
+    "probe": {
+      "errors": [
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/main.833f3be69ff336a0.js",
+          "tag": "SCRIPT",
+          "firedMs": 697,
+          "agentPresent": true
+        }
+      ],
+      "agentReadyMs": 567
+    },
+    "beacons": 2,
+    "inBeacon": {
+      "chunkError": false,
+      "byFilename": false,
+      "probeError": false
+    }
+  },
+  {
+    "env": "int",
+    "mode": "early",
+    "run": 3,
+    "files": [
+      "main.833f3be69ff336a0.js"
+    ],
+    "blocked": [
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/main.833f3be69ff336a0.js",
+        "atMs": 540
+      }
+    ],
+    "agentSeenMs": 755,
+    "probe": {
+      "errors": [
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/main.833f3be69ff336a0.js",
+          "tag": "SCRIPT",
+          "firedMs": 682,
+          "agentPresent": false
+        }
+      ],
+      "agentReadyMs": 777
+    },
+    "beacons": 2,
+    "inBeacon": {
+      "chunkError": false,
+      "byFilename": false,
+      "probeError": false
+    }
+  }
+]

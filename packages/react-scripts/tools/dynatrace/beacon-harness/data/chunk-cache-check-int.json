@@ -1,0 +1,26 @@
+{
+  "noRoute": [
+    {
+      "pass": "cold",
+      "transferSize": 175256,
+      "duration": 340
+    },
+    {
+      "pass": "warm",
+      "transferSize": 0,
+      "duration": 0
+    }
+  ],
+  "withRoute": [
+    {
+      "pass": "cold",
+      "transferSize": 175256,
+      "duration": 251
+    },
+    {
+      "pass": "warm",
+      "transferSize": 175256,
+      "duration": 58
+    }
+  ]
+}
