@@ -73,9 +73,39 @@ if (typeof getFeatureFlag !== 'undefined') {
            Single request, tracks tenant configuration automatically, and never blocks rendering.
            Trade-off: no SRI, and no cache validator, so browsers re-download it every 24 hours. -->
       <script type="text/javascript" src="<%= cdnCompleteUrlsNew[env] %>" crossorigin="anonymous" async></script>
-    <% }
-  } %>
+    <% } %>
   <script type="text/javascript">
+    // Early-error buffer. See tools/dynatrace/EARLY_ERROR_BUFFER.md for the motivation and data.
+    //
+    // The agent is loaded async, so its error handlers are not installed at navigation start.
+    // Measured on int: exceptions thrown before ~250ms are never captured, ~50% are captured at
+    // 400ms, and capture is complete by 550ms. Requests are unaffected — the agent recovers those
+    // retroactively from Resource Timing — so exceptions are the *only* thing the async load
+    // actually loses.
+    //
+    // Sentry does not cover this. It initialises from the app bundle at ~1016ms versus the agent's
+    // ~660ms, so it shares the same window and extends it. The gap is a property of installing a
+    // handler late, not of Dynatrace, and the only fix is a listener that exists at t=0.
+    //
+    // This block must stay FIRST in this script and this partial must stay early in <head>:
+    // anything that can throw before it runs is unrecoverable.
+    (function () {
+      if (typeof window === 'undefined' || !window.addEventListener) return;
+      var buf = [];
+      window.__dtEarlyErrors = buf;
+      function keep(e) {
+        // Bounded: a page erroring in a loop must not grow this without limit.
+        if (buf.length < 50) buf.push({e: e, t: Math.round((window.performance || {}).now ? performance.now() : 0)});
+      }
+      // Capture phase, so a stopPropagation() elsewhere cannot hide errors from us.
+      window.addEventListener('error', keep, true);
+      window.addEventListener('unhandledrejection', keep, true);
+      window.__dtEarlyErrorsStop = function () {
+        window.removeEventListener('error', keep, true);
+        window.removeEventListener('unhandledrejection', keep, true);
+      };
+    })();
+
     // RUM API readiness helper, exposed as window.dtWhenReady(which, fn).
     //
     // Two facts drive this shape:
@@ -118,5 +148,38 @@ if (typeof getFeatureFlag !== 'undefined') {
         }, 200);
       }
     })();
+
+    // Replay whatever the buffer caught before the agent's own handlers existed.
+    //
+    // Routed through RUM Classic on purpose: dtrum.reportError is available, dynatrace.reportError
+    // is NOT (New RUM exposes sendEvent instead, whose error event shape we have not verified).
+    // Classic runs alongside New RUM and cannot be disabled, so this path always exists. Whether a
+    // Classic-reported error also surfaces in Grail is unconfirmed — see EARLY_ERROR_BUFFER.md.
+    //
+    // Known imprecision, accepted deliberately: the agent installs its handlers slightly before
+    // window.dtrum becomes visible (measured — errors captured from ~550ms while dtrum appeared at
+    // ~660ms), so an error thrown in that ~100ms sliver can be reported twice. Duplicating a
+    // handful of errors is the better failure than dropping them, and the "[dt-early]" prefix makes
+    // replayed ones identifiable if they ever need excluding.
+    window.dtWhenReady && window.dtWhenReady('classic', function () {
+      var buf = window.__dtEarlyErrors || [];
+      if (window.__dtEarlyErrorsStop) { try { window.__dtEarlyErrorsStop(); } catch (e) {} }
+      for (var i = 0; i < buf.length; i++) {
+        try {
+          var rec = buf[i];
+          var ev = rec.e || {};
+          // Pass the Error object where we have one so the real stack survives; a bare string makes
+          // the agent synthesise a stack from the reporting site, which points here instead of at
+          // the throw. Check exception.is_stack_trace_generated in user.events to tell them apart.
+          var err = ev.error || ev.reason;
+          var at = '[dt-early +' + rec.t + 'ms] ';
+          if (typeof window.dtrum.reportError === 'function') {
+            window.dtrum.reportError(err instanceof Error ? err : new Error(at + (ev.message || err || 'unknown early error')));
+          }
+        } catch (e) {}
+      }
+      buf.length = 0;
+    });
   </script>
-<% } %>
+  <% }
+} %>
