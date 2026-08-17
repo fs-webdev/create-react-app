@@ -92,6 +92,24 @@ neither: `RetryChunkLoadPlugin` catches the rejection itself and reports the exh
 
 So a chunk failure inside the blind window would be lost, and this buffer would not save it.
 
+The same measurement found a harder limit that no buffer can fix. Application chunks are served
+cross-origin from `edge.fscdn.org` and their `<script>` tags carry no `crossorigin` attribute, so
+errors thrown inside application code arrive as a bare `"Script error."` — and unhandled
+rejections are **not dispatched to listeners at all**. Buffering earlier does not help when the
+event never fires.
+
+The only fix is `output.crossOriginLoading: 'anonymous'`, which has been **deliberately deferred**
+— it trades opaque errors for a new class of load-time failure, and a CORS misconfiguration is a
+white screen rather than a missing log line. See
+[RUM_ERROR_PROBE_SPEC.md](./RUM_ERROR_PROBE_SPEC.md#the-available-fix--deferred-deliberately).
+
+The practical consequence, until then: **this buffer is worth less than the measurements
+suggest.** It reliably recovers early errors from same-origin inline code, which is what
+[blind-window.mjs](./beacon-harness/blind-window.mjs) injects and measures. Errors thrown from
+application code in a chunk are opaque or absent whether or not they land in the blind window,
+so no amount of buffering makes them legible. Keep that in mind when reading the 10/10 rows —
+they measure the buffer, not the coverage of real application errors.
+
 In practice that is currently fine: on int, chunks are requested ~850–1200 ms and the error lands
 ~1150 ms, while the agent is ready at ~500–930 ms. The failure sits outside the window. But the
 ranges overlap, so a slow enough connection inverts the order.

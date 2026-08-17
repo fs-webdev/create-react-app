@@ -41,12 +41,30 @@ const TARGETS = {
   early: '**/assets/static/js/main.*.js*',
 }
 
-// `one:<n>` blocks only the nth *.chunk.js and lets the rest through. Blocking all of them
-// (mode `lazy`) stops the app booting, so the dynamic import()'s rejection handler never runs
-// and no ChunkLoadError is ever constructed -- measured: 19 resource errors, 0 ChunkLoadError,
-// 0 retries. Only a single-chunk block produces the failure the retry plugin actually handles.
-const mode = process.argv[2] || 'lazy'
-const oneIndex = mode.startsWith('one') ? Number(mode.split(':')[1] || 0) : null
+// Modes. Everything except `lazy` acts on a single chunk, because blocking all of them stops the
+// app booting -- the dynamic import()'s rejection handler never runs and no ChunkLoadError is
+// ever constructed (measured: 19 resource errors, 0 ChunkLoadError, 0 retries).
+//
+//   lazy          abort every *.chunk.js
+//   one:<n>       abort the nth chunk and all its retries -- hard failure, CDN down
+//   early         abort main.*.js -- races the agent
+//   flaky:<n>     abort the first n attempts, then let it through. THE COMMON PROD CASE:
+//                 a bad network that the retry plugin recovers from. Asks whether a recovered
+//                 failure is visible in RUM at all.
+//   truncate:<n>  serve the nth chunk cut off mid-file -- a dropped connection that still
+//                 returns 200. Produces a parse error, not a network error.
+//   syntax:<n>    serve the nth chunk with a deliberate typo appended -- the bad-bundle case
+//   syntax-main   same, to main.*.js -- a broken deploy where the app never starts
+//
+// The corrupt modes matter because a script that parses badly is NOT a failed request: the
+// browser fetched it successfully, so Resource Timing shows a normal 200 and the only evidence
+// is the parse error itself.
+const [mode, modeParam] = (process.argv[2] || 'lazy').split(':')
+const SINGLE_CHUNK = ['one', 'flaky', 'truncate', 'syntax']
+// `flaky`'s parameter is the failure count, not the chunk index, so it keeps the default target
+const oneIndex = SINGLE_CHUNK.includes(mode) ? (mode === 'flaky' ? 12 : Number(modeParam ?? 12)) : null
+const flakyFails = mode === 'flaky' ? Number(modeParam || 3) : 0
+const CORRUPT = mode === 'truncate' || mode === 'syntax' || mode === 'syntax-main'
 const env = process.argv[3] || 'int'
 const RUNS = Number(process.argv[4] || 5)
 const DWELL_MS = 25000
@@ -151,8 +169,13 @@ async function cacheCheck() {
 }
 
 async function blockRun() {
-  const pattern = oneIndex === null ? TARGETS[mode] : TARGETS.lazy
-  if (!pattern) throw new Error(`unknown mode "${mode}" — use lazy | one:<n> | early | cache-check`)
+  const pattern =
+    mode === 'syntax-main' ? TARGETS.early : oneIndex === null ? TARGETS[mode] : TARGETS.lazy
+  if (!pattern) {
+    throw new Error(
+      `unknown mode "${mode}" — use lazy | one:<n> | early | flaky:<n> | truncate:<n> | syntax:<n> | syntax-main | cache-check`
+    )
+  }
 
   const browser = await chromium.launch()
   const results = []
@@ -175,18 +198,46 @@ async function blockRun() {
     // shows the retry sequence rather than a single event.
     const blocked = []
     let seenChunks = 0
+    let attempts = 0
     const targetUrl = { url: null }
-    await page.route(pattern, route => {
+    await page.route(pattern, async route => {
       const url = route.request().url()
       const base = url.split('?')[0]
       if (oneIndex !== null) {
-        // Lock onto one chunk, then abort every attempt at it. Compare on the query-stripped
+        // Lock onto one chunk, then act on every attempt at it. Compare on the query-stripped
         // URL: retries arrive as `<same path>?cache-bust=<ts>`, so an exact-URL match would
-        // block the first attempt and let all 5 retries through.
+        // catch the first attempt and let all 5 retries through.
         if (targetUrl.url === null && seenChunks++ === oneIndex) targetUrl.url = base
         if (base !== targetUrl.url) return route.continue()
       }
-      blocked.push({ url, atMs: Date.now() - t0 })
+
+      // Recovers on attempt flakyFails+1, which is what a bad network usually does.
+      if (mode === 'flaky' && attempts++ >= flakyFails) {
+        blocked.push({ url, atMs: Date.now() - t0, action: 'allowed' })
+        return route.continue()
+      }
+
+      if (CORRUPT) {
+        // Fetch the real file and damage it, so the browser sees a normal 200 and only the
+        // parse fails. NOTE: this does NOT simulate a typo in source -- webpack fails the build
+        // on those, so they never ship. It simulates a corrupt artifact: a connection dropped
+        // mid-body, a bad deploy, or a CDN serving garbage.
+        try {
+          const real = await route.fetch()
+          const text = await real.text()
+          const body =
+            mode === 'truncate'
+              ? text.slice(0, Math.floor(text.length * 0.6))
+              : `${text}\n;var __rumProbeBrokenBundle = ;\n`
+          blocked.push({ url, atMs: Date.now() - t0, action: mode, bytes: body.length })
+          return route.fulfill({ response: real, body })
+        } catch (e) {
+          blocked.push({ url, atMs: Date.now() - t0, action: 'corrupt-failed', error: String(e) })
+          return route.abort('failed')
+        }
+      }
+
+      blocked.push({ url, atMs: Date.now() - t0, action: 'aborted' })
       route.abort('failed')
     })
 
@@ -207,6 +258,12 @@ async function blockRun() {
       chunkError: hay.some(h => /ChunkLoadError|Loading chunk|Loading CSS chunk/i.test(h)),
       byFilename: files.some(f => hay.some(h => h.includes(f))),
       probeError: probe.errors.some(e => e.message && hay.some(h => h.includes(e.message.slice(0, 60)))),
+      // A corrupt artifact should surface as a parse error. `scriptError` is the important one:
+      // chunk <script> tags carry no crossorigin attribute (webpack's crossOriginLoading
+      // defaults to false), so the browser may redact the details to a bare "Script error."
+      // even though the CDN sends Access-Control-Allow-Origin: *.
+      syntaxError: hay.some(h => /SyntaxError|Unexpected (end of input|token)/i.test(h)),
+      scriptError: hay.some(h => /Script error/i.test(h)),
     }
 
     const firstBlock = blocked[0]?.atMs ?? null
@@ -231,6 +288,8 @@ async function blockRun() {
   // For a `resource` error the observed message IS the URL, so this duplicates byFilename.
   // It only carries independent information for `exception` / `rejection` errors.
   console.log(`page-observed error message in beacon                      ${pct('probeError')}`)
+  console.log(`SyntaxError / parse error in beacon                        ${pct('syntaxError')}`)
+  console.log(`opaque "Script error." in beacon (cross-origin redaction)  ${pct('scriptError')}`)
 
   const withErrors = results.filter(r => r.probe.errors.length)
   if (withErrors.length) {
