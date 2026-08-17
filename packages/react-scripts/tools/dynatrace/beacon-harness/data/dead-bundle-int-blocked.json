@@ -1,0 +1,158 @@
+[
+  {
+    "run": 0,
+    "agentReadyMs": 788,
+    "mainBlockedMs": 519,
+    "monitored": true,
+    "classicBytes": 1478,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 1,
+    "agentReadyMs": 535,
+    "mainBlockedMs": 381,
+    "monitored": true,
+    "classicBytes": 1473,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 2,
+    "agentReadyMs": 702,
+    "mainBlockedMs": 531,
+    "monitored": true,
+    "classicBytes": 1478,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 3,
+    "agentReadyMs": 626,
+    "mainBlockedMs": 357,
+    "monitored": true,
+    "classicBytes": 1472,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 4,
+    "agentReadyMs": 479,
+    "mainBlockedMs": 380,
+    "monitored": true,
+    "classicBytes": 1476,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 5,
+    "agentReadyMs": 534,
+    "mainBlockedMs": 438,
+    "monitored": true,
+    "classicBytes": 1475,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 6,
+    "agentReadyMs": 985,
+    "mainBlockedMs": 687,
+    "monitored": true,
+    "classicBytes": 1485,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 7,
+    "agentReadyMs": 561,
+    "mainBlockedMs": 422,
+    "monitored": true,
+    "classicBytes": 1474,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 8,
+    "agentReadyMs": 988,
+    "mainBlockedMs": 794,
+    "monitored": true,
+    "classicBytes": 1478,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 9,
+    "agentReadyMs": 729,
+    "mainBlockedMs": 411,
+    "monitored": true,
+    "classicBytes": 1471,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 10,
+    "agentReadyMs": 647,
+    "mainBlockedMs": 419,
+    "monitored": true,
+    "classicBytes": 1474,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  },
+  {
+    "run": 11,
+    "agentReadyMs": 814,
+    "mainBlockedMs": 447,
+    "monitored": true,
+    "classicBytes": 1473,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "pageErrors": 1
+  }
+]
