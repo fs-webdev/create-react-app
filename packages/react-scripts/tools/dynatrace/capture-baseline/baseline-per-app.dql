@@ -1,21 +1,24 @@
-// Per-Frontier-app capture baseline for the sync -> async RUM loading change.
+// Per-environment, per-Frontier-app capture baseline for the sync -> async change.
 //
-// Sessions carry no app identifier (dt.support.rum.total_session_properties_count is 0), and all
-// Frontier apps in an environment share one Dynatrace application, so segment on the page path.
-// Without this, app-react's ~250 sessions/day are averaged into beta's 2,000-5,500 and a
-// regression is invisible.
+// NOTE the app-identifier field differs by table:
+//   user.sessions -> dt.rum.application.entities  (array, needs expand)
+//   user.events   -> dt.rum.application.id        (plain string)
+// Using the sessions idiom here silently yields null and sums int with beta, which are in
+// different deploy states -- that mistake produced a meaningless first baseline.
 //
-// Re-run with the same window after each deploy and compare. The metric that matters is the
-// share of sessions with >=1 user action -- session count alone hides a session that loads but
-// captures nothing.
+// Sessions carry no Frontier-app identifier and all apps in an environment share one Dynatrace
+// application, so segment on the page path.
+//
+// Compare share of sessions with >=1 user action, not session count: a session that loads but
+// captures nothing still counts as a session.
 fetch user.events, from:-10d
-| expand app = dt.rum.application.entities
 | filter dt.rum.user_type == "real_user"
+| fieldsAdd env = if(dt.rum.application.id == "3faf90e849295814", "int",
+             else: if(dt.rum.application.id == "c4242bb1eb216374", "beta",
+             else: if(dt.rum.application.id == "a8e5edd77f861ace", "prod", else: "other")))
 | fieldsAdd fapp = if(startsWith(page.detected_name, "/en/labs"), "labs",
-                   else: if(startsWith(page.detected_name, "/en/frontier/app-react"), "app-react",
-                   else: "other"))
-| filter fapp != "other"
+                   else: if(startsWith(page.detected_name, "/en/frontier/app-react"), "app-react", else: "other"))
+| filter fapp != "other" and env != "other"
 | fieldsAdd day = bin(start_time, 1d)
-| summarize { sessions = countDistinctExact(dt.rum.session.id), events = count() },
-    by:{app, fapp, day}
+| summarize { sessions = countDistinctExact(dt.rum.session.id), events = count() }, by:{env, fapp, day}
 | sort day asc
