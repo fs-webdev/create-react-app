@@ -1,0 +1,21 @@
+// Per-Frontier-app capture baseline for the sync -> async RUM loading change.
+//
+// Sessions carry no app identifier (dt.support.rum.total_session_properties_count is 0), and all
+// Frontier apps in an environment share one Dynatrace application, so segment on the page path.
+// Without this, app-react's ~250 sessions/day are averaged into beta's 2,000-5,500 and a
+// regression is invisible.
+//
+// Re-run with the same window after each deploy and compare. The metric that matters is the
+// share of sessions with >=1 user action -- session count alone hides a session that loads but
+// captures nothing.
+fetch user.events, from:-10d
+| expand app = dt.rum.application.entities
+| filter dt.rum.user_type == "real_user"
+| fieldsAdd fapp = if(startsWith(page.detected_name, "/en/labs"), "labs",
+                   else: if(startsWith(page.detected_name, "/en/frontier/app-react"), "app-react",
+                   else: "other"))
+| filter fapp != "other"
+| fieldsAdd day = bin(start_time, 1d)
+| summarize { sessions = countDistinctExact(dt.rum.session.id), events = count() },
+    by:{app, fapp, day}
+| sort day asc

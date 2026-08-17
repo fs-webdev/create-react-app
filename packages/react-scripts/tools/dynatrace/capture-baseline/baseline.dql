@@ -1,0 +1,15 @@
+// Pre/post capture-rate baseline for the sync -> async RUM loading change.
+// Re-run with the same window after alpha.17 is deployed and compare.
+fetch user.sessions, from:-10d
+| expand app = dt.rum.application.entities
+| filter dt.rum.user_type == "real_user"
+| fieldsAdd day = bin(start_time, 1d)
+| summarize {
+    sessions      = count(),
+    actions_mean  = avg(user_action_count),
+    with_action   = countIf(user_action_count > 0),
+    with_request  = countIf(request_count > 0),
+    errors_mean   = avg(`error.count`),
+    bounces       = countIf(`characteristics.is_bounce` == true)
+  }, by:{app, day}
+| sort day asc

@@ -7,9 +7,11 @@
   "scripts": {
     "measure": "node measure-beacons.mjs",
     "analyze": "node analyze.mjs",
-    "probe": "node probe-channels.mjs"
+    "probe": "node probe-channels.mjs",
+    "blind-window": "node blind-window.mjs"
   },
   "devDependencies": {
-    "playwright": "1.62.0"
+    "playwright": "1.62.0",
+    "snappyjs": "^0.7.0"
   }
 }
