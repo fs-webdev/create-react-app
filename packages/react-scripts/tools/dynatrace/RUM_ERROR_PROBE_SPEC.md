@@ -329,17 +329,69 @@ Two notes for whoever picks this up:
 Before shipping it: confirm every asset host in every environment sends `ACAO`, not just
 `edge.fscdn.org` on int, and roll it to int alone first.
 
-### Unresolved: blocking `main.js` produces nothing at all
+---
 
-Mode `early` blocks the main bundle instead of a lazy chunk. Result (n=4): **no error, no failed
-URL, nothing** — including in the 2 of 4 runs where the agent was already live when the request
-failed. That is not what the chunk result predicts.
+## Answered: when the app never starts
 
-Not yet explained, and the sample is too small to lean on. Candidates: the session was a
-`costAndTrafficControl` stub (~1 in 3 are monitored, so 0/4 is unremarkable); or a page whose
-bundle never loads generates too little activity for the agent to flush a full beacon — it sent
-only 2. Worth an n=15 run before drawing anything from it. **If it holds, it matters**: it would
-mean the hardest failure to detect is the one where the app does not start at all.
+The two ways this happens have different answers, so
+[beacon-harness/dead-bundle.mjs](./beacon-harness/dead-bundle.mjs) measures them separately.
+
+### `blocked` — main.js never arrives
+
+Result on int, **n=12**: the agent loaded in 12/12 and a Grail beacon went out in 12/12, so RUM
+was demonstrably watching. The failed `main.js` URL reached the beacon in **0/12**.
+
+The earlier n=4 could not distinguish this from sampling; n=12 can — under
+`costAndTrafficControl: 33`, twelve consecutive unmonitored sessions is a 0.8% event. **This is a
+real gap, and it is not closeable from our side.** Anything we might ship to detect it travels in
+the bundle that did not arrive. Treat it as a known blind spot and detect it elsewhere: synthetic
+monitoring, or a drop in server-side API traffic.
+
+### `throws` — main.js arrives and throws while evaluating
+
+The realistic code-defect case. A syntax error fails the build and never ships, but a runtime
+error during module-eval compiles cleanly — a missing browser API, a bad assumption about a
+global, anything that works in Chrome and dies in Safari. Result on int, n=8, with the injected
+throw confirmed to have evaluated in 8/8:
+
+| | |
+| --- | --- |
+| Browser reported `Script error.` to the page | **8/8** |
+| That error reached RUM | **3/8** |
+| ...with a legible message | **0/8** |
+
+So the failure is **detectable but never diagnosable**. Two separate limits stack:
+
+**Sampling.** The 3 sessions that reported are exactly the 3 with a ~4890-byte Classic payload,
+against ~4465 or ~1470 for the silent ones — a consistent ~430-byte delta that is the error
+itself. 3/8 ≈ 37.5% matches `costAndTrafficControl: 33`. The error is captured every time and
+*transmitted* about a third of the time. For an outage affecting many patrons that is ample; for
+a defect confined to one browser version on low traffic, it may never surface.
+
+**Opacity.** Every one is `"Script error."` with no message, file or line — the cross-origin
+redaction above. You learn the application is broken, not why.
+
+### What could be done, if it becomes worth doing
+
+Nothing here is currently implemented; recording the options while the measurements are fresh.
+
+| Option | Covers `blocked` | Covers `throws` | Cost |
+| --- | --- | --- | --- |
+| Accept it | — | detect only | zero |
+| `crossOriginLoading: 'anonymous'` | no | **full message + line** | CORS risk, deferred above |
+| Inline boot watchdog | **yes** | yes (as "did not mount", not a line number) | needs a reliable mount signal |
+| Synthetic monitoring | yes | yes | outside this repo |
+
+The **inline boot watchdog** is the only one that covers the `blocked` case. Because it would be
+inline and same-origin, its message is not redacted: a timer set in the layout that checks whether
+the app mounted and, if not, reports through `dtrum.reportError` — turning an ambiguous
+`"Script error."` (or complete silence) into an explicit "app failed to mount". It would sit
+naturally beside the early-error buffer in
+[dynatrace.ejs](../../layout/views/partials/dynatrace.ejs).
+
+Two things to resolve before building it: it needs a mount signal that holds for **every**
+consumer of `react-scripts`, not just this app, and its report still goes through Classic, so
+sampling still applies — it would improve *what* you learn, not *how often*.
 
 ### Flaky networks: recovered failures are invisible as errors
 

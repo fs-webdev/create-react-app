@@ -1,0 +1,186 @@
+[
+  {
+    "run": 0,
+    "mode": "throws",
+    "agentReadyMs": 870,
+    "mainTouchedMs": 590,
+    "monitored": true,
+    "classicBytes": 4465,
+    "counts": {
+      "classic": 3,
+      "grail": 1
+    },
+    "sawMain": true,
+    "anyError": false,
+    "legible": false,
+    "evalRan": true,
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "firedMs": 754
+      }
+    ]
+  },
+  {
+    "run": 1,
+    "mode": "throws",
+    "agentReadyMs": 561,
+    "mainTouchedMs": 372,
+    "monitored": true,
+    "classicBytes": 4892,
+    "counts": {
+      "classic": 3,
+      "grail": 1
+    },
+    "sawMain": true,
+    "anyError": true,
+    "legible": false,
+    "evalRan": true,
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "firedMs": 626
+      }
+    ]
+  },
+  {
+    "run": 2,
+    "mode": "throws",
+    "agentReadyMs": 687,
+    "mainTouchedMs": 506,
+    "monitored": true,
+    "classicBytes": 4898,
+    "counts": {
+      "classic": 3,
+      "grail": 1
+    },
+    "sawMain": true,
+    "anyError": true,
+    "legible": false,
+    "evalRan": true,
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "firedMs": 719
+      }
+    ]
+  },
+  {
+    "run": 3,
+    "mode": "throws",
+    "agentReadyMs": 767,
+    "mainTouchedMs": 484,
+    "monitored": true,
+    "classicBytes": 4465,
+    "counts": {
+      "classic": 3,
+      "grail": 1
+    },
+    "sawMain": true,
+    "anyError": false,
+    "legible": false,
+    "evalRan": true,
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "firedMs": 617
+      }
+    ]
+  },
+  {
+    "run": 4,
+    "mode": "throws",
+    "agentReadyMs": 546,
+    "mainTouchedMs": 439,
+    "monitored": true,
+    "classicBytes": 4897,
+    "counts": {
+      "classic": 3,
+      "grail": 1
+    },
+    "sawMain": true,
+    "anyError": true,
+    "legible": false,
+    "evalRan": true,
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "firedMs": 598
+      }
+    ]
+  },
+  {
+    "run": 5,
+    "mode": "throws",
+    "agentReadyMs": 741,
+    "mainTouchedMs": 456,
+    "monitored": true,
+    "classicBytes": 1477,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "anyError": false,
+    "legible": false,
+    "evalRan": true,
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "firedMs": 667
+      }
+    ]
+  },
+  {
+    "run": 6,
+    "mode": "throws",
+    "agentReadyMs": 627,
+    "mainTouchedMs": 401,
+    "monitored": true,
+    "classicBytes": 1471,
+    "counts": {
+      "classic": 1,
+      "grail": 1
+    },
+    "sawMain": false,
+    "anyError": false,
+    "legible": false,
+    "evalRan": true,
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "firedMs": 554
+      }
+    ]
+  },
+  {
+    "run": 7,
+    "mode": "throws",
+    "agentReadyMs": 1001,
+    "mainTouchedMs": 816,
+    "monitored": true,
+    "classicBytes": 4468,
+    "counts": {
+      "classic": 3,
+      "grail": 1
+    },
+    "sawMain": true,
+    "anyError": false,
+    "legible": false,
+    "evalRan": true,
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "firedMs": 976
+      }
+    ]
+  }
+]
