@@ -1,0 +1,378 @@
+[
+  {
+    "env": "int",
+    "case": "typeerror",
+    "run": 0,
+    "mark": "RTPROBE-typeerror-0-75105",
+    "beacons": 9,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": true,
+      "opaqueInPage": true,
+      "pageErrors": 3,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1063,
+        "agentPresent": true
+      },
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1092,
+        "agentPresent": true
+      },
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "filename": null,
+        "lineno": 0,
+        "firedMs": 1120,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "typeerror",
+    "run": 1,
+    "mark": "RTPROBE-typeerror-1-75105",
+    "beacons": 8,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": true,
+      "opaqueInPage": true,
+      "pageErrors": 3,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 969,
+        "agentPresent": true
+      },
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "filename": null,
+        "lineno": 0,
+        "firedMs": 1008,
+        "agentPresent": true
+      },
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1027,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "string-typo",
+    "run": 0,
+    "mark": "RTPROBE-string-typo-0-75105",
+    "beacons": 8,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": false,
+      "opaqueInPage": false,
+      "pageErrors": 2,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1154,
+        "agentPresent": true
+      },
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1189,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "string-typo",
+    "run": 1,
+    "mark": "RTPROBE-string-typo-1-75105",
+    "beacons": 7,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": false,
+      "opaqueInPage": false,
+      "pageErrors": 1,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 925,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "missing-module",
+    "run": 0,
+    "mark": "RTPROBE-missing-module-0-75105",
+    "beacons": 10,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": false,
+      "opaqueInPage": false,
+      "pageErrors": 2,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1154,
+        "agentPresent": true
+      },
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1186,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "missing-module",
+    "run": 1,
+    "mark": "RTPROBE-missing-module-1-75105",
+    "beacons": 11,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": false,
+      "opaqueInPage": false,
+      "pageErrors": 1,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 943,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "logic",
+    "run": 0,
+    "mark": "RTPROBE-logic-0-75105",
+    "beacons": 8,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": false,
+      "opaqueInPage": false,
+      "pageErrors": 1,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1148,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "logic",
+    "run": 1,
+    "mark": "RTPROBE-logic-1-75105",
+    "beacons": 7,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": false,
+      "opaqueInPage": false,
+      "pageErrors": 1,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1069,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "handler",
+    "run": 0,
+    "mark": "RTPROBE-handler-0-75105",
+    "beacons": 10,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": true,
+      "opaqueInPage": true,
+      "pageErrors": 2,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1140,
+        "agentPresent": true
+      },
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "filename": null,
+        "lineno": 0,
+        "firedMs": 7166,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "handler",
+    "run": 1,
+    "mark": "RTPROBE-handler-1-75105",
+    "beacons": 8,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": true,
+      "opaqueInPage": true,
+      "pageErrors": 2,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1140,
+        "agentPresent": true
+      },
+      {
+        "kind": "exception",
+        "message": "Script error.",
+        "filename": null,
+        "lineno": 0,
+        "firedMs": 7191,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "promise",
+    "run": 0,
+    "mark": "RTPROBE-promise-0-75105",
+    "beacons": 8,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": false,
+      "opaqueInPage": false,
+      "pageErrors": 1,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 1090,
+        "agentPresent": true
+      }
+    ]
+  },
+  {
+    "env": "int",
+    "case": "promise",
+    "run": 1,
+    "mark": "RTPROBE-promise-1-75105",
+    "beacons": 7,
+    "detail": {
+      "injected": true,
+      "byMark": false,
+      "legible": false,
+      "opaqueInBeacon": false,
+      "opaqueInPage": false,
+      "pageErrors": 1,
+      "ran": true
+    },
+    "errors": [
+      {
+        "kind": "exception",
+        "message": "ResizeObserver loop completed with undelivered notifications.",
+        "filename": "https://integration.familysearch.org/en/frontier/app-react/",
+        "lineno": 0,
+        "firedMs": 877,
+        "agentPresent": true
+      }
+    ]
+  }
+]

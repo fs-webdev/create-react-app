@@ -58,11 +58,37 @@ Result: `ChunkLoadError` reaches Grail complete with stack, but via **`error.sou
 not `window.onerror`. Details and the two ways this test can silently lie to you (retry query
 strings, blocking every chunk) are in the spec.
 
+Other delivery modes: `flaky:<n>` fails the first n attempts then lets the chunk through (the
+common bad-network case the retry plugin exists for), and `truncate:<n>` serves a chunk cut off
+mid-body. `truncate` simulates a **corrupt artifact in transit**, not a typo — webpack fails the
+build on syntax errors, so those never ship.
+
 **Run `cache-check` before trusting any timing.** `page.route()` disables Chromium's HTTP cache,
 and measurement confirms **a narrow pattern does not avoid this** — the agent's warm-load
 `transferSize` was 175,256 with a route registered versus 0 without. The agent therefore
 downloads cold on every intercepted run and agent-ready shifts later, so capture rates from this
 harness are a conservative bound and its timings are not comparable to `blind-window.mjs`.
+
+### runtime-errors.mjs — errors that survive the build
+
+Delivery failures are only half the picture. This injects the errors that actually reach
+production — ones that compile and deploy cleanly — inside a real cross-origin chunk:
+
+```bash
+node runtime-errors.mjs all int 3
+node runtime-errors.mjs typeerror,promise int 5
+```
+
+Cases: `typeerror`, `handler`, `promise`, `missing-module`, plus `string-typo` and `logic` as
+silent controls. Injection is verified by a receipt global, so "nothing in the beacon" is
+distinguishable from "the code never ran" — which matters, because for the controls nothing
+firing *is* the expected result.
+
+Result: TypeErrors arrive as opaque `"Script error."` and unhandled rejections are never
+dispatched at all, because chunk `<script>` tags carry no `crossorigin` attribute.
+`crossorigin-check.mjs` isolates that to the attribute alone and shows what changes if it is set.
+Full findings and the recommended config change — including why it is not free — are in
+[../RUM_ERROR_PROBE_SPEC.md](../RUM_ERROR_PROBE_SPEC.md).
 
 ## What it measures
 

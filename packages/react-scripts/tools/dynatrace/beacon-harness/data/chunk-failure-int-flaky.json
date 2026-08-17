@@ -1,0 +1,234 @@
+[
+  {
+    "env": "int",
+    "mode": "flaky",
+    "run": 0,
+    "files": [
+      "7502.e0cb07ce009ca5b5.chunk.js",
+      "7502.e0cb07ce009ca5b5.chunk.js?1786992077598",
+      "7502.e0cb07ce009ca5b5.chunk.js?1786992077610",
+      "7502.e0cb07ce009ca5b5.chunk.js?1786992077612"
+    ],
+    "blocked": [
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js",
+        "atMs": 1214,
+        "action": "aborted"
+      },
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992077598",
+        "atMs": 1232,
+        "action": "aborted"
+      },
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992077610",
+        "atMs": 1243,
+        "action": "aborted"
+      },
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992077612",
+        "atMs": 1244,
+        "action": "allowed"
+      }
+    ],
+    "agentSeenMs": 860,
+    "probe": {
+      "errors": [
+        {
+          "kind": "exception",
+          "message": "ResizeObserver loop completed with undelivered notifications.",
+          "tag": null,
+          "firedMs": 1214,
+          "agentPresent": true
+        },
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js",
+          "tag": "SCRIPT",
+          "firedMs": 1229,
+          "agentPresent": true
+        },
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992077598",
+          "tag": "SCRIPT",
+          "firedMs": 1241,
+          "agentPresent": true
+        },
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992077610",
+          "tag": "SCRIPT",
+          "firedMs": 1243,
+          "agentPresent": true
+        }
+      ],
+      "agentReadyMs": 884
+    },
+    "beacons": 7,
+    "inBeacon": {
+      "chunkError": false,
+      "byFilename": true,
+      "probeError": true,
+      "syntaxError": false,
+      "scriptError": false
+    }
+  },
+  {
+    "env": "int",
+    "mode": "flaky",
+    "run": 1,
+    "files": [
+      "6285.6f792c54f5f8f880.chunk.js",
+      "6285.6f792c54f5f8f880.chunk.js?1786992103415",
+      "6285.6f792c54f5f8f880.chunk.js?1786992103420",
+      "6285.6f792c54f5f8f880.chunk.js?1786992103435"
+    ],
+    "blocked": [
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/6285.6f792c54f5f8f880.chunk.js",
+        "atMs": 842,
+        "action": "aborted"
+      },
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/6285.6f792c54f5f8f880.chunk.js?1786992103415",
+        "atMs": 852,
+        "action": "aborted"
+      },
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/6285.6f792c54f5f8f880.chunk.js?1786992103420",
+        "atMs": 858,
+        "action": "aborted"
+      },
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/6285.6f792c54f5f8f880.chunk.js?1786992103435",
+        "atMs": 872,
+        "action": "allowed"
+      }
+    ],
+    "agentSeenMs": 460,
+    "probe": {
+      "errors": [
+        {
+          "kind": "exception",
+          "message": "ResizeObserver loop completed with undelivered notifications.",
+          "tag": null,
+          "firedMs": 844,
+          "agentPresent": true
+        },
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/6285.6f792c54f5f8f880.chunk.js",
+          "tag": "SCRIPT",
+          "firedMs": 851,
+          "agentPresent": true
+        },
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/6285.6f792c54f5f8f880.chunk.js?1786992103415",
+          "tag": "SCRIPT",
+          "firedMs": 856,
+          "agentPresent": true
+        },
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/6285.6f792c54f5f8f880.chunk.js?1786992103420",
+          "tag": "SCRIPT",
+          "firedMs": 870,
+          "agentPresent": true
+        }
+      ],
+      "agentReadyMs": 483
+    },
+    "beacons": 7,
+    "inBeacon": {
+      "chunkError": false,
+      "byFilename": true,
+      "probeError": true,
+      "syntaxError": false,
+      "scriptError": false
+    }
+  },
+  {
+    "env": "int",
+    "mode": "flaky",
+    "run": 2,
+    "files": [
+      "7502.e0cb07ce009ca5b5.chunk.js",
+      "7502.e0cb07ce009ca5b5.chunk.js?1786992129576",
+      "7502.e0cb07ce009ca5b5.chunk.js?1786992129597",
+      "7502.e0cb07ce009ca5b5.chunk.js?1786992129599"
+    ],
+    "blocked": [
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js",
+        "atMs": 1128,
+        "action": "aborted"
+      },
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992129576",
+        "atMs": 1154,
+        "action": "aborted"
+      },
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992129597",
+        "atMs": 1175,
+        "action": "aborted"
+      },
+      {
+        "url": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992129599",
+        "atMs": 1176,
+        "action": "allowed"
+      }
+    ],
+    "agentSeenMs": 805,
+    "probe": {
+      "errors": [
+        {
+          "kind": "exception",
+          "message": "ResizeObserver loop completed with undelivered notifications.",
+          "tag": null,
+          "firedMs": 1129,
+          "agentPresent": true
+        },
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js",
+          "tag": "SCRIPT",
+          "firedMs": 1153,
+          "agentPresent": true
+        },
+        {
+          "kind": "exception",
+          "message": "ResizeObserver loop completed with undelivered notifications.",
+          "tag": null,
+          "firedMs": 1170,
+          "agentPresent": true
+        },
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992129576",
+          "tag": "SCRIPT",
+          "firedMs": 1173,
+          "agentPresent": true
+        },
+        {
+          "kind": "resource",
+          "message": "https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js?1786992129597",
+          "tag": "SCRIPT",
+          "firedMs": 1175,
+          "agentPresent": true
+        }
+      ],
+      "agentReadyMs": 886
+    },
+    "beacons": 8,
+    "inBeacon": {
+      "chunkError": false,
+      "byFilename": true,
+      "probeError": true,
+      "syntaxError": false,
+      "scriptError": false
+    }
+  }
+]

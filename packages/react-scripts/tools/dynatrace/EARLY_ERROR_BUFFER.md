@@ -92,6 +92,13 @@ neither: `RetryChunkLoadPlugin` catches the rejection itself and reports the exh
 
 So a chunk failure inside the blind window would be lost, and this buffer would not save it.
 
+The same measurement found a harder limit that no buffer can fix. Application chunks are served
+cross-origin from `edge.fscdn.org` and their `<script>` tags carry no `crossorigin` attribute, so
+errors thrown inside application code arrive as a bare `"Script error."` — and unhandled
+rejections are **not dispatched to listeners at all**. Buffering earlier does not help when the
+event never fires. The fix is `output.crossOriginLoading: 'anonymous'`, not more buffering; see
+[RUM_ERROR_PROBE_SPEC.md](./RUM_ERROR_PROBE_SPEC.md#the-cause-is-one-missing-attribute).
+
 In practice that is currently fine: on int, chunks are requested ~850–1200 ms and the error lands
 ~1150 ms, while the agent is ready at ~500–930 ms. The failure sits outside the window. But the
 ranges overlap, so a slow enough connection inverts the order.

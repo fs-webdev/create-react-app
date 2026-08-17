@@ -232,6 +232,60 @@ resource entries, one per attempt including all five retries:
 "url.full":"https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js"
 ```
 
+---
+
+## Answered: errors that survive the build — and why prod cannot debug them
+
+A syntax error or a statically-resolvable missing import **fails the webpack build**, so it never
+ships. Simulating those measures a case that cannot happen. What actually reaches production is
+code that compiles cleanly and goes wrong at runtime.
+[beacon-harness/runtime-errors.mjs](./beacon-harness/runtime-errors.mjs) injects each such case
+inside a real cross-origin chunk. Measured on int, n=2 per case, injection execution confirmed
+via a receipt global in every row:
+
+| Case | What ships | Reaches RUM as |
+| --- | --- | --- |
+| `typeerror` | `o.enabled.value` where `o` is undefined | **`"Script error."`** — no message, no file, no line |
+| `handler` | TypeError in a timer 6 s after load | **`"Script error."`** — agent fully live, still opaque |
+| `promise` | unhandled rejection from an async path | **nothing at all** |
+| `missing-module` | `import()` of a bad runtime value | **nothing at all** |
+| `string-typo` | wrong key/flag/URL literal | nothing — no error is thrown (expected) |
+| `logic` | off-by-one, wrong condition | nothing — no error is thrown (**control**) |
+
+The last two rows are the honest baseline: they are invisible to *any* error monitor because
+nothing throws. Only better instrumentation or tests catch those. The first four are the problem.
+
+### The cause is one missing attribute
+
+Chunk `<script>` tags carry **no `crossorigin` attribute** — webpack's `crossOriginLoading`
+defaults to `false` and is not set in
+[config/webpack.config.js](../../config/webpack.config.js). Every app chunk is served from
+`edge.fscdn.org`, so every error thrown inside application code is a cross-origin error and the
+browser redacts it. `edge.fscdn.org` **already sends `Access-Control-Allow-Origin: *`**, so the
+CDN side is done; the tag simply never opts in.
+
+[beacon-harness/crossorigin-check.mjs](./beacon-harness/crossorigin-check.mjs) isolates it by
+serving identical throwing JS from that CDN twice, differing only in the attribute:
+
+| | Sync error | Unhandled rejection |
+| --- | --- | --- |
+| No attribute (**today**) | `"Script error."`, filename `""`, lineno `0` | **not dispatched at all** |
+| `crossorigin="anonymous"` | `Uncaught TypeError: Cannot read properties of null (reading 'boom')`, `xotest-co.js:4` | dispatched, with message |
+
+That async rejections are not merely redacted but **never dispatched** is the sharper half: no
+listener can see them, so this is not something RUM configuration or the early-error buffer can
+work around. See [EARLY_ERROR_BUFFER.md](./EARLY_ERROR_BUFFER.md#chunk-load-failures-are-not-covered).
+
+### Recommended change, with its risk
+
+Set `output.crossOriginLoading: 'anonymous'` in the webpack config. It is one line and it turns
+every application error from `"Script error."` into a real message, file and line.
+
+**It is not free.** The attribute puts chunk loading into CORS mode, so any host serving a chunk
+*without* a valid `Access-Control-Allow-Origin` stops loading it — a failure mode worse than poor
+error reporting. `edge.fscdn.org` sends `*` today, but this must be confirmed for every
+environment and every asset host before it ships, and it interacts with SRI. Verify on int first.
+
 ### Unresolved: blocking `main.js` produces nothing at all
 
 Mode `early` blocks the main bundle instead of a lazy chunk. Result (n=4): **no error, no failed
@@ -243,6 +297,20 @@ Not yet explained, and the sample is too small to lean on. Candidates: the sessi
 bundle never loads generates too little activity for the agent to flush a full beacon — it sent
 only 2. Worth an n=15 run before drawing anything from it. **If it holds, it matters**: it would
 mean the hardest failure to detect is the one where the app does not start at all.
+
+### Flaky networks: recovered failures are invisible as errors
+
+Mode `flaky:3` fails the first three attempts and lets the fourth succeed — what a bad mobile
+connection actually does, and the case `RetryChunkLoadPlugin` exists for. Measured n=3:
+
+| Signal | Result |
+| --- | --- |
+| `ChunkLoadError` in beacon | **0/3** — the retry succeeded, so no error is ever produced |
+| Failed chunk URLs in beacon | 3/3, one resource entry per failed attempt |
+
+So a patron on a flaky network who eventually loads the page **generates no RUM error at all**.
+The only trace is failed requests. Any attempt to size flaky-network impact from error counts
+will therefore read zero; it has to be measured from failed resource requests instead.
 
 ### Two mistakes worth not repeating
 
