@@ -276,15 +276,58 @@ That async rejections are not merely redacted but **never dispatched** is the sh
 listener can see them, so this is not something RUM configuration or the early-error buffer can
 work around. See [EARLY_ERROR_BUFFER.md](./EARLY_ERROR_BUFFER.md#chunk-load-failures-are-not-covered).
 
-### Recommended change, with its risk
+### The available fix — DEFERRED, deliberately
 
-Set `output.crossOriginLoading: 'anonymous'` in the webpack config. It is one line and it turns
-every application error from `"Script error."` into a real message, file and line.
+`output.crossOriginLoading: 'anonymous'` in the webpack config is one line and turns every
+application error from `"Script error."` into a real message, file and line.
 
-**It is not free.** The attribute puts chunk loading into CORS mode, so any host serving a chunk
-*without* a valid `Access-Control-Allow-Origin` stops loading it — a failure mode worse than poor
-error reporting. `edge.fscdn.org` sends `*` today, but this must be confirmed for every
-environment and every asset host before it ships, and it interacts with SRI. Verify on int first.
+**Decision (2026-08-17): not doing it now.** Better error text is a nice-to-have; a CORS
+misconfiguration is a white screen. The trade is real but the upside does not justify taking on a
+new class of load-time failure while a RUM rollout is in flight. Revisit when there is time to
+confirm CORS behaviour properly across every environment and asset host.
+
+Precise about what the change does, because "cross-origin" and "CORS" are not the same thing and
+the distinction is the whole argument:
+
+Today the chunk `<script>` is a **no-cors** request. Script tags are grandfathered — they may
+load and execute cross-origin scripts without permission, so the browser sends no `Origin` and
+never checks `Access-Control-Allow-Origin`. The header is currently **inert**; nothing reads it.
+The redaction is the consequence: the browser never verified we may read the resource, so it will
+not let us read its error text either.
+
+The attribute opts into the CORS protocol. It does not add CORS where there was none — it makes a
+**currently-decorative header load-bearing**. If it is ever missing or wrong, the script does not
+execute at all.
+
+Measured headers say the CDN side is in good shape:
+
+```
+access-control-allow-origin: *          # literal, not origin-reflected
+vary: Origin,Access-Control-Request-Headers,Access-Control-Request-Method
+server: AmazonS3   via: …cloudfront.net # static config, not per-request logic
+```
+
+`*` means one cached representation is valid for every origin, and `Vary: Origin` is already set,
+which closes the usual failure where a proxy caches a no-cors response without CORS headers and
+then serves it to a CORS request. There is also precedent in this very codebase:
+[dynatrace.ejs](../../layout/views/partials/dynatrace.ejs) already sets `crossorigin="anonymous"`
+on both agent tags, so we already depend on `js-cdn.dynatrace.com` CORS headers for RUM to load.
+
+**So the risk is blast radius, not probability.** An intermediary that strips `ACAO` — a corporate
+MITM proxy, some ISP appliance — breaks a CORS-mode load. That is the same mechanism and the same
+likelihood as today; the difference is that today such a proxy costs us the Dynatrace agent
+(telemetry), and afterwards it costs the patron the application (white screen).
+
+Two notes for whoever picks this up:
+
+- **SRI is not a conflict.** SRI on a cross-origin script *requires* `crossorigin`; it is a
+  prerequisite, not friction. An earlier version of this document had that backwards.
+- Chrome partitions its HTTP cache by request mode, so the first load after the change refetches
+  chunks rather than reusing the no-cors cached copies. One-time, but visible in any before/after
+  timing comparison.
+
+Before shipping it: confirm every asset host in every environment sends `ACAO`, not just
+`edge.fscdn.org` on int, and roll it to int alone first.
 
 ### Unresolved: blocking `main.js` produces nothing at all
 
