@@ -81,6 +81,29 @@ Grail events, so API-reported data reaches it in general, but that has not been 
 `reportError` specifically. If it does not cross over, the replay is visible in Classic dashboards
 only, and reaching Grail would need `dynatrace.sendEvent` with a hand-built error event.
 
+## Chunk-load failures are not covered
+
+The buffer listens for `error` and `unhandledrejection`. A chunk-load failure reaches RUM through
+neither: `RetryChunkLoadPlugin` catches the rejection itself and reports the exhausted retry with
+`console.error`, which the agent picks up by patching the console. Measured with
+[beacon-harness/chunk-failure.mjs](https://github.com/fs-webdev/create-react-app/blob/rum-harness-archive-2026-08-17/packages/react-scripts/tools/dynatrace/beacon-harness/chunk-failure.mjs), the event arrives as
+`exception.type: ChunkLoadError` with `error.source: "console"` — see
+[RUM_ERROR_PROBE_SPEC.md](./RUM_ERROR_PROBE_SPEC.md#answered-chunk-load).
+
+So a chunk failure inside the blind window would be lost, and this buffer would not save it.
+
+In practice that is currently fine: on int, chunks are requested ~850–1200 ms and the error lands
+~1150 ms, while the agent is ready at ~500–930 ms. The failure sits outside the window. But the
+ranges overlap, so a slow enough connection inverts the order.
+
+Closing it would mean also buffering `console.error`, which is a bigger change than it looks —
+the console is patched by the agent too, so the buffer would have to hand back cleanly to avoid
+double-reporting every console error on the page, not just those in the first half-second. That
+is why it was not done here. **Open, deliberately deferred**; revisit if chunk errors turn out to
+be under-counted in the field relative to the failed-request count, which is the signal that
+would show it (the failed chunk URL always reaches RUM via Resource Timing, 5/5, even when the
+error itself does not).
+
 ## Known imprecisions, accepted deliberately
 
 **Double-reporting in a ~100 ms sliver.** The agent installs its handlers slightly *before*
