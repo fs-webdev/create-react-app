@@ -1,0 +1,24 @@
+// Per-environment, per-Frontier-app capture baseline for the sync -> async change.
+//
+// NOTE the app-identifier field differs by table:
+//   user.sessions -> dt.rum.application.entities  (array, needs expand)
+//   user.events   -> dt.rum.application.id        (plain string)
+// Using the sessions idiom here silently yields null and sums int with beta, which are in
+// different deploy states -- that mistake produced a meaningless first baseline.
+//
+// Sessions carry no Frontier-app identifier and all apps in an environment share one Dynatrace
+// application, so segment on the page path.
+//
+// Compare share of sessions with >=1 user action, not session count: a session that loads but
+// captures nothing still counts as a session.
+fetch user.events, from:-10d
+| filter dt.rum.user_type == "real_user"
+| fieldsAdd env = if(dt.rum.application.id == "3faf90e849295814", "int",
+             else: if(dt.rum.application.id == "c4242bb1eb216374", "beta",
+             else: if(dt.rum.application.id == "a8e5edd77f861ace", "prod", else: "other")))
+| fieldsAdd fapp = if(startsWith(page.detected_name, "/en/labs"), "labs",
+                   else: if(startsWith(page.detected_name, "/en/frontier/app-react"), "app-react", else: "other"))
+| filter fapp != "other" and env != "other"
+| fieldsAdd day = bin(start_time, 1d)
+| summarize { sessions = countDistinctExact(dt.rum.session.id), events = count() }, by:{env, fapp, day}
+| sort day asc
