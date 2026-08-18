@@ -232,6 +232,103 @@ resource entries, one per attempt including all five retries:
 "url.full":"https://edge.fscdn.org/assets/static/js/7502.e0cb07ce009ca5b5.chunk.js"
 ```
 
+---
+
+## Answered: errors that survive the build — and why prod cannot debug them
+
+A syntax error or a statically-resolvable missing import **fails the webpack build**, so it never
+ships. Simulating those measures a case that cannot happen. What actually reaches production is
+code that compiles cleanly and goes wrong at runtime.
+[beacon-harness/runtime-errors.mjs](https://github.com/fs-webdev/create-react-app/blob/rum-harness-archive-2026-08-17/packages/react-scripts/tools/dynatrace/beacon-harness/runtime-errors.mjs) injects each such case
+inside a real cross-origin chunk. Measured on int, n=2 per case, injection execution confirmed
+via a receipt global in every row:
+
+| Case | What ships | Reaches RUM as |
+| --- | --- | --- |
+| `typeerror` | `o.enabled.value` where `o` is undefined | **`"Script error."`** — no message, no file, no line |
+| `handler` | TypeError in a timer 6 s after load | **`"Script error."`** — agent fully live, still opaque |
+| `promise` | unhandled rejection from an async path | **nothing at all** |
+| `missing-module` | `import()` of a bad runtime value | **nothing at all** |
+| `string-typo` | wrong key/flag/URL literal | nothing — no error is thrown (expected) |
+| `logic` | off-by-one, wrong condition | nothing — no error is thrown (**control**) |
+
+The last two rows are the honest baseline: they are invisible to *any* error monitor because
+nothing throws. Only better instrumentation or tests catch those. The first four are the problem.
+
+### The cause is one missing attribute
+
+Chunk `<script>` tags carry **no `crossorigin` attribute** — webpack's `crossOriginLoading`
+defaults to `false` and is not set in
+[config/webpack.config.js](../../config/webpack.config.js). Every app chunk is served from
+`edge.fscdn.org`, so every error thrown inside application code is a cross-origin error and the
+browser redacts it. `edge.fscdn.org` **already sends `Access-Control-Allow-Origin: *`**, so the
+CDN side is done; the tag simply never opts in.
+
+[beacon-harness/crossorigin-check.mjs](https://github.com/fs-webdev/create-react-app/blob/rum-harness-archive-2026-08-17/packages/react-scripts/tools/dynatrace/beacon-harness/crossorigin-check.mjs) isolates it by
+serving identical throwing JS from that CDN twice, differing only in the attribute:
+
+| | Sync error | Unhandled rejection |
+| --- | --- | --- |
+| No attribute (**today**) | `"Script error."`, filename `""`, lineno `0` | **not dispatched at all** |
+| `crossorigin="anonymous"` | `Uncaught TypeError: Cannot read properties of null (reading 'boom')`, `xotest-co.js:4` | dispatched, with message |
+
+That async rejections are not merely redacted but **never dispatched** is the sharper half: no
+listener can see them, so this is not something RUM configuration or the early-error buffer can
+work around. See [EARLY_ERROR_BUFFER.md](./EARLY_ERROR_BUFFER.md#chunk-load-failures-are-not-covered).
+
+### The available fix — DEFERRED, deliberately
+
+`output.crossOriginLoading: 'anonymous'` in the webpack config is one line and turns every
+application error from `"Script error."` into a real message, file and line.
+
+**Decision (2026-08-17): not doing it now.** Better error text is a nice-to-have; a CORS
+misconfiguration is a white screen. The trade is real but the upside does not justify taking on a
+new class of load-time failure while a RUM rollout is in flight. Revisit when there is time to
+confirm CORS behaviour properly across every environment and asset host.
+
+Precise about what the change does, because "cross-origin" and "CORS" are not the same thing and
+the distinction is the whole argument:
+
+Today the chunk `<script>` is a **no-cors** request. Script tags are grandfathered — they may
+load and execute cross-origin scripts without permission, so the browser sends no `Origin` and
+never checks `Access-Control-Allow-Origin`. The header is currently **inert**; nothing reads it.
+The redaction is the consequence: the browser never verified we may read the resource, so it will
+not let us read its error text either.
+
+The attribute opts into the CORS protocol. It does not add CORS where there was none — it makes a
+**currently-decorative header load-bearing**. If it is ever missing or wrong, the script does not
+execute at all.
+
+Measured headers say the CDN side is in good shape:
+
+```
+access-control-allow-origin: *          # literal, not origin-reflected
+vary: Origin,Access-Control-Request-Headers,Access-Control-Request-Method
+server: AmazonS3   via: …cloudfront.net # static config, not per-request logic
+```
+
+`*` means one cached representation is valid for every origin, and `Vary: Origin` is already set,
+which closes the usual failure where a proxy caches a no-cors response without CORS headers and
+then serves it to a CORS request. There is also precedent in this very codebase:
+[dynatrace.ejs](../../layout/views/partials/dynatrace.ejs) already sets `crossorigin="anonymous"`
+on both agent tags, so we already depend on `js-cdn.dynatrace.com` CORS headers for RUM to load.
+
+**So the risk is blast radius, not probability.** An intermediary that strips `ACAO` — a corporate
+MITM proxy, some ISP appliance — breaks a CORS-mode load. That is the same mechanism and the same
+likelihood as today; the difference is that today such a proxy costs us the Dynatrace agent
+(telemetry), and afterwards it costs the patron the application (white screen).
+
+Two notes for whoever picks this up:
+
+- **SRI is not a conflict.** SRI on a cross-origin script *requires* `crossorigin`; it is a
+  prerequisite, not friction. An earlier version of this document had that backwards.
+- Chrome partitions its HTTP cache by request mode, so the first load after the change refetches
+  chunks rather than reusing the no-cors cached copies. One-time, but visible in any before/after
+  timing comparison.
+
+Before shipping it: confirm every asset host in every environment sends `ACAO`, not just
+`edge.fscdn.org` on int, and roll it to int alone first.
+
 ### Unresolved: blocking `main.js` produces nothing at all
 
 Mode `early` blocks the main bundle instead of a lazy chunk. Result (n=4): **no error, no failed
@@ -243,6 +340,20 @@ Not yet explained, and the sample is too small to lean on. Candidates: the sessi
 bundle never loads generates too little activity for the agent to flush a full beacon — it sent
 only 2. Worth an n=15 run before drawing anything from it. **If it holds, it matters**: it would
 mean the hardest failure to detect is the one where the app does not start at all.
+
+### Flaky networks: recovered failures are invisible as errors
+
+Mode `flaky:3` fails the first three attempts and lets the fourth succeed — what a bad mobile
+connection actually does, and the case `RetryChunkLoadPlugin` exists for. Measured n=3:
+
+| Signal | Result |
+| --- | --- |
+| `ChunkLoadError` in beacon | **0/3** — the retry succeeded, so no error is ever produced |
+| Failed chunk URLs in beacon | 3/3, one resource entry per failed attempt |
+
+So a patron on a flaky network who eventually loads the page **generates no RUM error at all**.
+The only trace is failed requests. Any attempt to size flaky-network impact from error counts
+will therefore read zero; it has to be measured from failed resource requests instead.
 
 ### Two mistakes worth not repeating
 
