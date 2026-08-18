@@ -144,6 +144,8 @@ The same harness that measured the gap proves the fix. After deploying, re-run:
 
 ```bash
 cd packages/react-scripts/tools/dynatrace/beacon-harness
+git show rum-harness-archive-2026-08-17:packages/react-scripts/tools/dynatrace/beacon-harness/blind-window.mjs > blind-window.mjs
+npm install   # playwright + snappyjs, not in the committed package.json
 node blind-window.mjs int 10 "0,100,250,400,550,700,850,1000,1500"
 ```
 
@@ -170,3 +172,21 @@ The sync SRI arm was retained partly as the hedge against async losing early err
 works, that half of its justification goes away and only the caching argument remains — which is
 itself contingent on Dynatrace declining the `ETag` request. See
 [DYNATRACE_RUM_MECHANISMS.md](./DYNATRACE_RUM_MECHANISMS.md).
+
+## Retrieving the harnesses
+
+The measurement scripts cited above are **not carried on this branch** — they were exploratory
+tooling, and keeping them here would have put throwaway code in the shipping history. They are
+preserved in full at tag `rum-harness-archive-2026-08-17`, which is a permanent ref and will not be pruned.
+
+Pull back a single one without checking anything out:
+
+```bash
+git show rum-harness-archive-2026-08-17:packages/react-scripts/tools/dynatrace/beacon-harness/<name>.mjs
+```
+
+Available: `blind-window.mjs`, `chunk-failure.mjs`, `runtime-errors.mjs`, `crossorigin-check.mjs`,
+`dead-bundle.mjs`, `reporter-race.mjs`. The tag's annotation lists what each one settled, plus the
+two traps worth knowing before re-running any of them — a hardcoded chunk index that silently
+passes if the app ships fewer chunks, and `page.route()` disabling the HTTP cache even on a narrow
+pattern.
