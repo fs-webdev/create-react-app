@@ -42,8 +42,9 @@ Also worth knowing: `SERVER_DATA.sentryDSN` is **empty on int and beta** — set
 loads and costs bundle weight in the lower environments but transports nothing, so Sentry error
 coverage cannot be validated there at all.
 
-The gap is a property of installing a handler late, not of any particular vendor. The only fix is a
-listener that already exists at t=0.
+The gap is a property of installing a handler late, not of any particular vendor. The fix direction
+is a listener that exists earlier — though measurement later showed an inline listener still cannot
+reach t=0, only ~350 ms. See *Measured after deployment* below.
 
 ## How it works
 
@@ -56,7 +57,8 @@ listener that already exists at t=0.
 
 It must stay **first** in that script block, and the partial must stay early in `<head>` — anything
 that throws before it runs is unrecoverable. It currently renders at `layout.ejs` line 42, ahead of
-`SERVER_DATA` (52) and Sentry (65).
+`SERVER_DATA` (52) and Sentry (65), but *behind* a render-blocking stylesheet at line 38, which
+measurably delays it. See *Measured after deployment*.
 
 The block is inside the `!rumDisabled` branch, so the `off` treatment emits **zero bytes**. If RUM
 is kill-switched because it is causing a problem, our listeners should not still be installed.
@@ -149,9 +151,44 @@ npm install   # playwright + snappyjs, not in the committed package.json
 node blind-window.mjs int 10 "0,100,250,400,550,700,850,1000,1500"
 ```
 
-The **Error captured** column should go from `0/10` at t=0 to `10/10` at every offset. Anything less
-means the buffer is installing too late, the replay is not firing, or `reportError` is not reaching
-the beacon.
+### Measured after deployment (alpha.18, int, 2026-08-24)
+
+The original success criterion written here — `10/10` at every offset — was **wrong, and not
+achievable**. The buffer is an inline script; it cannot catch anything thrown before the parser
+reaches it. Actual result, against the same n=10 sweep that produced the pre-buffer numbers:
+
+| offset | before | after |
+| --- | --- | --- |
+| 0 ms | 0/10 | **0/10** |
+| 100 ms | 0/10 | 1/10 |
+| 250 ms | 2/10 | **6/10** |
+| 400 ms | 5/10 | **9/10** |
+| 550 ms + | 10/10 | 10/10 |
+
+The buffer works, and the gain in the 250–400 ms band is real. It does not close the window.
+
+**Why, measured directly:** the buffer becomes available at **~290–540 ms**, not at t=0.
+
+```
+run0 buffer@484ms dtrum@709ms  0:NO@310  100:NO@412  250:buf@561
+run1 buffer@331ms dtrum@542ms  0:NO@227  100:buf@331 250:buf@518
+run2 buffer@357ms dtrum@767ms  0:NO@189  100:NO@290  250:buf@440
+```
+
+Note the probe labels are **not wall-clock offsets**. Playwright's `addInitScript` runs after TTFB,
+so the "0 ms" probe actually fires at 189–310 ms and the "250 ms" probe at 440–561 ms. The entire
+curve is explained by buffer-install time versus probe-fire time — the replay path itself is not
+lossy. Before/after remains comparable because both runs used identical offset semantics.
+
+So the real coverage is a band roughly **350 ms → 550 ms**: after the buffer parses, before the
+agent installs its own handlers. Anything earlier is still unrecoverable.
+
+**Unverified lever.** The partial renders at `layout.ejs:42`, *after* a render-blocking stylesheet
+at line 38, and a pending stylesheet blocks execution of subsequent inline scripts. Moving the
+buffer above that link should let it install earlier and widen the band. Suggestive but not
+isolated: in 4 of 5 runs the buffer appeared 55–94 ms after the last stylesheet completed, though
+that measurement caught chunk CSS rather than the foundry sheet specifically. Test it properly
+before changing `layout.ejs` — and note this only widens the band, it cannot reach t=0.
 
 To find replayed errors in Grail:
 
