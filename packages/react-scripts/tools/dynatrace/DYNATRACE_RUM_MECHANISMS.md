@@ -16,13 +16,17 @@ paths were removed in 8.17.0.
 
 ## What is actually implemented
 
-`frontier_snow_dynatraceRUM` is the only flag. Three meaningful states:
+`frontier_snow_dynatraceRUM` is the only flag. Four meaningful states:
 
 | Treatment | Renders | Role |
 |---|---|---|
 | `off` | nothing | Kill switch. Defined in int, beta and prod |
-| `asyncCS-inline` | versioned OneAgent JS tag + SRI, **sync** | Fallback arm — option 4 below |
+| `asyncCS-inline` | versioned OneAgent JS tag + SRI, **sync** | Measurement arm — option 4 below |
+| `asyncCS-script` | the same versioned + SRI tag, **async** | Measurement arm — option 4 below |
 | anything else | `_complete.js`, **async** | Default — option 1 below |
+
+The two SRI arms render one shared tag differing only by the `async` attribute, so they cannot
+drift apart — that attribute is the variable under test.
 
 Two deliberate properties:
 
@@ -141,9 +145,14 @@ default.
 
 Two independent axes, plus a "not applicable" case. The treatment names in the feature flag are
 historical and **do not** describe these axes — they were fixed before the New RUM migration and
-remapped rather than renamed. `asyncCS-inline` is neither async nor inline; it is retained only
-to avoid a coordinated Split-plus-deploy rename. `asyncCS-script` and `global-cdn` are retired
-and now fall through to the default.
+remapped rather than renamed, because renaming needs a coordinated Split-plus-deploy change.
+Read the state table above, not the names:
+
+| Name | Actually means |
+|---|---|
+| `asyncCS-inline` | neither async nor inline — it is the **sync** SRI arm |
+| `asyncCS-script` | the **async** SRI arm (revived 2026-08-24 to measure sync vs async separately) |
+| `global-cdn` | retired as an explicit match; falls through to the default, which is the same thing |
 
 ### Axis 1 — where the agent comes from
 

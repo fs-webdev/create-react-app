@@ -2,21 +2,32 @@
 /* SETS up dynatrace for the various environments */
 
 if (typeof getFeatureFlag !== 'undefined') {
-  /* One flag, three states — see tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md for the full rationale.
+  /* One flag, four states — see tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md for the full rationale.
    *
    *   'off'             no agent at all (kill switch)
    *   'asyncCS-inline'  versioned OneAgent JS tag + SRI, loaded SYNCHRONOUSLY
+   *   'asyncCS-script'  the same versioned + SRI tag, loaded ASYNC
    *   anything else     combined _complete.js from the Dynatrace global CDN, loaded ASYNC
+   *
+   * The two asyncCS-* names read backwards and are kept only because they are live in Split:
+   * '-inline' is the SYNC arm (it replaced an inline-bootstrap approach that was abandoned) and
+   * '-script' is the ASYNC one. Trust this table over the names.
    *
    * The default is deliberately the fallthrough rather than an explicit 'global-cdn' match: a
    * retired treatment name, a renamed flag, or a Split outage returning 'control' must still load
    * RUM. Failing closed would produce a silent monitoring gap, which is the one failure mode we
    * cannot detect from the data itself.
    *
-   * The SRI arm is the hedge for BOTH documented revisit triggers: it is versioned and immutably
-   * cached (so it survives Dynatrace never adding an ETag to _complete.js), and it is synchronous
-   * (so it has no blind window if async proves to lose early interactions or errors). Because its
-   * URL is cacheable for a year, the sync parse-block is paid only on the first uncached load.
+   * The SRI arms are the hedge for BOTH documented revisit triggers, split so each can be measured
+   * on its own. Measured on the wire, _complete.js and the versioned file are the same size to
+   * within ~750 bytes; the ONLY material difference is the cache header — _complete.js is
+   * max-age=86400 with no validator, so it is re-downloaded in full every 24 hours, while the
+   * versioned URL is max-age=31536000, immutable. That is the whole case for these arms.
+   *
+   * Sync vs async is the second, independent question: sync has no blind window, async never
+   * blocks rendering. Because the versioned URL is cached for a year, the sync parse-block is
+   * paid only on the first uncached load — which is why sync is worth measuring here even though
+   * it would be indefensible for _complete.js.
    *
    * Whether the New RUM Experience is active is NOT a code concern — it is the tenant's
    * `enabledOnGrail` setting, toggled per application in the Dynatrace UI with no deploy.
@@ -26,7 +37,9 @@ if (typeof getFeatureFlag !== 'undefined') {
   const env = envType();
   const treatment = dynatraceFlag.treatment;
   const rumDisabled = treatment === 'off';
-  const useSriSync = treatment === 'asyncCS-inline';
+  const useSriSync = treatment === 'asyncCS-inline';   // versioned + SRI, render-blocking
+  const useSriAsync = treatment === 'asyncCS-script'; // versioned + SRI, non-blocking
+  const useSri = useSriSync || useSriAsync;
 
   // Snow provides fresh values via locals.dynatrace (published to S3 by
   // tools/dynatrace/fetch-dynatrace-scripts.js); fallback to values current at publish time.
@@ -62,12 +75,14 @@ if (typeof getFeatureFlag !== 'undefined') {
   // sign) inside a character-class string, which EJS misreads as an unterminated scriptlet and
   // fails with "Could not find matching close tag". It would also re-ship 300-460 KB per response.
   if (!rumDisabled) {
-    if (useSriSync) { %>
-      <!-- Versioned OneAgent JS tag + SRI, loaded SYNCHRONOUSLY. No blind window, and the versioned
-           URL is immutable for a year, so the parse-block is paid only on the first uncached load.
+    if (useSri) { %>
+      <!-- Versioned OneAgent JS tag + SRI. Immutable for a year, so it is fetched once per agent
+           version rather than once per day. Rendered as ONE tag for both arms so they cannot drift
+           apart: the async attribute is the only difference between them, which is exactly the
+           variable under test.
            Values come from locals.dynatrace when Snow supplies them; the fallbacks below are a
            last resort and go stale — refresh with tools/dynatrace/fetch-dynatrace-scripts.js. -->
-      <script type="text/javascript" src="<%= cdnUrlsNew[env] %>" data-dtconfig="<%= cdnConfigNew[env] %>" integrity="<%= cdnIntegrityNew[env] %>" crossorigin="anonymous"></script>
+      <script type="text/javascript" src="<%= cdnUrlsNew[env] %>" data-dtconfig="<%= cdnConfigNew[env] %>" integrity="<%= cdnIntegrityNew[env] %>" crossorigin="anonymous"<%= useSriAsync ? ' async' : '' %>></script>
     <% } else { %>
       <!-- Default: combined code+config _complete.js from the Dynatrace global CDN, loaded async.
            Single request, tracks tenant configuration automatically, and never blocks rendering.
