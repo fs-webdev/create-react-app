@@ -67,6 +67,22 @@ jobs:
         run: |
           set -euo pipefail
           cd "$HOME/tmp/fresh-cra-template"
+
+          # ===================================================================
+          # TEMPORARY -- DO NOT MERGE. Delete this block before merging.
+          #
+          # Drill to confirm a red smoke test actually blocks a merge on
+          # frontierMaster. jest picks this up via testMatch
+          # `<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}`, and CI=true means
+          # a single non-watch run, so the failure propagates as the step's
+          # exit code.
+          cat > src/IntentionalCiFailure.test.js <<'TESTEOF'
+          test('intentional failure: branch protection drill', () => {
+            expect('this build').toBe('intentionally broken')
+          })
+          TESTEOF
+          # ===================================================================
+
           CI=true npm test
           npm run build
 
