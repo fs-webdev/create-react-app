@@ -13,10 +13,19 @@ module.exports = {
   setupFrontier,
   alterPackageJsonFile,
   getCiPrereleaseVersion,
+  isFrontierCi,
   // Deprecated alias kept for one release. This module is a public export of
   // the published @fs/react-scripts package, so renaming it outright could
   // break an external caller. Remove after 8.17.
   getTravisPrereleaseVersion: getCiPrereleaseVersion,
+}
+
+/**
+ * True only when running inside this repo's own CI, where any app we scaffold is
+ * a throwaway smoke test rather than a real user's new project.
+ */
+function isFrontierCi() {
+  return GITHUB_REPOSITORY === 'fs-webdev/create-react-app'
 }
 
 /**
@@ -36,7 +45,7 @@ function setupFrontier(appPath, appName) {
     const packageJson = { ...appPackage }
     delete packageJson.scripts.eject
 
-    if (GITHUB_REPOSITORY === 'fs-webdev/create-react-app') {
+    if (isFrontierCi()) {
       const reactScriptPackageJson = require(path.join(__dirname, '../../package.json'))
       const ciPrereleaseVersion = getCiPrereleaseVersion(reactScriptPackageJson.version)
       console.log(
