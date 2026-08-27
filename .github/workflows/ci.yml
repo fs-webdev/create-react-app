@@ -10,6 +10,14 @@
 
 name: CI
 
+# The repo default is a read/write GITHUB_TOKEN. Nothing here touches the
+# GitHub API -- checkout only reads, and both publishes authenticate to
+# Artifactory with NODE_AUTH_TOKEN -- so drop the token to read-only rather
+# than leave a write-scoped credential in the environment while `npm install`
+# runs lifecycle scripts from the whole dependency tree.
+permissions:
+  contents: read
+
 on:
   push:
     branches: [frontierMaster, v7.x, next]
