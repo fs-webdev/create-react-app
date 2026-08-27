@@ -1,3 +1,12 @@
+## 8.16.3
+
+- Migrate CI from Travis to GitHub Actions (`.github/workflows/ci.yml`); delete `.travis.yml`
+  - CI prereleases are now labeled `X.Y.Z-prerelease.<github-run-number>` instead of `X.Y.Z-TravisPrerelease.<travis-build-number>`. `GITHUB_RUN_NUMBER` restarts at 1, but semver compares alphanumeric prerelease identifiers in ASCII order and `'T'` (84) < `'p'` (112), so `8.17.0-prerelease.1` still sorts above `8.17.0-TravisPrerelease.2311` and the `next` dist-tag does not move backwards
+  - `frontierInit.js` now reads `GITHUB_REPOSITORY` / `GITHUB_RUN_NUMBER` instead of `TRAVIS_REPO_SLUG` / `TRAVIS_BUILD_NUMBER`. `getTravisPrereleaseVersion` is renamed to `getCiPrereleaseVersion`, with the old name kept as a deprecated alias for one release since this module is a public export
+  - Artifactory auth now comes from `actions/setup-node`'s `registry-url` rather than three hand-written `.npmrc` files. `scope` is deliberately omitted so a bare `registry=` line is written and *all* packages keep resolving through the jfrog virtual registry, preserving curation enforcement
+  - `init.js` no longer git-inits or git-commits the scaffolded app when running in this repo's own CI. The runner has no git identity, so the commit failed and `init.js` then deleted the `.git` directory it had just created — noise in the log for no result. Gated on the new `isFrontierCi()` helper, so behavior is unchanged for anyone actually running `create-react-app`
+  - Also removes upstream Facebook CI config that had been dead since the fork: `azure-pipelines.yml`, `azure-pipelines-test-job.yml`, `.github/workflows/integration.yml`, and the Azure build badge in `README.md` (all keyed to a `main` branch this fork does not have)
+
 ## 8.16.2
 
 - Bump `resolve-url-loader` from `^4.0.0` to `^5.0.0` to drop the transitive `postcss@7.0.39`, which Artifactory's security policy now blocks (403 Forbidden), breaking `npm install` on every consuming app's build
