@@ -1,0 +1,77 @@
+# Build, publish, and smoke-test @fs/react-scripts. Replaces .travis.yml.
+#
+# Every run publishes a CI prerelease of @fs/react-scripts to Artifactory, then
+# scaffolds a real app against that exact prerelease and builds/tests it. That
+# scaffolded app is the only real test in this pipeline -- the root `npm test`
+# and `npm run test:integration` scripts are both stubbed to an echo.
+#
+# Pushes to the three release branches additionally publish the committed
+# version of @fs/react-scripts.
+
+name: CI
+
+on:
+  push:
+    branches: [frontierMaster, v7.x, next]
+  pull_request:
+    branches-ignore: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    name: build-and-publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      # Replaces the whole .travis.yml `before_install` block, which hand-wrote
+      # .npmrc in three places.
+      #
+      # No `scope:` on purpose. With a scope, setup-node writes `@fs:registry=`
+      # and only @fs packages resolve through Artifactory; without one it writes
+      # a bare `registry=` line, so ALL traffic goes through the jfrog virtual
+      # registry as it did on Travis. That keeps jfrog curation in play -- see
+      # the E403 diagnostic in publishPrReleaseAndCreateFreshCraTemplate.js.
+      #
+      # setup-node exports NPM_CONFIG_USERCONFIG and NODE_AUTH_TOKEN job-wide,
+      # so auth survives every later step and every `cd`.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://familysearch.jfrog.io/artifactory/api/npm/fs-npm-prod-virtual/
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+      # Plain `npm install`, matching Travis. `npm ci` would fail in
+      # packages/react-scripts, which has no lockfile of its own. The `cd` is
+      # what Travis did -- `--prefix` has different semantics inside an npm
+      # workspaces root, so don't "simplify" it.
+      - name: Install
+        run: |
+          set -euo pipefail
+          npm install
+          cd packages/react-scripts
+          npm install
+
+      - name: Publish CI prerelease and scaffold a fresh app
+        run: node publishPrReleaseAndCreateFreshCraTemplate.js
+
+      # The scaffolded app lives at $HOME/tmp/fresh-cra-template, hardcoded in
+      # the script above. `working-directory:` cannot expand $HOME, so cd here.
+      - name: Smoke test the scaffolded app
+        run: |
+          set -euo pipefail
+          cd "$HOME/tmp/fresh-cra-template"
+          CI=true npm test
+          npm run build
+
+      # Replaces the three identical `deploy: provider: script` entries.
+      - name: Publish release
+        if: github.event_name == 'push'
+        working-directory: packages/react-scripts
+        run: npm run fs-publish

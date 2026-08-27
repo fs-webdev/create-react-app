@@ -5,7 +5,7 @@ const path = require('path')
 
 const reactScriptPath = path.join(__dirname, 'packages/react-scripts')
 
-const { alterPackageJsonFile, getTravisPrereleaseVersion } = require(path.join(
+const { alterPackageJsonFile, getCiPrereleaseVersion } = require(path.join(
   reactScriptPath,
   'scripts/utils/frontierInit'
 ))
@@ -16,7 +16,7 @@ let newVersion
 
 alterPackageJsonFile(reactScriptPath, packageJson => {
   originalVersion = packageJson.version
-  newVersion = getTravisPrereleaseVersion(packageJson.version)
+  newVersion = getCiPrereleaseVersion(packageJson.version)
   console.log(`setting @fs/react-scripts version to "${newVersion}" temporarily to get published`)
   packageJson.version = newVersion
   return packageJson
