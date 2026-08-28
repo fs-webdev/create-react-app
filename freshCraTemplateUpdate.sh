@@ -14,7 +14,7 @@ sed -i.bak 's/#//' blueprint.yml
 
 # @fs/react-scripts dep version points to the local file (cause of `npx create-react-app file:localReactScriptsPath`),
 # so we need to replace that with the actual version
-NEW_CRA_VERSION=$(json -f ${TRAVIS_BUILD_DIR}/packages/react-scripts/package.json version)
+NEW_CRA_VERSION=$(json -f ${GITHUB_WORKSPACE}/packages/react-scripts/package.json version)
 echo "NEW_CRA_VERSION: $NEW_CRA_VERSION"
 json -I -f package.json -e "this.dependencies[\"@fs/react-scripts\"]=\"$NEW_CRA_VERSION\""
 

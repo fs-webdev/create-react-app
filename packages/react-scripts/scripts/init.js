@@ -22,7 +22,7 @@ const spawn = require('react-dev-utils/crossSpawn');
 const { defaultBrowsers } = require('react-dev-utils/browsersHelper');
 const os = require('os');
 const verifyTypeScriptSetup = require('./utils/verifyTypeScriptSetup');
-const { setupFrontier } = require('./utils/frontierInit');
+const { setupFrontier, isFrontierCi } = require('./utils/frontierInit');
 
 function isInGitRepository() {
   try {
@@ -288,10 +288,14 @@ module.exports = function (
     );
   }
 
-  // Initialize git repo
+  // Initialize git repo.
+  // Skipped in this repo's own CI. The app scaffolded there is a throwaway
+  // smoke test, and the runner has no git identity, so tryGitCommit() below
+  // would fail and init.js would then delete the .git directory it had just
+  // created -- a lot of noise in the log for no result.
   let initializedGit = false;
 
-  if (tryGitInit()) {
+  if (!isFrontierCi() && tryGitInit()) {
     initializedGit = true;
     console.log();
     console.log('Initialized a git repository.');

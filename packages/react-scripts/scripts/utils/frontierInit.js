@@ -7,24 +7,37 @@ const semver = require('semver')
 
 const osUtils = require('./osUtils')
 
-const { TRAVIS_REPO_SLUG, TRAVIS_BUILD_NUMBER } = process.env
+const { GITHUB_REPOSITORY, GITHUB_RUN_NUMBER } = process.env
 
 module.exports = {
   setupFrontier,
   alterPackageJsonFile,
-  getTravisPrereleaseVersion,
+  getCiPrereleaseVersion,
+  isFrontierCi,
+  // Deprecated alias kept for one release. This module is a public export of
+  // the published @fs/react-scripts package, so renaming it outright could
+  // break an external caller. Remove after 8.17.
+  getTravisPrereleaseVersion: getCiPrereleaseVersion,
 }
 
 /**
- * Strip of any existing prerelease info and make a travisPrelease based on the travis job number
+ * True only when running inside this repo's own CI, where any app we scaffold is
+ * a throwaway smoke test rather than a real user's new project.
+ */
+function isFrontierCi() {
+  return GITHUB_REPOSITORY === 'fs-webdev/create-react-app'
+}
+
+/**
+ * Strip off any existing prerelease info and make a prerelease version based on the CI run number
  *
  */
-function getTravisPrereleaseVersion(originalVersion) {
+function getCiPrereleaseVersion(originalVersion) {
   const major = semver.major(originalVersion)
   const minor = semver.minor(originalVersion)
   const patch = semver.patch(originalVersion)
 
-  return `${major}.${minor}.${patch}-TravisPrerelease.${TRAVIS_BUILD_NUMBER}`
+  return `${major}.${minor}.${patch}-prerelease.${GITHUB_RUN_NUMBER}`
 }
 
 function setupFrontier(appPath, appName) {
@@ -32,13 +45,13 @@ function setupFrontier(appPath, appName) {
     const packageJson = { ...appPackage }
     delete packageJson.scripts.eject
 
-    if (TRAVIS_REPO_SLUG === 'fs-webdev/create-react-app') {
+    if (isFrontierCi()) {
       const reactScriptPackageJson = require(path.join(__dirname, '../../package.json'))
-      const travisPrereleaseVersion = getTravisPrereleaseVersion(reactScriptPackageJson.version)
+      const ciPrereleaseVersion = getCiPrereleaseVersion(reactScriptPackageJson.version)
       console.log(
-        `CI and TRAVIS_BUILD_DIR are set, so setting @fs/react-scripts to Travis prerelease version "${travisPrereleaseVersion}"`
+        `Running in this repo's own CI, so setting @fs/react-scripts to prerelease version "${ciPrereleaseVersion}"`
       )
-      packageJson.dependencies['@fs/react-scripts'] = travisPrereleaseVersion
+      packageJson.dependencies['@fs/react-scripts'] = ciPrereleaseVersion
     }
     return packageJson
   })
