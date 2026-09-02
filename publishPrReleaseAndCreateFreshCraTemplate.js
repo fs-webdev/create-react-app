@@ -64,3 +64,14 @@ if (!fs.existsSync(scriptsBin)) {
   console.error('and is usually a transitive dependency of the template rather than of react-scripts.')
   process.exit(1)
 }
+
+// TEMPORARY (Sept 2026): webpack 5.110.2 breaks builds with "export 'css' (imported as 'css')
+// was not found in '@linaria/core'". Frontier Core's announced workaround is pinning webpack
+// 5.110.1 via overrides until the fix ships in Zion packages; remove this block once it does.
+// https://familysearch.slack.com/archives/C04NU7BJ8/p1788365473434469
+alterPackageJsonFile(appDir, packageJson => {
+  packageJson.overrides = { ...packageJson.overrides, webpack: '5.110.1' }
+  console.log('TEMPORARY: pinning webpack to 5.110.1 in the scaffolded app (see comment above)')
+  return packageJson
+})
+runExternalCommandSync('npm', ['install'], { cwd: appDir })
