@@ -1,3 +1,11 @@
+## 8.17.0
+
+- Support ESLint flat config in the dev-server lint plugin; bump `eslint-webpack-plugin` from `^3.1.1` to `^5.0.3` and `eslint` from `^8.3.0` to `^8.57.1`
+  - Apps with an `eslint.config.{js,mjs,cjs}` at their root are now linted with that config directly. The plugin is instantiated with `configType: 'flat'` and `eslintPath: 'eslint/use-at-your-own-risk'`, which exposes `FlatESLint` on ESLint 8.57 (on ESLint 9+ the plugin uses `loadESLint()` and the same path keeps resolving the right class). `baseConfig`/`resolvePluginsRelativeTo` are dropped in this branch — `FlatESLint` rejects both — and the `react/react-in-jsx-scope` fallback for apps without the new JSX transform is passed as a flat-format `baseConfig` instead
+  - Apps without a flat config file keep the existing eslintrc behavior unchanged (baseConfig extending `@fs/eslint-config-frontier-react`), with an explicit `configType: 'eslintrc'` since eslint-webpack-plugin v5 defaults to `'flat'`
+  - `ESLINT_USE_FLAT_CONFIG=false` forces the legacy branch, mirroring the ESLint CLI escape hatch; `DISABLE_ESLINT_PLUGIN=true` still disables linting entirely
+  - `eslint@^8.57.1` is required because 8.57 is the first version whose `use-at-your-own-risk` entry exports `FlatESLint`/`LegacyESLint`, which the v5 plugin worker relies on
+
 ## 8.16.3
 
 - Migrate CI from Travis to GitHub Actions (`.github/workflows/ci.yml`); delete `.travis.yml`
