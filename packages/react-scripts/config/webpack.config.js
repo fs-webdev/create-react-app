@@ -80,6 +80,13 @@ const babelRuntimeRegenerator = require.resolve('@babel/runtime/regenerator', {
 const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== 'false'
 
 const disableESLintPlugin = process.env.DISABLE_ESLINT_PLUGIN === 'true'
+// Apps with an ESLint flat config file get linted with it directly; apps without one keep the
+// legacy eslintrc behavior (baseConfig extending @fs/eslint-config-frontier-react).
+const useFlatEslintConfig =
+  process.env.ESLINT_USE_FLAT_CONFIG !== 'false' &&
+  ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs'].some(configFile =>
+    fs.existsSync(path.join(paths.appPath, configFile))
+  )
 const needsWci18nSupport = process.env.NEEDS_WCI18N_SUPPORT === 'true'
 
 const imageInlineSizeLimit = parseInt(process.env.IMAGE_INLINE_SIZE_LIMIT || '10000')
@@ -878,11 +885,41 @@ module.exports = function (webpackEnv) {
           },
         }),
       !disableESLintPlugin &&
+        useFlatEslintConfig &&
+        new ESLintPlugin({
+          // Plugin options
+          extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
+          formatter: require.resolve('react-dev-utils/eslintFormatter'),
+          // 'use-at-your-own-risk' exposes FlatESLint on ESLint 8.57, which configType 'flat'
+          // needs; the app's eslint.config.* is auto-loaded from cwd. On ESLint 9+ the plugin
+          // uses loadESLint() and this path still resolves the right class.
+          eslintPath: require.resolve('eslint/use-at-your-own-risk'),
+          configType: 'flat',
+          failOnError: false,
+          context: paths.appSrc,
+          cache: true,
+          cacheLocation: path.resolve(paths.appNodeModules, '.cache/.eslintcache'),
+          // ESLint class options
+          cwd: paths.appPath,
+          baseConfig: [
+            {
+              rules: {
+                ...(!hasJsxRuntime && {
+                  'react/react-in-jsx-scope': 'error',
+                }),
+              },
+            },
+          ],
+        }),
+      !disableESLintPlugin &&
+        !useFlatEslintConfig &&
         new ESLintPlugin({
           // Plugin options
           extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
           formatter: require.resolve('react-dev-utils/eslintFormatter'),
           eslintPath: require.resolve('eslint'),
+          // eslint-webpack-plugin@5 defaults to 'flat'; keep legacy apps on eslintrc.
+          configType: 'eslintrc',
           failOnError: false,
           context: paths.appSrc,
           cache: true,
