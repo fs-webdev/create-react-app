@@ -1,3 +1,11 @@
+## 8.16.4
+
+- Widen the `typescript` peer range from `^3.2.1 || ^4 || ^5` to `^3.2.1 || ^4 || ^5 || ^6` so consuming apps can take `typescript@6`
+  - npm 7+ enforces peer ranges for optional peers that are actually present in the tree, so any repo upgrading to `typescript@^6` hit an `ERESOLVE` conflict on `npm install` — including plain-JavaScript repos that only pull TypeScript in for lint and type-check tooling. Teams were closing or excluding their Renovate TypeScript 6 PRs to work around it, which also silences future 6.x notifications
+  - react-scripts touches TypeScript in three places — `verifyTypeScriptSetup.js`, `ForkTsCheckerWebpackPlugin` (via react-dev-utils), and `@babel/preset-typescript` for transpilation. TypeScript 6.x is the bridge release line that keeps the JavaScript-based compiler and its in-process compiler API, so all three behave as they do under 5.x
+  - `^7` is deliberately excluded: TS 7 is the native (Go) compiler and does not expose the in-process JS compiler API that fork-ts-checker and `verifyTypeScriptSetup` depend on, so declaring it would trade today's up-front `ERESOLVE` for a runtime build failure. `^3.2.1 || ^4` is deliberately kept — narrowing a peer range is breaking for consumers still on older TS
+  - Purely additive for existing consumers on TS 3/4/5. Note that this repo's own CI still runs `typescript: ^4.4.4`, so TS 6 is not exercised here; verified by smoke test in `fs-eng/data-dmconsole` at `typescript@6.0.3` (clean `npm install`, passing production build, passing tests)
+
 ## 8.16.3
 
 - Migrate CI from Travis to GitHub Actions (`.github/workflows/ci.yml`); delete `.travis.yml`
