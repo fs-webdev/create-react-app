@@ -139,6 +139,10 @@ the `asyncCS-inline` treatment name. It is the hedge for both documented revisit
 only non-default mechanism that is both supported by Dynatrace and materially different from the
 default.
 
+**Both SRI arms are currently non-functional for New RUM** — they send no data to Grail at all.
+See "Open: the SRI arms send no data to Grail" below. The reasoning in this section still holds
+for Classic RUM, but the arms cannot serve as a hedge until that is resolved.
+
 ---
 
 ## The option space
@@ -315,16 +319,80 @@ the gating question for keeping any self-hosted or SRI arm.
 
 ---
 
+## Open: the SRI arms send no data to Grail
+
+**Measured on int, 2026-10. Unexplained. Both SRI arms are unusable for New RUM until this is
+triaged.**
+
+With `asyncCS-inline` or `asyncCS-script` selected, the agent loads and runs, but no New RUM
+beacon ever reaches Grail — `grail=0` across 6/6 runs with a 20-second dwell. The same pages on
+the default `global-cdn` arm produce 2–4 beacons of 14–21 KB in the same window.
+
+Classic RUM keeps working on the SRI arms. That is what makes this dangerous rather than merely
+broken: the page loads, the agent reports, Classic dashboards keep moving, and only the Grail
+side is silent. There is no symptom visible from the application.
+
+Ruled out:
+
+* **Not the agent code.** The SRI-served file contains all four Gen3 API methods.
+* **Not the `ruxitagent_D_` runtime module.** Byte-identical and HTTP 200 on both paths.
+* **Not SRI or CORS.** The script executes; no console errors; no integrity failures.
+
+The one observable difference: `window.dynatrace` exposes nine methods on `global-cdn` and two
+(`sendBizEvent`, `sendEvent`) on the SRI arms. Diffing the two configurations, four keys appear
+in `_complete.js` and are absent from the baked `data-dtconfig` — `auto`, `domain`, `rid`,
+`rpid`. **`auto=1` is the leading hypothesis** for why the Grail channel never initialises, but
+it has not been tested; the mechanism is genuinely unknown.
+
+**This likely extends to self-hosting.** Option C above also serves a baked `data-dtconfig`
+rather than `_complete.js`, so it probably inherits the same failure. That should be confirmed
+before any self-hosting work is scheduled — it may remove the option entirely for New RUM.
+
+Next step is to intercept the response and inject the missing keys one at a time to find which
+one restores the Grail channel. Until then, keep both SRI treatments at zero allocation.
+
+---
+
 ## Current state
+
+Verified against the tenant on 2026-10-26.
 
 | | int | beta | prod |
 |---|---|---|---|
-| New RUM (`enabledOnGrail`) | on | on | off |
-| RUM sampling | 33% | 33% | 33% |
-| Session Replay | on | off (temporary, payload measurement) | on |
-| JS version channel | LATEST_STABLE | LATEST_STABLE | PREVIOUS_STABLE |
-| Agent served | 1.343 | 1.343 | 1.341 |
+| Settings scope | application | inherited | inherited |
+| New RUM (`enabledOnGrail`) | on | on | on (2026-10-23) |
+| RUM sampling | 33% | 35% | 35% |
+| Session Replay | on, 10% | on, 5% | on, 5% (2026-10-26) |
+| Session Replay on Grail | on | on | on |
+| JS version channel | LATEST_STABLE | LATEST_STABLE | LATEST_STABLE |
+| Agent served | 1.347 | 1.347 | 1.347 |
+| featureHash | `ICA15789MNPQRTUVXfghqrux` | same | same |
 
-**Agent version dependency:** 1.341 is missing three of the four Gen3 API methods the RUM
-JavaScript SDK requires; 1.343 has all four. An environment pinned to `PREVIOUS_STABLE` will
-silently drop API-reported session properties until it catches up.
+All three are deliberately uniform right now. Session Replay sits at 5% because that yields
+enough sessions to evaluate the feature without pushing the replay payload onto low-bandwidth
+patrons; RUM sampling and Grail enablement are matched for the same reason. These numbers are
+expected to move once the evaluation produces decisions — they are a starting point, not a
+settled configuration.
+
+Uniformity is achieved by letting the applications inherit the `environment`-scoped
+`builtin:rum.web.enablement` object. **Int is the one exception:** it still carries its own
+application-scoped object at 33% RUM / 10% Session Replay, so it does not track changes to the
+environment object and is already drifting from the other two. Deleting that object makes int
+inherit like beta and prod.
+
+Four further application-scoped objects exist for IDs that no longer resolve to live
+applications (`DA59925A648D952E`, `52CA64C87D7A17F1`, `AB0E6FE853C83C45`, `EA7C4B59F27D43EB`).
+They are leftovers from deleted applications and affect nothing, but they make a settings listing
+harder to read than it should be.
+
+**No custom version pins exist** (`builtin:rum.web.custom-rum-javascript-version` is empty) and
+nothing is on `PREVIOUS_STABLE`. All three environments therefore serve the same build,
+`10347260902154543`. The `PREVIOUS_STABLE` hazard is still worth knowing: 1.341 was missing three
+of the four Gen3 API methods the RUM JavaScript SDK requires, and an environment left behind on
+that channel silently drops API-reported session properties until it catches up.
+
+**The featureHash is identical across all three**, which was not true before prod was enabled on
+Grail — prod previously served `ICA7NQVfghqrux`. The fallback values baked into
+`layout/views/partials/dynatrace.ejs` still carry that old prod hash and the 1.343 build; they are
+a last resort behind `locals.dynatrace`, but they are stale and should be refreshed with
+`tools/dynatrace/fetch-dynatrace-scripts.js`.
