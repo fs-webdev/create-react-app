@@ -64,25 +64,50 @@ To confirm, run `git diff` on `dynatrace.ejs` and check that all three environme
 
 ### Step 3: Verify what renders
 
-One flag drives everything: **`frontier_snow_dynatraceRUM`** (see [dynatrace.ejs](../../layout/views/partials/dynatrace.ejs)). It has three meaningful states. Decision rationale is in [DYNATRACE_RUM_MECHANISMS.md](./DYNATRACE_RUM_MECHANISMS.md).
+One flag drives everything: **`frontier_snow_dynatraceRUM`** (see [dynatrace.ejs](../../layout/views/partials/dynatrace.ejs)). It has four meaningful states. Decision rationale is in [DYNATRACE_RUM_MECHANISMS.md](./DYNATRACE_RUM_MECHANISMS.md).
 
 | Treatment | Renders | Purpose |
 |---|---|---|
 | `off` | nothing | Kill switch. Defined in int, beta and prod |
-| `asyncCS-inline` | versioned OneAgent JS tag + SRI, **sync** | Fallback arm. Immutably cached for a year, and no blind window |
-| anything else | `_complete.js` from the global CDN, **async** | Default |
+| `asyncCS-inline` | versioned OneAgent JS tag + SRI, **sync** | SRI arm. Immutably cached for a year, and no blind window. **Sends no data to Grail** — see the mechanisms doc |
+| `asyncCS-script` | the same versioned tag + SRI, **async** | SRI arm. **Sends no data to Grail** |
+| anything else | `_complete.js` from the global CDN, **async** | Default. Essentially all real traffic: the flag is 100% `global-cdn` apart from four test keys (below) |
 
 The default is the **fallthrough**, not an explicit `global-cdn` match. A retired treatment name, a renamed flag, or a Split outage returning `control` all still load RUM. Failing closed would create a silent monitoring gap — the one failure mode invisible in the data itself. Do not "tidy" this into an equality check.
 
-The treatment name `asyncCS-inline` is historical and describes neither its load mode nor its format; it is retained to avoid a coordinated Split-plus-deploy rename.
+The `asyncCS-*` names are historical and read backwards — `-inline` is the **sync** arm, `-script` the **async** one. They are retained to avoid a coordinated Split-plus-deploy rename.
 
 What to verify (DevTools → Network / Elements):
 
 ```text
 off             → no Dynatrace script tag at all
 asyncCS-inline  → <script src=".../sri/ruxitagent_…js" data-dtconfig integrity …>   (no async)
+asyncCS-script  → the same tag with async
 default         → <script src=".../{appId}_complete.js" async>   (no integrity/data-dtconfig; config baked in)
 ```
+
+#### Forcing a specific state
+
+The flag is 100% `global-cdn`, plus four individually targeted Split keys — one per state — so
+each can be tested on demand. Snow derives the key (`SERVER_DATA.flagAttributes.anonId`)
+deterministically from the `fs_anid` cookie, so setting the cookie selects the state:
+
+| Treatment | Split key | `fs_anid` cookie |
+|---|---|---|
+| `off` | `A_6452` | `d7000000-0000-4000-8000-000000000000` |
+| `global-cdn` | `A_1118` | `d7000000-0000-4000-8000-000000000001` |
+| `asyncCS-script` | `A_9904` | `d7000000-0000-4000-8000-000000000002` |
+| `asyncCS-inline` | `A_2603` | `d7000000-0000-4000-8000-000000000003` |
+
+The same cookie resolves to the same key in int, beta and prod (verified 2026-10-27). To use it,
+set `fs_anid` on `.familysearch.org` in DevTools and reload; confirm with
+`SERVER_DATA.flagAttributes.anonId` in the console. The scripts in `beacon-harness/` use these
+cookie values. With no `fs_anid`, or any other value, you get the default.
+
+These keys are buckets, not users. There are about 10,000, so each targeted key also catches the
+~0.01% of real visitors whose cookie happens to hash into it. In practice ~0.03% of visitors sit
+on `off` or an SRI arm — and while the SRI arms send nothing to Grail, that slice is invisible to
+New RUM. Remove a target once it is no longer needed.
 
 `defer` is intentionally unused: for a monitoring agent it strictly enlarges the un-instrumented early window for a negligible page-speed gain over `async`.
 

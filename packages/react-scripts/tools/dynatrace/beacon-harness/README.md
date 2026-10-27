@@ -81,8 +81,9 @@ Re-running after prod enables New RUM is the natural next use — it would verif
 
 ## Not included
 
-The earlier FCP/loading-mechanism harnesses were deliberately not kept: they were tied to
-`fs_anid` cookie pins that are meaningless now the flag is 100% `global-cdn`, two of their three
+The earlier FCP/loading-mechanism harnesses were deliberately not kept: they compared
+loading mechanisms that no real traffic uses now the flag is 100% `global-cdn` (the `fs_anid`
+pins still select each state for testing — see DYNATRACE_RUM_UPDATE.md), two of their three
 approaches had already been superseded, and the one question they addressed — does `async` lose
 early events — is better answered by `@dynatrace/rum-javascript-sdk-playwright`'s
 `dynatraceTesting.expectToHaveSentEvent(...)`, which turns it into a deterministic assertion.
