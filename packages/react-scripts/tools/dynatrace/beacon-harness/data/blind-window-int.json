@@ -1,0 +1,1012 @@
+[
+  {
+    "env": "int",
+    "run": 0,
+    "runId": "pmt7orqln0",
+    "agentReadyMs": 856,
+    "beacons": 10,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7orqln0-t0-xhr",
+        "errMarker": "dtprobe-pmt7orqln0-t0-err",
+        "at": 393
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7orqln0-t100-xhr",
+        "errMarker": "dtprobe-pmt7orqln0-t100-err",
+        "at": 495
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7orqln0-t250-xhr",
+        "errMarker": "dtprobe-pmt7orqln0-t250-err",
+        "at": 645
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7orqln0-t400-xhr",
+        "errMarker": "dtprobe-pmt7orqln0-t400-err",
+        "at": 794
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7orqln0-t550-xhr",
+        "errMarker": "dtprobe-pmt7orqln0-t550-err",
+        "at": 945
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7orqln0-t700-xhr",
+        "errMarker": "dtprobe-pmt7orqln0-t700-err",
+        "at": 1094
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7orqln0-t850-xhr",
+        "errMarker": "dtprobe-pmt7orqln0-t850-err",
+        "at": 1245
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7orqln0-t1000-xhr",
+        "errMarker": "dtprobe-pmt7orqln0-t1000-err",
+        "at": 1412
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7orqln0-t1500-xhr",
+        "errMarker": "dtprobe-pmt7orqln0-t1500-err",
+        "at": 1895
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": false
+      },
+      "250": {
+        "xhr": true,
+        "err": true
+      },
+      "400": {
+        "xhr": true,
+        "err": true
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  },
+  {
+    "env": "int",
+    "run": 1,
+    "runId": "pmt7os4tl1",
+    "agentReadyMs": 514,
+    "beacons": 4,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7os4tl1-t0-xhr",
+        "errMarker": "dtprobe-pmt7os4tl1-t0-err",
+        "at": 288
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7os4tl1-t100-xhr",
+        "errMarker": "dtprobe-pmt7os4tl1-t100-err",
+        "at": 390
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7os4tl1-t250-xhr",
+        "errMarker": "dtprobe-pmt7os4tl1-t250-err",
+        "at": 541
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7os4tl1-t400-xhr",
+        "errMarker": "dtprobe-pmt7os4tl1-t400-err",
+        "at": 704
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7os4tl1-t550-xhr",
+        "errMarker": "dtprobe-pmt7os4tl1-t550-err",
+        "at": 845
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7os4tl1-t700-xhr",
+        "errMarker": "dtprobe-pmt7os4tl1-t700-err",
+        "at": 994
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7os4tl1-t850-xhr",
+        "errMarker": "dtprobe-pmt7os4tl1-t850-err",
+        "at": 1139
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7os4tl1-t1000-xhr",
+        "errMarker": "dtprobe-pmt7os4tl1-t1000-err",
+        "at": 1290
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7os4tl1-t1500-xhr",
+        "errMarker": "dtprobe-pmt7os4tl1-t1500-err",
+        "at": 1790
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": false
+      },
+      "250": {
+        "xhr": true,
+        "err": true
+      },
+      "400": {
+        "xhr": true,
+        "err": true
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  },
+  {
+    "env": "int",
+    "run": 2,
+    "runId": "pmt7osi8o2",
+    "agentReadyMs": 615,
+    "beacons": 4,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7osi8o2-t0-xhr",
+        "errMarker": "dtprobe-pmt7osi8o2-t0-err",
+        "at": 301
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7osi8o2-t100-xhr",
+        "errMarker": "dtprobe-pmt7osi8o2-t100-err",
+        "at": 402
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7osi8o2-t250-xhr",
+        "errMarker": "dtprobe-pmt7osi8o2-t250-err",
+        "at": 553
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7osi8o2-t400-xhr",
+        "errMarker": "dtprobe-pmt7osi8o2-t400-err",
+        "at": 737
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7osi8o2-t550-xhr",
+        "errMarker": "dtprobe-pmt7osi8o2-t550-err",
+        "at": 886
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7osi8o2-t700-xhr",
+        "errMarker": "dtprobe-pmt7osi8o2-t700-err",
+        "at": 1003
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7osi8o2-t850-xhr",
+        "errMarker": "dtprobe-pmt7osi8o2-t850-err",
+        "at": 1154
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7osi8o2-t1000-xhr",
+        "errMarker": "dtprobe-pmt7osi8o2-t1000-err",
+        "at": 1303
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7osi8o2-t1500-xhr",
+        "errMarker": "dtprobe-pmt7osi8o2-t1500-err",
+        "at": 1803
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": false
+      },
+      "250": {
+        "xhr": true,
+        "err": false
+      },
+      "400": {
+        "xhr": true,
+        "err": true
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  },
+  {
+    "env": "int",
+    "run": 3,
+    "runId": "pmt7osvow3",
+    "agentReadyMs": 961,
+    "beacons": 4,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7osvow3-t0-xhr",
+        "errMarker": "dtprobe-pmt7osvow3-t0-err",
+        "at": 451
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7osvow3-t100-xhr",
+        "errMarker": "dtprobe-pmt7osvow3-t100-err",
+        "at": 553
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7osvow3-t250-xhr",
+        "errMarker": "dtprobe-pmt7osvow3-t250-err",
+        "at": 702
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7osvow3-t400-xhr",
+        "errMarker": "dtprobe-pmt7osvow3-t400-err",
+        "at": 856
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7osvow3-t550-xhr",
+        "errMarker": "dtprobe-pmt7osvow3-t550-err",
+        "at": 1017
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7osvow3-t700-xhr",
+        "errMarker": "dtprobe-pmt7osvow3-t700-err",
+        "at": 1152
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7osvow3-t850-xhr",
+        "errMarker": "dtprobe-pmt7osvow3-t850-err",
+        "at": 1303
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7osvow3-t1000-xhr",
+        "errMarker": "dtprobe-pmt7osvow3-t1000-err",
+        "at": 1451
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7osvow3-t1500-xhr",
+        "errMarker": "dtprobe-pmt7osvow3-t1500-err",
+        "at": 1952
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": false
+      },
+      "250": {
+        "xhr": true,
+        "err": false
+      },
+      "400": {
+        "xhr": true,
+        "err": false
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  },
+  {
+    "env": "int",
+    "run": 4,
+    "runId": "pmt7ot98v4",
+    "agentReadyMs": 607,
+    "beacons": 4,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7ot98v4-t0-xhr",
+        "errMarker": "dtprobe-pmt7ot98v4-t0-err",
+        "at": 194
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7ot98v4-t100-xhr",
+        "errMarker": "dtprobe-pmt7ot98v4-t100-err",
+        "at": 296
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7ot98v4-t250-xhr",
+        "errMarker": "dtprobe-pmt7ot98v4-t250-err",
+        "at": 445
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7ot98v4-t400-xhr",
+        "errMarker": "dtprobe-pmt7ot98v4-t400-err",
+        "at": 608
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7ot98v4-t550-xhr",
+        "errMarker": "dtprobe-pmt7ot98v4-t550-err",
+        "at": 797
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7ot98v4-t700-xhr",
+        "errMarker": "dtprobe-pmt7ot98v4-t700-err",
+        "at": 896
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7ot98v4-t850-xhr",
+        "errMarker": "dtprobe-pmt7ot98v4-t850-err",
+        "at": 1056
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7ot98v4-t1000-xhr",
+        "errMarker": "dtprobe-pmt7ot98v4-t1000-err",
+        "at": 1195
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7ot98v4-t1500-xhr",
+        "errMarker": "dtprobe-pmt7ot98v4-t1500-err",
+        "at": 1696
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": false
+      },
+      "250": {
+        "xhr": true,
+        "err": false
+      },
+      "400": {
+        "xhr": true,
+        "err": true
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  },
+  {
+    "env": "int",
+    "run": 5,
+    "runId": "pmt7otmri5",
+    "agentReadyMs": 789,
+    "beacons": 16,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7otmri5-t0-xhr",
+        "errMarker": "dtprobe-pmt7otmri5-t0-err",
+        "at": 314
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7otmri5-t100-xhr",
+        "errMarker": "dtprobe-pmt7otmri5-t100-err",
+        "at": 415
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7otmri5-t250-xhr",
+        "errMarker": "dtprobe-pmt7otmri5-t250-err",
+        "at": 565
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7otmri5-t400-xhr",
+        "errMarker": "dtprobe-pmt7otmri5-t400-err",
+        "at": 760
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7otmri5-t550-xhr",
+        "errMarker": "dtprobe-pmt7otmri5-t550-err",
+        "at": 874
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7otmri5-t700-xhr",
+        "errMarker": "dtprobe-pmt7otmri5-t700-err",
+        "at": 1015
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7otmri5-t850-xhr",
+        "errMarker": "dtprobe-pmt7otmri5-t850-err",
+        "at": 1166
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7otmri5-t1000-xhr",
+        "errMarker": "dtprobe-pmt7otmri5-t1000-err",
+        "at": 1315
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7otmri5-t1500-xhr",
+        "errMarker": "dtprobe-pmt7otmri5-t1500-err",
+        "at": 1815
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": true
+      },
+      "250": {
+        "xhr": true,
+        "err": true
+      },
+      "400": {
+        "xhr": true,
+        "err": true
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  },
+  {
+    "env": "int",
+    "run": 6,
+    "runId": "pmt7ou07v6",
+    "agentReadyMs": 799,
+    "beacons": 4,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7ou07v6-t0-xhr",
+        "errMarker": "dtprobe-pmt7ou07v6-t0-err",
+        "at": 410
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7ou07v6-t100-xhr",
+        "errMarker": "dtprobe-pmt7ou07v6-t100-err",
+        "at": 512
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7ou07v6-t250-xhr",
+        "errMarker": "dtprobe-pmt7ou07v6-t250-err",
+        "at": 661
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7ou07v6-t400-xhr",
+        "errMarker": "dtprobe-pmt7ou07v6-t400-err",
+        "at": 815
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7ou07v6-t550-xhr",
+        "errMarker": "dtprobe-pmt7ou07v6-t550-err",
+        "at": 966
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7ou07v6-t700-xhr",
+        "errMarker": "dtprobe-pmt7ou07v6-t700-err",
+        "at": 1112
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7ou07v6-t850-xhr",
+        "errMarker": "dtprobe-pmt7ou07v6-t850-err",
+        "at": 1267
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7ou07v6-t1000-xhr",
+        "errMarker": "dtprobe-pmt7ou07v6-t1000-err",
+        "at": 1412
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7ou07v6-t1500-xhr",
+        "errMarker": "dtprobe-pmt7ou07v6-t1500-err",
+        "at": 1912
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": false
+      },
+      "250": {
+        "xhr": true,
+        "err": false
+      },
+      "400": {
+        "xhr": true,
+        "err": true
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  },
+  {
+    "env": "int",
+    "run": 7,
+    "runId": "pmt7oudv27",
+    "agentReadyMs": 777,
+    "beacons": 8,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7oudv27-t0-xhr",
+        "errMarker": "dtprobe-pmt7oudv27-t0-err",
+        "at": 345
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7oudv27-t100-xhr",
+        "errMarker": "dtprobe-pmt7oudv27-t100-err",
+        "at": 447
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7oudv27-t250-xhr",
+        "errMarker": "dtprobe-pmt7oudv27-t250-err",
+        "at": 603
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7oudv27-t400-xhr",
+        "errMarker": "dtprobe-pmt7oudv27-t400-err",
+        "at": 752
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7oudv27-t550-xhr",
+        "errMarker": "dtprobe-pmt7oudv27-t550-err",
+        "at": 898
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7oudv27-t700-xhr",
+        "errMarker": "dtprobe-pmt7oudv27-t700-err",
+        "at": 1047
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7oudv27-t850-xhr",
+        "errMarker": "dtprobe-pmt7oudv27-t850-err",
+        "at": 1197
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7oudv27-t1000-xhr",
+        "errMarker": "dtprobe-pmt7oudv27-t1000-err",
+        "at": 1347
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7oudv27-t1500-xhr",
+        "errMarker": "dtprobe-pmt7oudv27-t1500-err",
+        "at": 1847
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": false
+      },
+      "250": {
+        "xhr": true,
+        "err": true
+      },
+      "400": {
+        "xhr": true,
+        "err": true
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  },
+  {
+    "env": "int",
+    "run": 8,
+    "runId": "pmt7ource8",
+    "agentReadyMs": 598,
+    "beacons": 8,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7ource8-t0-xhr",
+        "errMarker": "dtprobe-pmt7ource8-t0-err",
+        "at": 287
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7ource8-t100-xhr",
+        "errMarker": "dtprobe-pmt7ource8-t100-err",
+        "at": 389
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7ource8-t250-xhr",
+        "errMarker": "dtprobe-pmt7ource8-t250-err",
+        "at": 539
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7ource8-t400-xhr",
+        "errMarker": "dtprobe-pmt7ource8-t400-err",
+        "at": 727
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7ource8-t550-xhr",
+        "errMarker": "dtprobe-pmt7ource8-t550-err",
+        "at": 846
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7ource8-t700-xhr",
+        "errMarker": "dtprobe-pmt7ource8-t700-err",
+        "at": 989
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7ource8-t850-xhr",
+        "errMarker": "dtprobe-pmt7ource8-t850-err",
+        "at": 1139
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7ource8-t1000-xhr",
+        "errMarker": "dtprobe-pmt7ource8-t1000-err",
+        "at": 1290
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7ource8-t1500-xhr",
+        "errMarker": "dtprobe-pmt7ource8-t1500-err",
+        "at": 1790
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": false
+      },
+      "250": {
+        "xhr": true,
+        "err": true
+      },
+      "400": {
+        "xhr": true,
+        "err": true
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  },
+  {
+    "env": "int",
+    "run": 9,
+    "runId": "pmt7ov4t49",
+    "agentReadyMs": 854,
+    "beacons": 10,
+    "fired": [
+      {
+        "ms": 0,
+        "xhrMarker": "dtprobe-pmt7ov4t49-t0-xhr",
+        "errMarker": "dtprobe-pmt7ov4t49-t0-err",
+        "at": 415
+      },
+      {
+        "ms": 100,
+        "xhrMarker": "dtprobe-pmt7ov4t49-t100-xhr",
+        "errMarker": "dtprobe-pmt7ov4t49-t100-err",
+        "at": 517
+      },
+      {
+        "ms": 250,
+        "xhrMarker": "dtprobe-pmt7ov4t49-t250-xhr",
+        "errMarker": "dtprobe-pmt7ov4t49-t250-err",
+        "at": 666
+      },
+      {
+        "ms": 400,
+        "xhrMarker": "dtprobe-pmt7ov4t49-t400-xhr",
+        "errMarker": "dtprobe-pmt7ov4t49-t400-err",
+        "at": 825
+      },
+      {
+        "ms": 550,
+        "xhrMarker": "dtprobe-pmt7ov4t49-t550-xhr",
+        "errMarker": "dtprobe-pmt7ov4t49-t550-err",
+        "at": 968
+      },
+      {
+        "ms": 700,
+        "xhrMarker": "dtprobe-pmt7ov4t49-t700-xhr",
+        "errMarker": "dtprobe-pmt7ov4t49-t700-err",
+        "at": 1117
+      },
+      {
+        "ms": 850,
+        "xhrMarker": "dtprobe-pmt7ov4t49-t850-xhr",
+        "errMarker": "dtprobe-pmt7ov4t49-t850-err",
+        "at": 1271
+      },
+      {
+        "ms": 1000,
+        "xhrMarker": "dtprobe-pmt7ov4t49-t1000-xhr",
+        "errMarker": "dtprobe-pmt7ov4t49-t1000-err",
+        "at": 1416
+      },
+      {
+        "ms": 1500,
+        "xhrMarker": "dtprobe-pmt7ov4t49-t1500-xhr",
+        "errMarker": "dtprobe-pmt7ov4t49-t1500-err",
+        "at": 1916
+      }
+    ],
+    "captured": {
+      "0": {
+        "xhr": true,
+        "err": false
+      },
+      "100": {
+        "xhr": true,
+        "err": false
+      },
+      "250": {
+        "xhr": true,
+        "err": true
+      },
+      "400": {
+        "xhr": true,
+        "err": true
+      },
+      "550": {
+        "xhr": true,
+        "err": true
+      },
+      "700": {
+        "xhr": true,
+        "err": true
+      },
+      "850": {
+        "xhr": true,
+        "err": true
+      },
+      "1000": {
+        "xhr": true,
+        "err": true
+      },
+      "1500": {
+        "xhr": true,
+        "err": true
+      }
+    }
+  }
+]
