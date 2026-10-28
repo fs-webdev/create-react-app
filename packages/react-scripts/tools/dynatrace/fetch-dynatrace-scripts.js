@@ -2,9 +2,10 @@
 /**
  * Dynatrace RUM Script Fetcher
  *
- * Fetches the latest RUM inline scripts and tags from Dynatrace using the API.
- * Automatically updates inline script files, dynatrace.ejs fallbacks, and publishes
- * dynatrace-rum-config.json to S3 for Snow to consume.
+ * Fetches the latest RUM tags from Dynatrace using the API.
+ * Automatically updates the dynatrace.ejs fallbacks, and publishes dynatrace-rum-config.json
+ * to S3 for Snow to consume. No released Snow reads it yet (pending in fs-webdev/snow#446), so
+ * the baked fallbacks are what render today.
  *
  * Requires:
  *   - Dynatrace API token with "Read RUM manual insertion tags" scope

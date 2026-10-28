@@ -50,9 +50,10 @@ if (typeof getFeatureFlag !== 'undefined') {
   const useSriAsync = treatment === 'asyncCS-script'; // versioned + SRI, non-blocking
   const useSri = useSriSync || useSriAsync;
 
-  // Snow provides fresh values via locals.dynatrace (published to S3 by
-  // tools/dynatrace/fetch-dynatrace-scripts.js); fallback to values current at publish time.
-  // fallback to values current at react-scripts publish time.
+  // locals.dynatrace would supply fresh values from the S3 copy of dynatrace-rum-config.json, but
+  // no released Snow populates it yet (pending in fs-webdev/snow#446). Until then the values below,
+  // written by tools/dynatrace/fetch-dynatrace-scripts.js at react-scripts publish time, are what
+  // actually render.
   const cdnUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnUrls) || {
     int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10347260902154543.js',
     beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10347260902154543.js',
@@ -72,7 +73,7 @@ if (typeof getFeatureFlag !== 'undefined') {
   }
 
   // New RUM JavaScript tag (combined code+config _complete.js) from the Dynatrace global CDN.
-  // Snow provides fresh values via locals.dynatrace.cdnCompleteUrls; fallback to publish-time values.
+  // The URL is stable and Dynatrace updates the file behind it, so this fallback does not go stale.
   const cdnCompleteUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnCompleteUrls) || {
     int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/3faf90e849295814_complete.js',
     beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/c4242bb1eb216374_complete.js',
@@ -89,8 +90,9 @@ if (typeof getFeatureFlag !== 'undefined') {
            version rather than once per day. Rendered as ONE tag for both arms so they cannot drift
            apart: the async attribute is the only difference between them, which is exactly the
            variable under test.
-           Values come from locals.dynatrace when Snow supplies them; the fallbacks below are a
-           last resort and go stale — refresh with tools/dynatrace/fetch-dynatrace-scripts.js. -->
+           Values come from the baked fallbacks above (locals.dynatrace is not populated yet), so
+           they go stale with every agent release or tenant change until the next react-scripts
+           release — refresh with tools/dynatrace/fetch-dynatrace-scripts.js. -->
       <script type="text/javascript" src="<%= cdnUrlsNew[env] %>" data-dtconfig="<%= cdnConfigNew[env] %>" integrity="<%= cdnIntegrityNew[env] %>" crossorigin="anonymous"<%= useSriAsync ? ' async' : '' %>></script>
     <% } else { %>
       <!-- Default: combined code+config _complete.js from the Dynatrace global CDN, loaded async.
@@ -99,7 +101,7 @@ if (typeof getFeatureFlag !== 'undefined') {
       <script type="text/javascript" src="<%= cdnCompleteUrlsNew[env] %>" crossorigin="anonymous" async></script>
     <% } %>
   <script type="text/javascript">
-    // Early-error buffer. See tools/dynatrace/EARLY_ERROR_BUFFER.md for the motivation and data.
+    // Early-error buffer. See tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md, "Early-error buffer".
     //
     // The agent is loaded async, so its error handlers are not installed at navigation start.
     // Measured on int: exceptions thrown before ~250ms are never captured, ~50% are captured at
@@ -178,7 +180,7 @@ if (typeof getFeatureFlag !== 'undefined') {
     // Routed through RUM Classic on purpose: dtrum.reportError is available, dynatrace.reportError
     // is NOT (New RUM exposes sendEvent instead, whose error event shape we have not verified).
     // Classic runs alongside New RUM and cannot be disabled, so this path always exists. Whether a
-    // Classic-reported error also surfaces in Grail is unconfirmed — see EARLY_ERROR_BUFFER.md.
+    // Classic-reported error also surfaces in Grail is unconfirmed — see the mechanisms doc.
     //
     // Known imprecision, accepted deliberately: the agent installs its handlers slightly before
     // window.dtrum becomes visible (measured — errors captured from ~550ms while dtrum appeared at

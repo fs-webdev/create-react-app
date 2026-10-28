@@ -2,6 +2,12 @@
 
 This guide explains how to update the Dynatrace RUM agent to a new version using the automated fetch script.
 
+> **When this matters.** The default arm loads `_complete.js` from a stable URL that Dynatrace
+> updates itself, so it always serves the tenant's current agent and configuration — no refresh
+> needed. This procedure only refreshes the values baked into `dynatrace.ejs` for the two SRI
+> arms, which no real traffic uses today. Run it when you need those arms current, or as routine
+> hygiene alongside a release.
+
 ## Quick Start
 
 ```bash
@@ -44,7 +50,7 @@ node packages/react-scripts/tools/dynatrace/fetch-dynatrace-scripts.js
 
 The script will:
 1. ✅ **Update the new-RUM fallback values** in `dynatrace.ejs` (`cdnUrlsNew`, `cdnIntegrityNew`, `cdnConfigNew`, `cdnCompleteUrlsNew`)
-2. ✅ **Write & publish** `dynatrace-rum-config.json` to S3 so Snow can supply fresh values via `locals.dynatrace.*` without a react-scripts redeploy
+2. ✅ **Write & publish** `dynatrace-rum-config.json` to S3. Snow would read it into `locals.dynatrace.*` and supply fresh values without a react-scripts release, but no released Snow does that yet (pending in fs-webdev/snow#446) — so today the baked fallbacks are what render
 3. 🔒 **Capture the SRI integrity hashes** and `data-dtconfig` for each environment
 
 > **The agent is never inlined.** The script does not fetch `/inlineCode` or write `_inline_*.ejs` files — those were deleted along with the old-RUM code paths. Reason: EJS `include()` compiles the included file as a template, and the minified agent contains the two-character EJS open-delimiter sequence (a `<` immediately followed by a `%`) inside a string, which EJS misreads as an unterminated scriptlet ("Could not find matching close tag"). It also re-ships 300–460 KB on every page view. The agent loads exclusively via `<script>` tags.
@@ -101,8 +107,8 @@ deterministically from the `fs_anid` cookie, so setting the cookie selects the s
 
 The same cookie resolves to the same key in int, beta and prod (verified 2026-10-27). To use it,
 set `fs_anid` on `.familysearch.org` in DevTools and reload; confirm with
-`SERVER_DATA.flagAttributes.anonId` in the console. The scripts in `beacon-harness/` use these
-cookie values. With no `fs_anid`, or any other value, you get the default.
+`SERVER_DATA.flagAttributes.anonId` in the console. The test harnesses archived at tag
+`rum-research-archive-2026-10-27` use these cookie values. With no `fs_anid`, or any other value, you get the default.
 
 These keys are buckets, not users. There are about 10,000, so each targeted key also catches the
 ~0.01% of real visitors whose cookie happens to hash into it. In practice ~0.03% of visitors sit
@@ -117,31 +123,16 @@ Read it with the queries in [DYNATRACE_RUM_MECHANISMS.md, "Checking the current 
 
 ### Step 4: Commit and Release
 
+Commit the two files the script changed, then release as usual:
+
 ```bash
-# Stage changes (dynatrace.ejs fallback values are auto-updated by the fetch script)
-git add packages/react-scripts/layout/views/partials/dynatrace.ejs
-
-# Commit with descriptive message
-git commit -m "Update Dynatrace RUM to latest version
-
-- Update new-RUM fallback values (cdnUrls/cdnIntegrity/cdnConfig/cdnCompleteUrls) via fetch-dynatrace-scripts.js
-- Republish dynatrace-rum-config.json to S3
-- New RUM version includes enhanced data collection (owasp=1, uxrgce=1)"
-
-# Bump version in package.json (usually minor bump)
-# Example: 8.16.0 → 8.17.0
-sed -i '' 's/"version": "8\.16\.0"/"version": "8.17.0"/' packages/react-scripts/package.json
-
-# Update CHANGELOG-FRONTIER.md
-# Add entry at the top with the new version and upgrade details
-
-# Commit version and changelog
-git add packages/react-scripts/package.json CHANGELOG-FRONTIER.md
-git commit -m "Bump react-scripts to 8.17.0 with Dynatrace RUM upgrade"
-
-# Push when ready
-git push origin dynatrace-rum-upgrade
+git add packages/react-scripts/layout/views/partials/dynatrace.ejs \
+        packages/react-scripts/tools/dynatrace/dynatrace-rum-config.json
+git commit -m "chore(rum): refresh Dynatrace fallbacks to agent <version>"
 ```
+
+Bump the version in `packages/react-scripts/package.json` and add a `CHANGELOG-FRONTIER.md`
+entry. Consuming apps pick up the new fallbacks only when they upgrade and redeploy.
 
 ## Understanding the Output
 
@@ -189,17 +180,11 @@ CHANGELOG-FRONTIER.md (add entry)
 
 ## Related Documentation
 
+- [DYNATRACE_RUM_MECHANISMS.md](./DYNATRACE_RUM_MECHANISMS.md) — why the template is built this way, what is known broken, and how to read the current tenant state
+- [Dynatrace RUM: Loading Mechanisms & Agent Management (In-Depth Analysis)](https://icseng.atlassian.net/wiki/spaces/FRDOCS/pages/2496266249/Dynatrace+RUM+Loading+Mechanisms+Agent+Management+In-Depth+Analysis) — the full analysis and measurements (Confluence)
+- Tag `rum-research-archive-2026-10-27` — the measurement harnesses, raw data and research notes, recoverable with `git show`
 - [Dynatrace RUM API Documentation](https://docs.dynatrace.com/docs/dynatrace-api/environment-api/rum/rum-manual-insertion-tags)
 - [dynatrace.ejs](../../layout/views/partials/dynatrace.ejs) - Main RUM configuration file
 - [fetch-dynatrace-scripts.js](./fetch-dynatrace-scripts.js) - The fetch script itself
 
-## Version History
-
-- **8.17.0**: New RUM Experience baseline; single-flag loading
-  - Removed the `frontier_snow_dynatraceNewRUM` flag — New RUM enablement is the tenant's
-    `enabledOnGrail` setting, not a code concern
-  - Removed all old-RUM code paths: `edgeUrls`, the old `cdnUrls`, and the three
-    `_inline_*.ejs` bootstrap files (~105 KB out of the published package)
-  - `frontier_snow_dynatraceRUM` reduced to three states: `off`, `asyncCS-inline`
-    (SRI, sync), and a fail-open default of `_complete.js` loaded `async`
-  - Maintainer tooling and docs moved to `tools/dynatrace/`, excluded from the published package
+Release history is in `CHANGELOG-FRONTIER.md` at the repository root.
