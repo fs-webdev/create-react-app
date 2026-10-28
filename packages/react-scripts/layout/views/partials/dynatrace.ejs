@@ -201,7 +201,12 @@ if (typeof getFeatureFlag !== 'undefined') {
           var err = ev.error || ev.reason;
           var at = '[dt-early +' + rec.t + 'ms] ';
           if (typeof window.dtrum.reportError === 'function') {
-            window.dtrum.reportError(err instanceof Error ? err : new Error(at + (ev.message || err || 'unknown early error')));
+            var reported = new Error(at + (err instanceof Error ? err.message : (ev.message || err || 'unknown early error')));
+            if (err instanceof Error) {
+              reported.name = err.name;
+              if (err.stack) reported.stack = err.stack;
+            }
+            window.dtrum.reportError(reported);
           }
         } catch (e) {}
       }
