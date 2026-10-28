@@ -120,6 +120,7 @@ if (typeof getFeatureFlag !== 'undefined') {
       var buf = [];
       window.__dtEarlyErrors = buf;
       function keep(e) {
+        if (e.type === 'error' && e.target !== window) return;
         // Bounded: a page erroring in a loop must not grow this without limit.
         if (buf.length < 50) buf.push({e: e, t: Math.round((window.performance || {}).now ? performance.now() : 0)});
       }
