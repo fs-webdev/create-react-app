@@ -24,13 +24,14 @@ if (typeof getFeatureFlag !== 'undefined') {
    * max-age=86400 with no validator, so it is re-downloaded in full every 24 hours, while the
    * versioned URL is max-age=31536000, immutable. That is the whole case for these arms.
    *
-   * KNOWN BROKEN — both SRI arms send NOTHING to Grail. Measured on int: 6/6 runs produced zero
-   * New RUM beacons, where global-cdn produced 2-4. Classic RUM keeps working, so there is no
-   * visible symptom; only the Grail side goes silent. Not the agent code, not the D module, not
-   * an SRI or CORS failure — the leading suspect is the `auto` key, which _complete.js carries
-   * and the baked data-dtconfig does not. Keep these treatments at zero allocation until it is
-   * triaged. See tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md, "Open: the SRI arms send no data
-   * to Grail".
+   * KNOWN BROKEN — both SRI arms send NOTHING to Grail. Measured on int over two rounds: Grail data
+   * in 0 of 12 SRI runs vs 4 of 6 global-cdn runs. Int records 33% of sessions, so a single empty
+   * run means nothing; 12 in a row is <1% by chance. Classic RUM keeps working, so there is no
+   * visible symptom; only the Grail side goes silent. Not the agent code, not the D module, not an
+   * SRI or CORS failure — the leading suspect is the `auto` key, which _complete.js carries and the
+   * baked data-dtconfig does not. Keep these treatments limited to their test keys until it is
+   * triaged. See tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md, "Open: the SRI arms send no data to
+   * Grail".
    *
    * Sync vs async is the second, independent question: sync has no blind window, async never
    * blocks rendering. Because the versioned URL is cached for a year, the sync parse-block is
