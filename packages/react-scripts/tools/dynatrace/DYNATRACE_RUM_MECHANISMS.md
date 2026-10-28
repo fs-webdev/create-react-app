@@ -367,46 +367,62 @@ one restores the Grail channel. Until then, keep both SRI treatments limited to 
 
 ---
 
-## Current state
+## Checking the current tenant state
 
-Verified against the tenant on 2026-10-26.
+These settings change in the Dynatrace UI with no deploy, so a snapshot here goes stale within
+weeks. Read them from the tenant instead. All of the following are read-only.
 
 | | int | beta | prod |
 |---|---|---|---|
-| Settings scope | application | inherited | inherited |
-| New RUM (`enabledOnGrail`) | on | on | on (2026-10-23) |
-| RUM sampling | 33% | 35% | 35% |
-| Session Replay | on, 10% | on, 5% | on, 5% (2026-10-26) |
-| Session Replay on Grail | on | on | on |
-| JS version channel | LATEST_STABLE | LATEST_STABLE | LATEST_STABLE |
-| Agent served | 1.347 | 1.347 | 1.347 |
-| featureHash | `ICA15789MNPQRTUVXfghqrux` | same | same |
+| Application | `APPLICATION-3FAF90E849295814` | `APPLICATION-C4242BB1EB216374` | `APPLICATION-A8E5EDD77F861ACE` |
 
-All three are deliberately uniform right now. Session Replay sits at 5% because that yields
-enough sessions to evaluate the feature without pushing the replay payload onto low-bandwidth
-patrons; RUM sampling and Grail enablement are matched for the same reason. These numbers are
-expected to move once the evaluation produces decisions — they are a starting point, not a
-settled configuration.
+**Inheritance trap.** An application with no object of its own for a schema inherits the
+`environment`-scoped object. Querying one application with `--scope` then returns an empty
+list, which looks like "not configured" but means "inherits". List the whole schema and read the
+application's object if it has one, otherwise the `environment` object.
 
-Uniformity is achieved by letting the applications inherit the `environment`-scoped
-`builtin:rum.web.enablement` object. **Int is the one exception:** it still carries its own
-application-scoped object at 33% RUM / 10% Session Replay, so it does not track changes to the
-environment object and is already drifting from the other two. Deleting that object makes int
-inherit like beta and prod.
+```bash
+# New RUM and Session Replay: enabled, enabledOnGrail, and sampling (costAndTrafficControl, %)
+dtctl get settings --schema builtin:rum.web.enablement -o json --plain \
+  --jq '.[] | {scope, rum: .value.rum, sessionReplay: .value.sessionReplay}'
 
-Four further application-scoped objects exist for IDs that no longer resolve to live
-applications (`DA59925A648D952E`, `52CA64C87D7A17F1`, `AB0E6FE853C83C45`, `EA7C4B59F27D43EB`).
-They are leftovers from deleted applications and affect nothing, but they make a settings listing
-harder to read than it should be.
+# Agent version channel: LATEST_STABLE or PREVIOUS_STABLE
+dtctl get settings --schema builtin:rum.web.rum-javascript-updates -o json --plain \
+  --jq '.[] | {scope, version: .value.JavascriptVersion}'
 
-**No custom version pins exist** (`builtin:rum.web.custom-rum-javascript-version` is empty) and
-nothing is on `PREVIOUS_STABLE`. All three environments therefore serve the same build,
-`10347260902154543`. The `PREVIOUS_STABLE` hazard is still worth knowing: 1.341 was missing three
-of the four Gen3 API methods the RUM JavaScript SDK requires, and an environment left behind on
-that channel silently drops API-reported session properties until it catches up.
+# Hard version pins. Expect 0
+dtctl get settings --schema builtin:rum.web.custom-rum-javascript-version -o json --plain --jq 'length'
 
-**The featureHash is identical across all three**, which was not true before prod was enabled on
-Grail — prod previously served `ICA7NQVfghqrux`. The fallback values baked into
-`layout/views/partials/dynatrace.ejs` still carry that old prod hash and the 1.343 build; they are
-a last resort behind `locals.dynatrace`, but they are stale and should be refreshed with
-`tools/dynatrace/fetch-dynatrace-scripts.js`.
+# Session Replay masking (MASK_ALL / MASK_USER_INPUT / ...), recording and playback separately
+dtctl get settings --schema builtin:sessionreplay.web.privacy-preferences -o json --plain \
+  --jq '.[] | {scope, recording: .value.maskingPresets.recordingMaskingPreset, playback: .value.maskingPresets.playbackMaskingPreset}'
+```
+
+What browsers actually receive — the agent version and enabled-module set baked into each
+environment's `_complete.js`:
+
+```bash
+for e in int:3faf90e849295814 beta:c4242bb1eb216374 prod:a8e5edd77f861ace; do
+  f=$(curl -s --compressed "https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/${e#*:}_complete.js")
+  printf '%-5s %s  %s\n' "${e%%:*}" \
+    "$(grep -o 'running with version: [0-9.-]*' <<<"$f" | head -1 | cut -d' ' -f4)" \
+    "$(grep -oE 'featureHash=[A-Za-z0-9]{8,}' <<<"$f" | head -1)"
+done
+```
+
+Reading the results:
+
+* **An application-scoped object overrides the environment for that application only.** When
+  the intent is the same settings everywhere, an application-scoped object on any of the three
+  applications above is drift, and deleting it restores inheritance.
+* **Objects for application IDs that no longer resolve** are leftovers from deleted
+  applications. They affect nothing.
+* **The `featureHash` encodes which modules are enabled.** If it differs from the values in
+  `dynatrace-rum-config.json` and the fallbacks in `dynatrace.ejs`, re-run
+  `fetch-dynatrace-scripts.js`. Only the SRI arms read those values; the default arm loads
+  `_complete.js` and always matches the tenant.
+* **`PREVIOUS_STABLE` has a known hazard.** 1.341 was missing three of the four Gen3 API methods
+  the RUM JavaScript SDK requires, so an environment left a version behind silently drops
+  API-reported session properties until it catches up.
+* **Discovering other schemas:** `dtctl get settings-schemas` returns only the first 50 by
+  default. Use `--limit 500`.

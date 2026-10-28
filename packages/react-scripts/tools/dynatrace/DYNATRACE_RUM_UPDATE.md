@@ -113,9 +113,7 @@ New RUM. Remove a target once it is no longer needed.
 
 **Whether the New RUM Experience is active is not a code concern.** It is the tenant's `enabledOnGrail` setting, toggled per application in the Dynatrace UI with no deploy:
 
-```bash
-dtctl get settings --schema builtin:rum.web.enablement --scope APPLICATION-<id>
-```
+Read it with the queries in [DYNATRACE_RUM_MECHANISMS.md, "Checking the current tenant state"](./DYNATRACE_RUM_MECHANISMS.md#checking-the-current-tenant-state). Do not query a single application with `--scope`: an application that inherits from the environment returns an empty list.
 
 ### Step 4: Commit and Release
 
