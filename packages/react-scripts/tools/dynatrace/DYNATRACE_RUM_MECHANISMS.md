@@ -61,7 +61,7 @@ Rules that must survive any refactoring:
 
 ## Known broken: the SRI arms send no data to Grail
 
-**Measured on int, 2026-10 (two rounds, the second on alpha.20 with 1.347 config).
+**Measured on int on 2026-08-27 and again on 2026-10-27 (alpha.20, 1.347 config).
 Unexplained. Both SRI arms are unusable for New RUM until this is triaged.**
 
 With `asyncCS-inline` or `asyncCS-script` selected, the agent loads and runs, but no New RUM
@@ -69,8 +69,8 @@ beacon ever reaches Grail:
 
 | | runs with Grail data | beacons when present |
 |---|---|---|
-| `global-cdn` | **4 of 6** (3/3, then 1/3) | 2–8, 14–42 KB |
-| SRI arms, both | **0 of 12** (6, then 6) | — |
+| `global-cdn` | **4 of 6** (3/3 in August, 1/3 in October) | 2–8, 14–42 KB |
+| SRI arms, both | **0 of 12** (6 in each round) | — |
 
 Read this against sampling. Int records 33% of sessions, and a session that is not recorded
 sends nothing to Grail on *any* arm, so an empty run on its own proves nothing — `global-cdn`
@@ -78,9 +78,11 @@ itself came back empty in 2 of its 6 runs. The evidence is the comparison: if th
 recorded at even int's configured 33%, twelve empty runs in a row would happen by chance about
 0.8% of the time (0.67¹²). Each run is a fresh browser context with a 20-second dwell.
 
-Do not judge a single run by the size of its Classic beacon: in the first round `global-cdn`
-sent Grail data alongside only ~1 KB of Classic, so payload size is not a reliable stand-in for
-"this session was recorded".
+Grail's sampling appears to have changed between the rounds. In August `global-cdn` sent Grail
+data on every run, even alongside a ~1 KB Classic stub; in October it did so only in the run that
+also sent a full Classic payload. So a session's Classic payload size does not reliably say whether
+it was recorded on the Grail side. The August half of the SRI evidence is the stronger half: an
+unsampled channel should have reported on every run.
 
 Classic RUM keeps working on the SRI arms. That is what makes this dangerous rather than merely
 broken: the page loads, the agent reports, Classic dashboards keep moving, and only the Grail
