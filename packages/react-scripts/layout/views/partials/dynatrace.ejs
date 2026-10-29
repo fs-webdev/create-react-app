@@ -2,27 +2,216 @@
 /* SETS up dynatrace for the various environments */
 
 if (typeof getFeatureFlag !== 'undefined') {
+  /* One flag, four states — see tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md for the full rationale.
+   *
+   *   'off'             no agent at all (kill switch)
+   *   'asyncCS-inline'  versioned OneAgent JS tag + SRI, loaded SYNCHRONOUSLY
+   *   'asyncCS-script'  the same versioned + SRI tag, loaded ASYNC
+   *   anything else     combined _complete.js from the Dynatrace global CDN, loaded ASYNC
+   *
+   * The two asyncCS-* names read backwards and are kept only because they are live in Split:
+   * '-inline' is the SYNC arm (it replaced an inline-bootstrap approach that was abandoned) and
+   * '-script' is the ASYNC one. Trust this table over the names.
+   *
+   * The default is deliberately the fallthrough rather than an explicit 'global-cdn' match: a
+   * retired treatment name, a renamed flag, or a Split outage returning 'control' must still load
+   * RUM. Failing closed would produce a silent monitoring gap, which is the one failure mode we
+   * cannot detect from the data itself.
+   *
+   * The SRI arms are the hedge for BOTH documented revisit triggers, split so each can be measured
+   * on its own. Measured on the wire, _complete.js and the versioned file are the same size to
+   * within ~750 bytes; the ONLY material difference is the cache header — _complete.js is
+   * max-age=86400 with no validator, so it is re-downloaded in full every 24 hours, while the
+   * versioned URL is max-age=31536000, immutable. That is the whole case for these arms.
+   *
+   * KNOWN BROKEN — both SRI arms send NOTHING to Grail. Measured on int over two rounds: Grail data
+   * in 0 of 12 SRI runs vs 4 of 6 global-cdn runs. Int records 33% of sessions, so a single empty
+   * run means nothing; 12 in a row is <1% by chance. Classic RUM keeps working, so there is no
+   * visible symptom; only the Grail side goes silent. Not the agent code, not the D module, not an
+   * SRI or CORS failure — the leading suspect is the `auto` key, which _complete.js carries and the
+   * baked data-dtconfig does not. Keep these treatments limited to their test keys until it is
+   * triaged. See tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md, "Open: the SRI arms send no data to
+   * Grail".
+   *
+   * Sync vs async is the second, independent question: sync has no blind window, async never
+   * blocks rendering. Because the versioned URL is cached for a year, the sync parse-block is
+   * paid only on the first uncached load — which is why sync is worth measuring here even though
+   * it would be indefensible for _complete.js.
+   *
+   * Whether the New RUM Experience is active is NOT a code concern — it is the tenant's
+   * `enabledOnGrail` setting, toggled per application in the Dynatrace UI with no deploy.
+   * The old frontier_snow_dynatraceNewRUM flag never controlled it; it only toggled `async`.
+   */
   const dynatraceFlag = getFeatureFlag('frontier_snow_dynatraceRUM', {appName: process.env.APP_NAME});
   const env = envType();
+  const treatment = dynatraceFlag.treatment;
+  const rumDisabled = treatment === 'off';
+  const useSriSync = treatment === 'asyncCS-inline';   // versioned + SRI, render-blocking
+  const useSriAsync = treatment === 'asyncCS-script'; // versioned + SRI, non-blocking
+  const useSri = useSriSync || useSriAsync;
 
-  const cdnUrls = {
+  // locals.dynatrace would supply fresh values from the S3 copy of dynatrace-rum-config.json, but
+  // no released Snow populates it yet (pending in fs-webdev/snow#446). Until then the values below,
+  // written by tools/dynatrace/fetch-dynatrace-scripts.js at react-scripts publish time, are what
+  // actually render.
+  const cdnUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnUrls) || {
+    int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10347260902154543.js',
+    beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10347260902154543.js',
+    prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10347260902154543.js'
+  }
+
+  const cdnIntegrityNew = (locals && locals.dynatrace && locals.dynatrace.cdnIntegrity) || {
+    int: 'sha256-1MMBOB8sNstRMOWL02a1m3Ksn1qVkP/F6KewuBFvwtk=',
+    beta: 'sha256-1MMBOB8sNstRMOWL02a1m3Ksn1qVkP/F6KewuBFvwtk=',
+    prod: 'sha256-1MMBOB8sNstRMOWL02a1m3Ksn1qVkP/F6KewuBFvwtk='
+  }
+
+  const cdnConfigNew = (locals && locals.dynatrace && locals.dynatrace.cdnConfig) || {
+    int: 'app=3faf90e849295814|cors=1|srtbv=4|owasp=1|featureHash=ICA15789MNPQRTUVXfghqrux|msl=153600|srsr=10000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;0%2F%5Bcontenteditable%5D%3Anot%28%5Bcontenteditable%3D%22false%22%5D%29;0%2F%5Brole%3D%22textbox%22%5D%2C%5Brole%3D%22checkbox%22%5D%2C%5Brole%3D%22radio%22%5D%2C%5Brole%3D%22option%22%5D%2C%5Brole%3D%22combobox%22%5D%2C%5Brole%3D%22slider%22%5D%2C%5Brole%3D%22searchbox%22%5D%2C%5Brole%3D%22switch%22%5D%2C%5Brole%3D%22spinbutton%22%5D;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.User.profile.cisId,mdcc3=bs.pageName,mdcc4=bFS.attrs.anonId,mdcc5=bFS.attrs.country,mdcc6=bFS.attrs.cisId|lastModification=1793030880628|mdp=mdcc4,mdcc5|tp=500,50,0|srbbv=3|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10347260902154543.js',
+    beta: 'app=c4242bb1eb216374|cors=1|srtbv=4|owasp=1|featureHash=ICA15789MNPQRTUVXfghqrux|msl=153600|srsr=5000|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|cuc=t0rtn87t|srms=2,1,0,0%2Ftextarea%2Cinput%2Cselect%2Coption;0%2Fdatalist;0%2Fform%20button;0%2F%5Bdata-dtrum-input%5D;0%2F.data-dtrum-input;0%2F%5Bcontenteditable%5D%3Anot%28%5Bcontenteditable%3D%22false%22%5D%29;0%2F%5Brole%3D%22textbox%22%5D%2C%5Brole%3D%22checkbox%22%5D%2C%5Brole%3D%22radio%22%5D%2C%5Brole%3D%22option%22%5D%2C%5Brole%3D%22combobox%22%5D%2C%5Brole%3D%22slider%22%5D%2C%5Brole%3D%22searchbox%22%5D%2C%5Brole%3D%22switch%22%5D%2C%5Brole%3D%22spinbutton%22%5D;1%2F%5Edata%28%28%5C-.%2B%24%29%7C%24%29|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=fx-ratelimit-remaining,mdcc5=bs.campaign,mdcc6=bs.channel,mdcc7=bs.pageName,mdcc8=bs.pageURL,mdcc9=bs.pageType,mdcc10=bs.visitorID|lastModification=1793030880628|tp=500,50,0|srbbv=3|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10347260902154543.js',
+    prod: 'app=a8e5edd77f861ace|cors=1|srtbv=4|owasp=1|featureHash=ICA15789MNPQRTUVXfghqrux|msl=153600|srsr=5000|vcx=1500|nsfnv=1|reportUrl=https://bf99293tkn.bf.dynatrace.com/bf|srvr=%5C%2Fidentity%5C%2Fsettings|rdnt=2|uxrgce=1|vcit=8000|cuc=t0rtn87t|srms=2,2,1,|mdl=mdcc11=20|mel=100000|dpvc=1|md=mdcc1=cfs_anid,mdcc2=bFS.attrs.cisId,mdcc3=bFS.User.profile.cisId,mdcc4=bs.pageName,mdcc5=bs.pageType,mdcc6=bs.pageURL,mdcc7=bs.visitorID,mdcc8=bs.campaign,mdcc9=bs.channel,mdcc10=fx-ratelimit-remaining,mdcc11=bdocument.referrer,mdcc12=dutm_campaign,mdcc13=dutm_source,mdcc14=dutm_medium|lastModification=1793030880628|tp=500,50,0|srbbv=3|agentUri=https://js-cdn.dynatrace.com/jstag/15c157a40ab/sri/ruxitagent_ICA15789MNPQRTUVXfghqrux_10347260902154543.js'
+  }
+
+  // New RUM JavaScript tag (combined code+config _complete.js) from the Dynatrace global CDN.
+  // The URL is stable and Dynatrace updates the file behind it, so this fallback does not go stale.
+  const cdnCompleteUrlsNew = (locals && locals.dynatrace && locals.dynatrace.cdnCompleteUrls) || {
     int: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/3faf90e849295814_complete.js',
     beta: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/c4242bb1eb216374_complete.js',
     prod: 'https://js-cdn.dynatrace.com/jstag/15c157a40ab/bf99293tkn/a8e5edd77f861ace_complete.js'
   }
 
-  const edgeUrls = {
-    int: 'https://edge.fscdn.org/assets/components/hf/assets/js/monitoring/dynatrace-20221104-int.min-9aebd229f83ef7c845ae898f451bb617.js',
-    beta: 'https://edge.fscdn.org/assets/components/hf/assets/js/monitoring/dynatrace-20221104-beta.min-e859eab722487cc71d4f659447d7ed6d.js',
-    prod: 'https://edge.fscdn.org/assets/components/hf/assets/js/monitoring/dynatrace-20221104-prod.min-44bb9345beec8a984c2fca40385b4f41.js'
-  }
+  // The agent is never inlined: EJS compiles included files as templates, and the minified agent
+  // contains the EJS open-delimiter sequence (a less-than sign immediately followed by a percent
+  // sign) inside a character-class string, which EJS misreads as an unterminated scriptlet and
+  // fails with "Could not find matching close tag". It would also re-ship 300-460 KB per response.
+  if (!rumDisabled) {
+    if (useSri) { %>
+      <!-- Versioned OneAgent JS tag + SRI. Immutable for a year, so it is fetched once per agent
+           version rather than once per day. Rendered as ONE tag for both arms so they cannot drift
+           apart: the async attribute is the only difference between them, which is exactly the
+           variable under test.
+           Values come from the baked fallbacks above (locals.dynatrace is not populated yet), so
+           they go stale with every agent release or tenant change until the next react-scripts
+           release — refresh with tools/dynatrace/fetch-dynatrace-scripts.js. -->
+      <script type="text/javascript" src="<%= cdnUrlsNew[env] %>" data-dtconfig="<%= cdnConfigNew[env] %>" integrity="<%= cdnIntegrityNew[env] %>" crossorigin="anonymous"<%= useSriAsync ? ' async' : '' %>></script>
+    <% } else { %>
+      <!-- Default: combined code+config _complete.js from the Dynatrace global CDN, loaded async.
+           Single request, tracks tenant configuration automatically, and never blocks rendering.
+           Trade-off: no SRI, and no cache validator, so browsers re-download it every 24 hours. -->
+      <script type="text/javascript" src="<%= cdnCompleteUrlsNew[env] %>" crossorigin="anonymous" async></script>
+    <% } %>
+  <script type="text/javascript">
+    // Early-error buffer. See tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md, "Early-error buffer".
+    //
+    // The agent is loaded async, so its error handlers are not installed at navigation start.
+    // Measured on int: exceptions thrown before ~250ms are never captured, ~50% are captured at
+    // 400ms, and capture is complete by 550ms. Requests are unaffected — the agent recovers those
+    // retroactively from Resource Timing — so exceptions are the *only* thing the async load
+    // actually loses.
+    //
+    // Sentry does not cover this. It initialises from the app bundle at ~1016ms versus the agent's
+    // ~660ms, so it shares the same window and extends it. The gap is a property of installing a
+    // handler late, not of Dynatrace, and the only fix is a listener that exists at t=0.
+    //
+    // This block must stay FIRST in this script and this partial must stay early in <head>:
+    // anything that can throw before it runs is unrecoverable.
+    (function () {
+      if (typeof window === 'undefined' || !window.addEventListener) return;
+      var buf = [];
+      window.__dtEarlyErrors = buf;
+      function keep(e) {
+        if (e.type === 'error' && e.target !== window) return;
+        // Bounded: a page erroring in a loop must not grow this without limit.
+        if (buf.length < 50) buf.push({e: e, t: Math.round((window.performance || {}).now ? performance.now() : 0)});
+      }
+      // Capture phase, so a stopPropagation() elsewhere cannot hide errors from us.
+      window.addEventListener('error', keep, true);
+      window.addEventListener('unhandledrejection', keep, true);
+      window.__dtEarlyErrorsStop = function () {
+        window.removeEventListener('error', keep, true);
+        window.removeEventListener('unhandledrejection', keep, true);
+      };
+    })();
 
-  if (dynatraceFlag.treatment === 'asyncCS-script') { %>
-    <script type="text/javascript" src="<%= edgeUrls[env] %>" crossorigin="anonymous"></script>
-    <% } else if (dynatraceFlag.treatment === 'asyncCS-inline') { %>
-    <%- include(`./partials/dynatrace/_inline_${env}`) %>
-  <% } else if (dynatraceFlag.treatment === 'global-cdn') { %>
-      <script type="text/javascript" src="<%= cdnUrls[env] %>" crossorigin="anonymous"></script>
-  <% } %>
+    // RUM API readiness helper, exposed as window.dtWhenReady(which, fn).
+    //
+    // Two facts drive this shape:
+    //  1. With async loading neither window.dtrum nor window.dynatrace exists when this inline
+    //     script runs, and the on-page API has no vendor-provided ready callback (only the
+    //     @dynatrace/rum-javascript-sdk npm package waits for availability, and that can't be
+    //     imported from a server-rendered inline script). So we poll.
+    //  2. The New RUM Experience runs *alongside* RUM Classic and Classic cannot be disabled, so
+    //     both globals can be present at once. We feature-detect each independently and let
+    //     callers register per API rather than branching on which experience is enabled.
+    (function () {
+      if (typeof window === 'undefined') return;
+      var queue = {classic: [], grail: []};
+      var fired = {classic: false, grail: false};
+      var attempts = 0;
 
-<% } %>
+      window.dtWhenReady = function (which, fn) {
+        if (fired[which]) { try { fn(); } catch (e) {} return; }
+        if (queue[which]) queue[which].push(fn);
+      };
+
+      function flush(which) {
+        if (fired[which]) return;
+        fired[which] = true;
+        var fns = queue[which];
+        queue[which] = [];
+        for (var i = 0; i < fns.length; i++) { try { fns[i](); } catch (e) {} }
+      }
+
+      function poll() {
+        if (window.dtrum) flush('classic');
+        if (window.dynatrace && typeof window.dynatrace.sendSessionPropertyEvent === 'function') flush('grail');
+        return fired.classic && fired.grail;
+      }
+
+      poll(); // synchronous treatments have already loaded by now
+      if (!(fired.classic && fired.grail)) {
+        var iv = setInterval(function () {
+          if (poll() || ++attempts > 50) clearInterval(iv); // up to ~10s for an async agent
+        }, 200);
+      }
+    })();
+
+    // Replay whatever the buffer caught before the agent's own handlers existed.
+    //
+    // Routed through RUM Classic on purpose: dtrum.reportError is available, dynatrace.reportError
+    // is NOT (New RUM exposes sendEvent instead, whose error event shape we have not verified).
+    // Classic runs alongside New RUM and cannot be disabled, so this path always exists. Whether a
+    // Classic-reported error also surfaces in Grail is unconfirmed — see the mechanisms doc.
+    //
+    // Known imprecision, accepted deliberately: the agent installs its handlers slightly before
+    // window.dtrum becomes visible (measured — errors captured from ~550ms while dtrum appeared at
+    // ~660ms), so an error thrown in that ~100ms sliver can be reported twice. Duplicating a
+    // handful of errors is the better failure than dropping them, and the "[dt-early]" prefix makes
+    // replayed ones identifiable if they ever need excluding.
+    window.dtWhenReady && window.dtWhenReady('classic', function () {
+      var buf = window.__dtEarlyErrors || [];
+      if (window.__dtEarlyErrorsStop) { try { window.__dtEarlyErrorsStop(); } catch (e) {} }
+      for (var i = 0; i < buf.length; i++) {
+        try {
+          var rec = buf[i];
+          var ev = rec.e || {};
+          // Pass the Error object where we have one so the real stack survives; a bare string makes
+          // the agent synthesise a stack from the reporting site, which points here instead of at
+          // the throw. Check exception.is_stack_trace_generated in user.events to tell them apart.
+          var err = ev.error || ev.reason;
+          var at = '[dt-early +' + rec.t + 'ms] ';
+          if (typeof window.dtrum.reportError === 'function') {
+            var reported = new Error(at + (err instanceof Error ? err.message : (ev.message || err || 'unknown early error')));
+            if (err instanceof Error) {
+              reported.name = err.name;
+              if (err.stack) reported.stack = err.stack;
+            }
+            window.dtrum.reportError(reported);
+          }
+        } catch (e) {}
+      }
+      buf.length = 0;
+    });
+  </script>
+  <% }
+} %>

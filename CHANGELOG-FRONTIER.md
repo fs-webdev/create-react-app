@@ -1,3 +1,15 @@
+## 8.17.0
+
+- Migrate to the Dynatrace New RUM Experience (RUM on Grail) and load the agent `async`
+  - **Default:** `_complete.js` from the Dynatrace global CDN, loaded `async`, so pages no longer block rendering on the agent download (~181 KB gzipped with New RUM and Session Replay). It follows the tenant's agent version and configuration with no react-scripts release
+  - **`enableManualPageDetection` and `window.dtinfo.appName` now work under async loading.** `layout.ejs` called them only if `window.dtrum` already existed, which silently skipped them once the agent loaded async. A new `dtWhenReady(which, fn)` helper runs them when the agent arrives
+  - **Early-error buffer:** an inline listener catches errors thrown before the async agent installs its handlers and replays them through `dtrum.reportError`. Measured on int, capture at 250 ms rose from 2/10 to 6/10 and at 400 ms from 5/10 to 9/10; it cannot reach t=0. Emits nothing under `off`
+  - **Removed the `frontier_snow_dynatraceNewRUM` flag.** It never controlled New RUM — that is the tenant's `enabledOnGrail` setting — and only toggled `async`
+  - `frontier_snow_dynatraceRUM` has four states: `off` (kill switch), two SRI arms — `asyncCS-inline` (versioned tag + SRI, `sync`) and `asyncCS-script` (the same tag, `async`) — and a fail-open default for anything else, including a Split outage returning `control`
+  - **Both SRI arms currently send no data to Grail** — 0 of 12 runs on int, against 4 of 6 for the default; sampling cannot explain it and the cause is unknown. Classic RUM keeps working on them, so nothing looks wrong from the page. Keep them limited to their test keys. Their values are baked in at publish time: Snow does not yet supply fresh ones through `locals.dynatrace` (pending in fs-webdev/snow#446)
+  - **Removed all old-RUM code paths:** `edgeUrls`, the old `cdnUrls`, and the three `_inline_*.ejs` bootstrap files
+  - Maintainer tooling and docs moved to `packages/react-scripts/tools/dynatrace/` and excluded from the published package. Published package: 119 files / 392 KB → 104 files / 254 KB. Rationale and known limits: `tools/dynatrace/DYNATRACE_RUM_MECHANISMS.md`
+
 ## 8.16.4
 
 - Widen the `typescript` peer range from `^3.2.1 || ^4 || ^5` to `^3.2.1 || ^4 || ^5 || ^6` so consuming apps can take `typescript@6`
