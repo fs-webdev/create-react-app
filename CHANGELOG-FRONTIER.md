@@ -1,3 +1,16 @@
+## 8.18.0
+
+- Upgrade `webpack-dev-server` from `^4.13.0` to `^6.1.0`, removing `sockjs`, `faye-websocket`, `websocket-driver` and `websocket-extensions` from the dependency tree
+  - Artifactory curation blocks `websocket-driver` 0.7.x (GHSA-v36f-rjg3-3v46), and `sockjs@0.3.24`, the last release, requires it. WDS 4 and 5 both depend on `sockjs`; WDS 6 uses only `ws`. The dev server already used the `ws` transport, so hot reload is unchanged
+  - Apps can remove their `"websocket-driver"` override after upgrading, unless something else still pulls in WDS 4 or 5 — for example `@storybook/preset-create-react-app`, which depends on upstream `react-scripts@5.0.1`. Check with `npm ls sockjs`
+  - Raises the `webpack` range to `^5.101.0` (WDS 6 peer requirement). Node `>=24` already satisfies WDS 6
+- Dev server config changes required by WDS 5 and 6:
+  - `https` → `server`; `onBeforeSetupMiddleware`/`onAfterSetupMiddleware` → `setupMiddlewares`. WDS's host checks still run before `src/setupProxy.js`, as before
+  - **`src/setupProxy.js` still receives an Express 4 app.** WDS 6 runs on Express 5, whose router rejects Express 4 route patterns such as snow's `app.post('*')`. The app is now a separate Express 4 app mounted inside the dev server's, so snow and existing proxy setups work unchanged. Adds `express@^4.22.0` as a direct dependency
+  - The `proxy` field in `package.json`: its handlers are now passed under `on`, the form http-proxy-middleware v4 expects; otherwise they would be silently ignored
+  - `.cjs` files are no longer sent to the asset loader. WDS 6's hot reload client imports `.cjs` modules, which failed to compile as asset URLs
+  - `npm start` now prints the error and exits when the dev server fails to start, instead of hanging silently. Ctrl+C uses `stopCallback`, since `close()` was removed
+
 ## 8.17.0
 
 - Migrate to the Dynatrace New RUM Experience (RUM on Grail) and load the agent `async`
