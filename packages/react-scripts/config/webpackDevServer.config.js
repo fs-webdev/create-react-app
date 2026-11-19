@@ -9,6 +9,7 @@
 'use strict';
 
 const fs = require('fs');
+const express = require('express');
 const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware');
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 const ignoredFiles = require('react-dev-utils/ignoredFiles');
@@ -23,6 +24,24 @@ const sockPath = process.env.WDS_SOCKET_PATH; // default: '/ws'
 const sockPort = process.env.WDS_SOCKET_PORT;
 
 const isSnow = fs.existsSync(path.join(paths.appNodeModules, 'snow', 'package.json')) || fs.existsSync(path.join(paths.appNodeModules, '@fs', 'snow', 'package.json'));
+
+// webpack-dev-server 4 ran `onBeforeSetupMiddleware` after its host checks. Keep
+// those checks first so `src/setupProxy.js` never sees a request they would reject.
+const hostCheckMiddlewares = ['host-header-check', 'cross-origin-header-check'];
+
+// http-proxy-middleware v4 (used by webpack-dev-server 6) ignores the v2-style
+// `onProxyReq`, `onError` and `logLevel` keys that react-dev-utils' `prepareProxy`
+// returns. Event handlers now go under `on`.
+function toProxyEvents({ onProxyReq, onError, logLevel, ...options }) {
+  return { ...options, on: { proxyReq: onProxyReq, error: onError } };
+}
+
+// webpack-dev-server 5 replaced the `https` option with `server`.
+function getServerConfig() {
+  const https = getHttpsConfig();
+  if (!https) return 'http';
+  return https === true ? 'https' : { type: 'https', options: https };
+}
 
 module.exports = function (proxy, allowedHost) {
   const disableFirewall =
@@ -82,9 +101,7 @@ module.exports = function (proxy, allowedHost) {
     },
     client: {
       webSocketURL: {
-        // Enable custom sockjs pathname for websocket connection to hot reloading server.
-        // Enable custom sockjs hostname, pathname and port for websocket connection
-        // to hot reloading server.
+        // Custom hostname, pathname and port for the hot reloading websocket.
         hostname: sockHost,
         pathname: sockPath,
         port: sockPort,
@@ -106,7 +123,7 @@ module.exports = function (proxy, allowedHost) {
       writeToDisk: isSnow,
     },
 
-    https: getHttpsConfig(),
+    server: getServerConfig(),
     host,
     historyApiFallback: {
       // Paths with dots should still use the history fallback.
@@ -114,29 +131,39 @@ module.exports = function (proxy, allowedHost) {
       disableDotRule: true,
       index: paths.publicUrlOrPath,
     },
-    // `proxy` is run between `before` and `after` `webpack-dev-server` hooks
-    proxy,
-    onBeforeSetupMiddleware(devServer) {
+    // `proxy` runs after `src/setupProxy.js` and before `redirectServedPath`
+    // (it is one of the `middlewares` returned by `setupMiddlewares` below)
+    proxy: proxy && proxy.map(toProxyEvents),
+    setupMiddlewares(middlewares, devServer) {
+      const isHostCheck = (m) => hostCheckMiddlewares.includes(m.name);
+      middlewares.filter(isHostCheck).forEach((m) => devServer.app.use(m.middleware));
+
       // Keep `evalSourceMapMiddleware`
       // middlewares before `redirectServedPath` otherwise will not have any effect
       // This lets us fetch source contents from webpack for the error overlay
       devServer.app.use(evalSourceMapMiddleware(devServer));
 
       if (fs.existsSync(paths.proxySetup)) {
-        // This registers user provided middleware for proxy reasons
-        require(paths.proxySetup)(devServer.app);
+        // This registers user provided middleware for proxy reasons.
+        // webpack-dev-server 6 runs on Express 5, whose router rejects Express 4
+        // route patterns such as snow's `app.post('*')`. Give setupProxy.js its
+        // own Express 4 app, mounted inside the dev server's.
+        const setupProxyApp = express();
+        require(paths.proxySetup)(setupProxyApp);
+        devServer.app.use(setupProxyApp);
       }
-    },
-    onAfterSetupMiddleware(devServer) {
-      // Redirect to `PUBLIC_URL` or `homepage` from `package.json` if url not match
-      devServer.app.use(redirectServedPath(paths.publicUrlOrPath));
 
-      // This service worker file is effectively a 'no-op' that will reset any
-      // previous service worker registered for the same host:port combination.
-      // We do this in development to avoid hitting the production cache if
-      // it used the same host and port.
-      // https://github.com/facebook/create-react-app/issues/2272#issuecomment-302832432
-      devServer.app.use(noopServiceWorkerMiddleware(paths.publicUrlOrPath));
+      return [
+        ...middlewares.filter((m) => !isHostCheck(m)),
+        // Redirect to `PUBLIC_URL` or `homepage` from `package.json` if url not match
+        redirectServedPath(paths.publicUrlOrPath),
+        // This service worker file is effectively a 'no-op' that will reset any
+        // previous service worker registered for the same host:port combination.
+        // We do this in development to avoid hitting the production cache if
+        // it used the same host and port.
+        // https://github.com/facebook/create-react-app/issues/2272#issuecomment-302832432
+        noopServiceWorkerMiddleware(paths.publicUrlOrPath),
+      ];
     },
   };
 };
