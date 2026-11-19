@@ -68,8 +68,25 @@
       // unconditionally and as early as possible. Both RUM Classic and the New RUM Experience can
       // read it via their own (separately configured) capture rules; gating it on the agent being
       // loaded meant the async treatments never set it at all.
+      // Keys: appName, sid (`<blueprint>/<system>/<service>`) and environment (dev|test|prod), the
+      // primary Grail tag values, derived exactly as @fs/startup derives them for the dyno's
+      // processes so RUM events and back-end records match. Each frontend needs its own capture
+      // rule per key to copy it onto events. sid and environment come from the FS_* config vars
+      // only (never TARGET_ENV); a sid is positional, so it stops at the first missing or malformed
+      // segment; an unmapped system leaves environment unset rather than mislabelled.
       if (!window.dtinfo) window.dtinfo = {}
       window.dtinfo.appName = SERVER_DATA.appName
+      <%
+        const dtinfoSidSegments = []
+        for (const segment of [process.env.FS_BLUEPRINT_NAME, process.env.FS_SYSTEM_NAME, process.env.FS_SERVICE_NAME]) {
+          if (!segment || !/^[a-z](?:[-a-z0-9]*[a-z0-9])?$/.test(segment)) break
+          dtinfoSidSegments.push(segment)
+        }
+        const dtinfoSid = dtinfoSidSegments.join('/')
+        const dtinfoEnvironment = process.env.FS_ENVIRONMENT_NAME || ({ int: 'dev', beta: 'test', prod: 'prod' })[process.env.FS_SYSTEM_NAME] || ''
+      %>
+      <% if (dtinfoSid) { %>window.dtinfo.sid = "<%= dtinfoSid %>"<% } %>
+      <% if (dtinfoEnvironment) { %>window.dtinfo.environment = "<%= dtinfoEnvironment %>"<% } %>
 
       // enableManualPageDetection is a RUM Classic API with no New RUM equivalent — New RUM models
       // navigations / page summaries / view summaries instead. Defer it until dtrum exists rather

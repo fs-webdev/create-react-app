@@ -1,3 +1,11 @@
+## 8.19.0
+
+- Render the primary Grail tag values on `window.dtinfo`, next to `appName`, so a per-frontend Dynatrace RUM capture rule can copy them onto user events as `event_properties.*`
+  - `window.dtinfo.sid` is `<blueprint>/<system>/<service>` from `FS_BLUEPRINT_NAME`, `FS_SYSTEM_NAME` and `FS_SERVICE_NAME`, derived as `@fs/startup` 4.4.0 derives it for the dyno's processes so RUM and back-end records match. It stops at the first missing or malformed segment and is not set when the blueprint is missing
+  - `window.dtinfo.environment` is `FS_ENVIRONMENT_NAME`, or else `FS_SYSTEM_NAME` mapped `int→dev`, `beta→test`, `prod→prod`. An unmapped system leaves it unset rather than mislabelled. `TARGET_ENV` is never read
+  - Each global is set only when its value is non-empty, in the same unconditional block as `appName` (not behind `NODE_ENV` or the RUM flag)
+  - Each frontend still needs its own capture rule per key before the values reach Grail. `fsetgrp_id` is not rendered yet: the project group is not on the Heroku deploy path
+
 ## 8.17.0
 
 - Migrate to the Dynatrace New RUM Experience (RUM on Grail) and load the agent `async`
